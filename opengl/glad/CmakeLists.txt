@@ -1,0 +1,9 @@
+aux_source_directory(./src glad_src)
+
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
+
+add_library(glad_static STATIC ${glad_src})
+add_library(glad SHARED  ${glad_src})
+
+
