@@ -10,6 +10,8 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/opengl/glfw/include
     ${CMAKE_CURRENT_SOURCE_DIR}/opengl/glm/
     ${CMAKE_CURRENT_SOURCE_DIR}/opengl/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/env/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/agent/include
 )
 
 set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR}/bin)
@@ -19,7 +21,10 @@ message(STATUS "Compiler: ${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION}
 
 add_subdirectory(opengl)
 
-add_executable(main main.cpp)
+aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/env/src env_src)
+aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/agent/src agent_src)
+
+add_executable(main main.cpp ${env_src} ${agent_src})
 
 target_link_directories(main PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/bin)
 
