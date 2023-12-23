@@ -1,6 +1,5 @@
 #pragma once
-
-#include <game.h>
+#include "game.h"
 
 class HumanAgent: public Agent{
 public:

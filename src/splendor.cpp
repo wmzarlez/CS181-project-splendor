@@ -1,5 +1,7 @@
 #include "splendor.h"
 
+extern Options options;
+
 PlayerBoard::PlayerBoard(){
     
 }
@@ -13,9 +15,9 @@ std::vector<Action> GameState::get_legal_action(int playerIndex){
     return std::vector<Action>();
 }
 
-bool GameState::apply_action(Action action){
+void GameState::apply_action(Action action){
+    // check_nobel and print_table should be used in this function
     
-    return false;
 }
 
 bool GameState::is_win(){
@@ -24,6 +26,10 @@ bool GameState::is_win(){
 }
 
 void GameState::check_noble(int playerIndex){
+
+}
+
+void GameState::print_table(){
 
 }
 

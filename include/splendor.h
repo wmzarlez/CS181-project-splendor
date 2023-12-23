@@ -69,12 +69,13 @@ public:
     // GameState init
     GameState();
     std::vector<Action> get_legal_action(int playerIndex);
-    bool apply_action(Action action);
+    void apply_action(Action action);
     // return true if one player wins
     bool is_win();
     // Check whether a player can get a noble.
     // If true, increase the player's point, and remove that noble
     void check_noble(int playerIndex);
+    void print_table();
 
     //  when you need to add/remove tokens, use functions below
     void add_card_random(int cardLevel, int cardIndex);

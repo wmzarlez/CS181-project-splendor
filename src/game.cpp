@@ -1,5 +1,6 @@
 #include "game.h"
 
+extern Options options;
 
 Game::Game(){
 
@@ -11,12 +12,13 @@ void Game::run(){
         for p in players:
             a=p->getAction(state)
             state.apply_action(a)
-            check_noble(p)
     check who wins...
     */
+   std::cout<<"Game start!"<<std::endl;
 
 }
 
 void Game::train(){
     // for wmz
+    std::cout<<"Start training!"<<std::endl;
 }
