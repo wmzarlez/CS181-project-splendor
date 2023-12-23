@@ -15,6 +15,6 @@ public:
 
 private:
     GameState state;
-    std::vector<Agent> players;
+    std::vector<Agent*> players;
     int numPlayer;
 };

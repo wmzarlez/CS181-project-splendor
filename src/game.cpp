@@ -8,7 +8,7 @@ void Game::run(){
     /*
     While(!state.is_win())
         for p in players:
-            a=p.getAction(state)
+            a=p->getAction(state)
             state.apply_action(a)
             check_noble(p)
     check who wins...

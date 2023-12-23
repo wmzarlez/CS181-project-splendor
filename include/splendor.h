@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <iostream>
 
 typedef enum{
     WHITE = 0,
