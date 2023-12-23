@@ -10,14 +10,17 @@ GameState::GameState(){
 
 std::vector<Action> GameState::get_legal_action(int playerIndex){
     
+    return std::vector<Action>();
 }
 
 bool GameState::apply_action(Action action){
     
+    return false;
 }
 
 bool GameState::is_win(){
     
+    return false;
 }
 
 void GameState::check_noble(int playerIndex){

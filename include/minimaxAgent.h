@@ -1,6 +1,6 @@
 #pragma once
-#include "game.h"
 
+#include "game.h"
 
 class MinimaxAgent: public Agent{
 public:

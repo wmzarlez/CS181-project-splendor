@@ -1,4 +1,5 @@
 #pragma once
+
 #include "splendor.h"
 
 class Agent{

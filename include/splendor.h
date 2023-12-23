@@ -1,6 +1,8 @@
 #pragma once
+
 #include <vector>
-#include <iostream>
+#include "util.hpp"
+#include "../opengl/include/visualization.hpp"
 
 typedef enum{
     WHITE = 0,
@@ -20,7 +22,7 @@ typedef enum{
 } ActionType;
 
 struct Card{
-    int point = 0;
+    int point = -2;
     Gem bonusGem;
     int cost[5];
 };
@@ -30,6 +32,23 @@ struct Noble{
     int bonusRequired[5];
 };
 
+/*
+ * params are used to describe an action, details are below
+ * SELECTGEMS:
+ * the first 3 params are the gems player selected
+ * the last 3 params are the gems player droped (usually BLANK(6))
+ * BUYCARD:
+ * (params[0],params[1]) represents (cardLevel-1,cardIndex)
+ * they can be just used as market[params[0]][params[1]]
+ * params remained are useless
+ * RESERVECARD:
+ * the first 2 params are similar with BUYCARD
+ * the third param is an indicator of whether a gold/YELLOW gem can be got
+ * 0 -- no YELLOW gem, 1 -- get a YELLOW gem
+ * params remained are useless
+ * SKIP:
+ * all params are useless
+*/
 struct Action{
     ActionType type = SELECTGEMS;
     int params[6];
@@ -80,4 +99,6 @@ private:
 
     PlayerBoard playerBoards[4];
     int numPlayer = 2;
+
+    Visualization* paintbrush;
 };

@@ -1,4 +1,5 @@
 #pragma once
+
 #include "game.h"
 
 class QLearningAgent: public Agent{

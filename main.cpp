@@ -1,8 +1,9 @@
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
+#include <util.hpp>
 
-int main(){
+Options options;
 
-    
-    return 0;
+int main(int argc, const char* argv[]){
+    options.set_args(argc, argv);
+
+
 }
