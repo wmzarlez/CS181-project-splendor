@@ -1,5 +1,5 @@
 #pragma once
-
+#include <memory>
 #include <vector>
 #include "util.hpp"
 #include "../opengl/include/visualization.hpp"
@@ -11,7 +11,7 @@ typedef enum{
     RED = 3,
     BLACK = 4,
     YELLOW = 5,
-    BLANK = 6
+    BLANK_ = 6
 } Gem;
 
 typedef enum{
@@ -23,13 +23,15 @@ typedef enum{
 
 struct Card{
     int point = -2;
-    Gem bonusGem;
-    int cost[5];
+    Gem bonusGem = BLANK_;
+    int cardLevel = 0; // cardLevel is start from 1
+    int cardId = 0; // cardId is start from 1
+    int cost[5] = {10,10,10,10,10};
 };
 
 struct Noble{
     int point = 3;
-    int bonusRequired[5];
+    int bonusRequired[5] = {10,10,10,10,10};
 };
 
 /*
@@ -50,7 +52,7 @@ struct Noble{
  * all params are useless
 */
 struct Action{
-    ActionType type = SELECTGEMS;
+    ActionType type = SKIP;
     int params[6];
 };
 
@@ -64,23 +66,32 @@ private:
     Card reservedCards[3];
 };
 
+struct CardPile{
+    Card level1Pile[40];
+    int level1CardRemained = 40;
+    Card level2Pile[30];
+    int level2CardRemained = 30;
+    Card level3Pile[20];
+    int level3CardRemained = 20;
+};
+
 class GameState{
 public:
     // GameState init
     GameState();
-    std::vector<Action> get_legal_action(int playerIndex);
+    std::vector<Action> get_legal_action(int playerIndex) const;
     void apply_action(Action action);
     // return true if one player wins
     bool is_win();
     // Check whether a player can get a noble.
     // If true, increase the player's point, and remove that noble
     void check_noble(int playerIndex);
-    void print_table();
+    void print_table() const;
 
     //  when you need to add/remove tokens, use functions below
-    void add_card_random(int cardLevel, int cardIndex);
-    void add_card_explicit(int cardLevel, int cardIndex, int cardId);
-    void remove_card(int cardLevel, int cardIndex);
+    void add_card_random(int cardLevel, int cardColumnIndex);
+    void add_card_explicit(int cardLevel, int cardColumnIndex, int cardId);
+    void remove_card(int cardLevel, int cardColumnIndex);
     void add_gem(Gem gemType);
     void remove_gem(Gem gemType);
     void add_noble_random(int nobleIndex);
@@ -91,9 +102,7 @@ private:
     int gemPile[6] = {4,4,4,4,4,5};
 
     Card market[3][4];
-    Card level1Pile[40];
-    Card level2Pile[30];
-    Card level3Pile[20];
+    std::shared_ptr<CardPile> cardPile;
 
     Noble noblePile[5];
     int numNoble = 3;

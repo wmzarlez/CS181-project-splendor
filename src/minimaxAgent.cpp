@@ -2,7 +2,9 @@
 
 extern Options options;
 
-Action MinimaxAgent::getAction(GameState state){
+MinimaxAgent::MinimaxAgent(int index): playerIndex(index){}
+
+Action MinimaxAgent::getAction(const GameState& state){
 
     return Action();
 }

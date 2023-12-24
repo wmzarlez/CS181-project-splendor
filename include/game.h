@@ -4,7 +4,7 @@
 
 class Agent{
 public:
-    virtual Action getAction(GameState state) = 0;
+    virtual Action getAction(const GameState& state) = 0;
 };
 
 class Game{
@@ -16,6 +16,6 @@ public:
 
 private:
     GameState state;
-    std::vector<Agent*> players;
+    std::vector<std::unique_ptr<Agent>> players;
     int numPlayer;
 };

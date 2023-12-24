@@ -6,11 +6,11 @@ PlayerBoard::PlayerBoard(){
     
 }
 
-GameState::GameState(){
+GameState::GameState(): cardPile(std::make_shared<CardPile>()){
     
 }
 
-std::vector<Action> GameState::get_legal_action(int playerIndex){
+std::vector<Action> GameState::get_legal_action(int playerIndex) const{
     
     return std::vector<Action>();
 }
@@ -21,6 +21,7 @@ void GameState::apply_action(Action action){
 }
 
 bool GameState::is_win(){
+    // check if some one wins
     
     return false;
 }
@@ -29,17 +30,18 @@ void GameState::check_noble(int playerIndex){
 
 }
 
-void GameState::print_table(){
+void GameState::print_table() const{
+    // use std::format
 
 }
 
-void GameState::add_card_random(int cardLevel, int cardIndex){
+void GameState::add_card_random(int cardLevel, int cardColumnIndex){
 
 }
-void GameState::add_card_explicit(int cardLevel, int cardIndex, int cardId){
+void GameState::add_card_explicit(int cardLevel, int cardColumnIndex, int cardId){
 
 }
-void GameState::remove_card(int cardLevel, int cardIndex){
+void GameState::remove_card(int cardLevel, int cardColumnIndex){
 
 }
 void GameState::add_gem(Gem gemType){

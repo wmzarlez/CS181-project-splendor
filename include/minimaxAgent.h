@@ -3,5 +3,8 @@
 
 class MinimaxAgent: public Agent{
 public:
-    Action getAction(GameState state);
+    virtual Action getAction(const GameState& state);
+    MinimaxAgent(int index);
+private:
+    int playerIndex;
 };

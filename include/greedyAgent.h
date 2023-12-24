@@ -1,11 +1,10 @@
 #pragma once
 #include "game.h"
 
-class HumanAgent: public Agent{
+class GreedyAgent: public Agent{
 public:
     virtual Action getAction(const GameState& state);
-    HumanAgent(int index);
+    GreedyAgent(int index);
 private:
     int playerIndex;
 };
-
