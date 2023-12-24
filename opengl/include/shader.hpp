@@ -11,18 +11,21 @@
 #include "glad/glad.h"
 #include "utils.hpp"
 
+
+
 namespace OpenGL {
     enum struct shader_t : unsigned int {
         VERTEX = GL_VERTEX_SHADER, 
         FRAGMENT = GL_FRAGMENT_SHADER,
     };
 
+    enum struct loader_t {
+        FILE = 0, 
+        STRING = 1,
+    };
+
     template<shader_t Shader_t>
     class Shader {
-        enum struct loader_t {
-            FILE = 0, 
-            STRING = 1,
-        };
 
         std::string _source;
         std::optional<unsigned int> _id;
@@ -33,12 +36,13 @@ namespace OpenGL {
             char err_buf[buf_l];
 
             _id = glCreateShader(static_cast<GLenum>(Shader_t));
-            glShaderSource(_id, 1, _source.data(), nullptr);
-            glCompileShader(_id);
+            const char* strs[] = {_source.c_str()};
+            glShaderSource(*_id, 1, strs, nullptr);
+            glCompileShader(*_id);
 
-            glGetShaderiv(_id, GL_COMPILE_STATUS, &ok);
+            glGetShaderiv(*_id, GL_COMPILE_STATUS, &ok);
             if(!ok) {
-                glGetShaderInfoLog(_id, buf_l, nullptr, err_buf);
+                glGetShaderInfoLog(*_id, buf_l, nullptr, err_buf);
                 const char* shader_name = "null";
                 if constexpr (Shader_t == shader_t::VERTEX) { shader_name = "vertex"; }
                 else if constexpr (Shader_t == shader_t::FRAGMENT) { shader_name = "fragment"; }
@@ -51,26 +55,26 @@ namespace OpenGL {
 
         Shader() = default;
 
-        template<loader_t Loader_t>
-        Shader(const std::string_view src) {
+        Shader(std::string_view src, loader_t loadWay) {
 
-            if constexpr (Loader_t == loader_t::FILE) {
-                std::ifstream f{std::cbegin(src), std::cend(src)};
-                if(!f)
-                    runtime_error(std::format("Could not open the file {}\n", src));
-                
-                int c;
-                while(f) {
-                    c = f.get();
-                    if(c != EOF)
-                        _source.push_back(c);
+            switch(loadWay) {
+                case loader_t::FILE: {
+                    std::ifstream f{std::cbegin(src)};
+                    if(!f)
+                        runtime_error(std::format("Could not open the file {}\n", src));
+                    
+                    int c;
+                    while(f) {
+                        c = f.get();
+                        if(c != EOF)
+                            _source.push_back(c);
+                    }
+                    break;
                 }
-            }
-            else if constexpr (Loader_t == loader_t::STRING) {
-                _source = src;
-            }
-            else {
-                runtime_error("Unknown construct type!");
+
+                case loader_t::STRING : {
+                    _source = src;
+                }
             }
 
             init();
@@ -102,31 +106,44 @@ namespace OpenGL {
     using Vertex_Shader     = Shader<shader_t::VERTEX>;
     using Fragment_Shader   = Shader<shader_t::FRAGMENT>;
 
+    inline Shader<shader_t::VERTEX> createVertexShaderFromFile(std::string_view str) {
+        return std::move(Shader<shader_t::VERTEX>(str, loader_t::FILE));
+    }
+
+    inline Shader<shader_t::FRAGMENT> createFragmentShaderFromFile(std::string_view str) {
+        return std::move(Shader<shader_t::FRAGMENT>(str, loader_t::FILE));
+    }
+
     class Shader_Program {
         private:
             std::optional<unsigned int> _id;
+
+            inline void is_valid() const {
+                if(!_id)
+                    runtime_error("Shader is not valid!");
+            }
 
         public:
             Shader_Program() = default;
 
             template<Shader_concept... Shaders>
-            Shader_Program(const Shaders&... shaders) {
+            Shader_Program(Shaders&&... shaders) {
                 constexpr std::size_t buf_l = 512;
 
                 int ok;
                 char err_buf[buf_l];
 
-                _id = glCreateShader();
+                _id = glCreateProgram();
 
-                apply([=this](const auto& shader){
-                    glAttachShader(this->id, shader.get_id());
-                }, shaders...);
+                apply([=, this](const auto& shader){
+                    glAttachShader(*_id, shader.get_id());
+                }, std::forward<Shaders>(shaders)...);
 
-                glLinkProgram(_id);
+                glLinkProgram(*_id);
 
-                glGetProgramiv(_id, GL_LINK_STATUS, &ok);
+                glGetProgramiv(*_id, GL_LINK_STATUS, &ok);
                 if(!ok) {
-                    glGetProgramInfoLog(_id, buf_l, nullptr, err_buf);
+                    glGetProgramInfoLog(*_id, buf_l, nullptr, err_buf);
                     runtime_error(std::format("ERROR::SHADER_PROGRAM::LINK_FAILED\n{}\n", err_buf));
                 }
             }
@@ -138,6 +155,7 @@ namespace OpenGL {
             const Shader_Program& operator=(Shader_Program&& other) { this->swap(other); return *this; }
 
             inline void use() const {
+                is_valid();
                 glUseProgram(*_id);
             }
 
@@ -151,6 +169,19 @@ namespace OpenGL {
                     _id = std::nullopt;
                 }
             }
+
+            inline void set_bool(const std::string& str, bool v) const {
+                glUniform1i(glGetUniformLocation(*_id, str.c_str()), (int)v);
+            }
+
+            inline void set_int(const std::string& str, int v) const {
+                glUniform1i(glGetUniformLocation(*_id, str.c_str()), v);
+            }
+
+            inline void set_float(const std::string& str, float v) const {
+                glUniform1f(glGetUniformLocation(*_id, str.c_str()), v);
+            }
+
     };
 }
 
