@@ -1,0 +1,10 @@
+bias    1.0
+cards-to-closest-noble 1.0
+cards-owned 1.0
+gem-owned   1.0
+gold-gem    1.0
+my-points   1.0
+points-opponents-get-after-2-turns   -1.0
+4-max-card-values-to-me 1.0
+4-max-card-values-to-opponents  -1.0
+turns   -1.0

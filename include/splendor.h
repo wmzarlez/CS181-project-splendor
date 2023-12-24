@@ -99,6 +99,8 @@ public:
     void remove_noble(int nobleIndex);
 
 private:
+    int numTurn = 0;
+
     int gemPile[6] = {4,4,4,4,4,5};
 
     Card market[3][4];
