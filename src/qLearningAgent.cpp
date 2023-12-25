@@ -16,10 +16,12 @@ void QLearningAgent::update_weights(const GameState& state, Action action, const
 
 std::unordered_map<std::string, float> QLearningAgent::get_features(const GameState& state){
 
+    return std::unordered_map<std::string, float>();
 }
 
 float QLearningAgent::get_weight(std::string){
 
+    return 0.0;
 }
 
 QLearningAgent::QLearningAgent(int index): playerIndex(index){
