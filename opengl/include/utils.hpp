@@ -12,10 +12,10 @@ inline void runtime_error(const char* file, unsigned int line, const std::string
 #define runtime_error(what) runtime_error(__FILE__, __LINE__, what)
 
 template<typename T, typename... Args, typename Func>
-inline void apply(Func&& func, T first, Args... others) {
+inline void apply(Func&& func, T&& first, Args&&... others) {
     func(first);
     if constexpr (sizeof...(others) > 0) {
-        apply(std::forward<Func>(func), others...);
+        apply(std::forward<Func>(func), std::forward<Args>(others)...);
     }
 }
 

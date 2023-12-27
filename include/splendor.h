@@ -101,6 +101,8 @@ public:
     void add_noble_random(int nobleIndex);
     void add_noble_explicit(int nobleIndex, int nobleId);
     void remove_noble(int nobleIndex);
+    int numTurn = 0;
+
     int gemPile[6] = {4,4,4,4,4,5};
 
     Card market[3][4];
