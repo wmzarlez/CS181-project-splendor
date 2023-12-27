@@ -8,6 +8,7 @@ int main(int argc, const char* argv[]){
     options.set_args(argc, argv);
 
     Game game;
+    
     if(options.get_option<std::string>("-m")==std::string("HumanVsComputer")){
         game.run();
     }

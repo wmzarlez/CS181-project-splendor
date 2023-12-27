@@ -29,6 +29,8 @@ struct Card{
     int cost[5] = {10,10,10,10,10};
 };
 
+//Card card = {.point = -2, .bonusGem, .cost = {10,10,10,10,10}}
+
 struct Noble{
     int point = 3;
     int bonusRequired[5] = {10,10,10,10,10};
@@ -51,6 +53,7 @@ struct Noble{
  * SKIP:
  * all params are useless
 */
+
 struct Action{
     ActionType type = SKIP;
     int params[6];
@@ -73,6 +76,7 @@ struct CardPile{
     int level2CardRemained = 30;
     Card level3Pile[20];
     int level3CardRemained = 20;
+    CardPile();
 };
 
 class GameState{
@@ -90,15 +94,13 @@ public:
 
     //  when you need to add/remove tokens, use functions below
     void add_card_random(int cardLevel, int cardColumnIndex);
-    void add_card_explicit(int cardLevel, int cardColumnIndex, int cardId);
+    void add_card_explicit(int cardLevel, int cardColumnIndex, int cardId);   
     void remove_card(int cardLevel, int cardColumnIndex);
     void add_gem(Gem gemType);
     void remove_gem(Gem gemType);
     void add_noble_random(int nobleIndex);
     void add_noble_explicit(int nobleIndex, int nobleId);
     void remove_noble(int nobleIndex);
-
-private:
     int gemPile[6] = {4,4,4,4,4,5};
 
     Card market[3][4];
@@ -108,7 +110,7 @@ private:
     int numNoble = 3;
 
     PlayerBoard playerBoards[4];
-    int numPlayer = 2;
+    int numPlayer ;
 
     Visualization* paintbrush;
 };

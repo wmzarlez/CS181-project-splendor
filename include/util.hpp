@@ -12,7 +12,7 @@
 
 class Options {
     private:
-        std::unordered_map<std::string, std::optional<std::string>> _options;
+        std::unordered_map<std::string, std::string> _options;
 
         inline bool is_flag(const char* s) {
             return (strlen(s) > 0 && s[0] == '-');
@@ -83,36 +83,43 @@ class Options {
         }
 
         template<typename T>
-        inline std::optional<T> get_option(const char* s) const {
+        inline T get_option(const char* s) const {
             static_assert(0, "Type is not supported!");
-            return std::nullopt;
+            return T();
         }
 };
 
 template<>
-inline std::optional<std::string> Options::get_option<std::string>(const char* s) const {
+inline std::string Options::get_option<std::string>(const char* s) const {
     auto iter = _options.find(s);
-    if(iter == _options.end() || !(iter->second))
-        return std::nullopt;
+    if(iter == _options.end()){
+        std::cout<<"No matched options."<<std::endl;
+        return std::string();
+    }
     return iter->second;
 }
 
 template<>
-inline std::optional<int> Options::get_option<int>(const char* s) const {
+inline int Options::get_option<int>(const char* s) const {
     auto iter = _options.find(s);
     int ret;
-    if(iter == _options.end() || !(iter->second) || sscanf(iter->second->c_str(), "%d", &ret) < 1)
-        return std::nullopt;
+    if(iter == _options.end()){
+        std::cout<<"No matched options."<<std::endl;
+        return -1;
+    }
+    sscanf(iter->second.c_str(), "%d", &ret);
     return ret;
 }
 
 template<>
-inline std::optional<bool> Options::get_option<bool>(const char* s) const {
+inline bool Options::get_option<bool>(const char* s) const {
     auto iter = _options.find(s);
     int value;
-    if(iter == _options.end())
-        return std::nullopt;
-    sscanf(iter->second->c_str(), "%d", &value);
+    if(iter == _options.end()){
+        std::cout<<"No matched options."<<std::endl;
+        return false;
+    }
+    sscanf(iter->second.c_str(), "%d", &value);
     if(value==0){
         return false;
     }
