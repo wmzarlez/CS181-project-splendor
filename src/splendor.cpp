@@ -9,6 +9,7 @@ CardPile::CardPile(){
     level1CardRemained=40;
     level2CardRemained=30;
     level3CardRemained=20;
+    /*level 1*/
     Card card1 = {.point = 0, .bonusGem=RED, .cardLevel=1, .cardId=1, .cost = {3,0,0,0,0}};
     level1Pile[0] = card1;
 
@@ -128,9 +129,164 @@ CardPile::CardPile(){
 
     Card card40 = {.point = 0, .bonusGem=RED, .cardLevel=1, .cardId=40, .cost = {2,0,0,2,0}};
     level1Pile[39] = card40;
+    /*xxxxxxx*/
+    /*level 2*/
+    /*xxxxxxx*/
+    Card card41 = {.point = 2, .bonusGem=RED, .cardLevel=2, .cardId=41, .cost = {3,0,0,0,5}}; 
+    level2Pile[0] = card41;
+
+    Card card42 = {.point = 3, .bonusGem=BLUE, .cardLevel=2, .cardId=42, .cost = {0,6,0,0,0}}; 
+    level2Pile[1] = card42;
+
+    Card card43 = {.point = 3, .bonusGem=GREEN, .cardLevel=2, .cardId=43, .cost = {0,0,6,0,0}}; 
+    level2Pile[2] = card43;
+
+    Card card44 = {.point = 3, .bonusGem=WHITE, .cardLevel=2, .cardId=44, .cost = {6,0,0,0,0}}; 
+    level2Pile[3] = card44;
+
+    Card card45 = {.point = 1, .bonusGem=BLACK, .cardLevel=2, .cardId=45, .cost = {3,0,3,0,2}}; 
+    level2Pile[4] = card45;
+
+    Card card46 = {.point = 2, .bonusGem=GREEN, .cardLevel=2, .cardId=46, .cost = {0,0,5,0,0}}; 
+    level2Pile[5] = card46;
+
+    Card card47 = {.point = 2, .bonusGem=BLACK, .cardLevel=2, .cardId=47, .cost = {0,0,5,3,0}}; 
+    level2Pile[6] = card47;
+
+    Card card48 = {.point = 1, .bonusGem=RED, .cardLevel=2, .cardId=48, .cost = {2,0,0,2,3}}; 
+    level2Pile[7] = card48;
+
+    Card card49 = {.point = 2, .bonusGem=BLACK, .cardLevel=2, .cardId=49, .cost = {0,1,4,2,0}}; 
+    level2Pile[8] = card49;
+
+    Card card50 = {.point = 1, .bonusGem=GREEN, .cardLevel=2, .cardId=50, .cost = {3,0,2,3,0}}; 
+    level2Pile[9] = card50;
+
+    Card card51 = {.point = 2, .bonusGem=WHITE, .cardLevel=2, .cardId=51, .cost = {0,0,0,5,0}}; 
+    level2Pile[10] = card51;
+
+    Card card52 = {.point = 3, .bonusGem=RED, .cardLevel=2, .cardId=52, .cost = {0,0,0,6,0}}; 
+    level2Pile[11] = card52;
+
+    Card card53 = {.point = 2, .bonusGem=WHITE, .cardLevel=2, .cardId=53, .cost = {0,0,1,4,2}}; 
+    level2Pile[12] = card53;
+
+    Card card54 = {.point = 2, .bonusGem=RED, .cardLevel=2, .cardId=54, .cost = {0,0,0,0,5}}; 
+    level2Pile[13] = card54;
+
+    Card card55 = {.point = 1, .bonusGem=WHITE, .cardLevel=2, .cardId=55, .cost = {0,0,3,2,2}}; 
+    level2Pile[14] = card55;
+
+    Card card56 = {.point = 2, .bonusGem=GREEN, .cardLevel=2, .cardId=56, .cost = {4,2,0,0,1}}; 
+    level2Pile[15] = card56;
+
+    Card card57 = {.point = 2, .bonusGem=BLUE, .cardLevel=2, .cardId=57, .cost = {5,3,0,0,0}}; 
+    level2Pile[16] = card57;
+
+    Card card58 = {.point = 3, .bonusGem=BLACK, .cardLevel=2, .cardId=58, .cost = {0,0,0,0,6}}; 
+    level2Pile[17] = card58;
+
+    Card card59 = {.point = 2, .bonusGem=GREEN, .cardLevel=2, .cardId=59, .cost = {0,5,3,0,0}}; 
+    level2Pile[18] = card59;
+
+    Card card60 = {.point = 1, .bonusGem=BLUE, .cardLevel=2, .cardId=60, .cost = {0,2,3,0,3}}; 
+    level2Pile[19] = card60;
+
+    Card card61 = {.point = 2, .bonusGem=BLACK, .cardLevel=2, .cardId=61, .cost = {5,0,0,0,0}}; 
+    level2Pile[20] = card61;
+
+    Card card62 = {.point = 2, .bonusGem=BLUE, .cardLevel=2, .cardId=62, .cost = {2,0,0,1,4}}; 
+    level2Pile[21] = card62;
+
+    Card card63 = {.point = 1, .bonusGem=BLUE, .cardLevel=2, .cardId=63, .cost = {0,2,2,3,0}}; 
+    level2Pile[22] = card63;
+
+    Card card64 = {.point = 2, .bonusGem=WHITE, .cardLevel=2, .cardId=64, .cost = {0,0,0,5,3}}; 
+    level2Pile[23] = card64;
+
+    Card card65 = {.point = 1, .bonusGem=WHITE, .cardLevel=2, .cardId=65, .cost = {2,3,0,3,0}}; 
+    level2Pile[24] = card65;
+
+    Card card66 = {.point = 2, .bonusGem=RED, .cardLevel=2, .cardId=66, .cost = {1,4,2,0,0}}; 
+    level2Pile[25] = card66;
+
+    Card card67 = {.point = 1, .bonusGem=BLACK, .cardLevel=2, .cardId=67, .cost = {3,2,2,0,0}};
+    level2Pile[26] = card67;
+
+    Card card68 = {.point = 1, .bonusGem=RED, .cardLevel=2, .cardId=68, .cost = {0,3,0,2,3}}; 
+    level2Pile[27] = card68;
+
+    Card card69 = {.point = 2, .bonusGem=BLUE, .cardLevel=2, .cardId=69, .cost = {0,5,0,0,0}}; 
+    level2Pile[28] = card69;
+
+    Card card70 = {.point = 1, .bonusGem=GREEN, .cardLevel=2, .cardId=70, .cost = {2,3,0,0,2}}; 
+    level2Pile[29] = card70;
+    /*xxxxxxx*/
+    /*level 3*/
+    /*xxxxxxx*/
+    Card card71 = {.point = 4, .bonusGem=BLACK, .cardLevel=3, .cardId=71, .cost = {0,0,0,7,0}};
+    level3Pile[0] = card71;
+
+    Card card72 = {.point = 5, .bonusGem=RED, .cardLevel=3, .cardId=72, .cost = {0,0,7,3,0}};
+    level3Pile[1] = card72;
+
+    Card card73 = {.point = 4, .bonusGem=GREEN, .cardLevel=3, .cardId=73, .cost = {0,7,0,0,0}};
+    level3Pile[2] = card73;
+
+    Card card74 = {.point = 4, .bonusGem=WHITE, .cardLevel=3, .cardId=74, .cost = {3,0,0,3,6}};
+    level3Pile[3] = card74;
+
+    Card card75 = {.point = 3, .bonusGem=BLACK, .cardLevel=3, .cardId=75, .cost = {3,3,5,3,0}};
+    level3Pile[4] = card75;
+
+    Card card76 = {.point = 4, .bonusGem=BLACK, .cardLevel=3, .cardId=76, .cost = {0,0,3,6,3}};
+    level3Pile[5] = card76;
+
+    Card card77 = {.point = 4, .bonusGem=WHITE, .cardLevel=3, .cardId=77, .cost = {0,0,0,0,7}};
+    level3Pile[6] = card77;
+
+    Card card78 = {.point = 4, .bonusGem=GREEN, .cardLevel=3, .cardId=78, .cost = {3,6,3,0,0}};
+    level3Pile[7] = card78;
+
+    Card card79 = {.point = 5, .bonusGem=BLUE, .cardLevel=3, .cardId=79, .cost = {7,3,0,0,0}};
+    level3Pile[8] = card79;
+
+    Card card80 = {.point = 4, .bonusGem=RED, .cardLevel=3, .cardId=80, .cost = {0,3,6,3,0}};
+    level3Pile[9] = card80;
+
+    Card card81 = {.point = 4, .bonusGem=RED, .cardLevel=3, .cardId=81, .cost = {0,0,7,0,0}};
+    level3Pile[10] = card81;
+
+    Card card82 = {.point = 5, .bonusGem=BLACK, .cardLevel=3, .cardId=82, .cost = {0,0,0,7,3}};
+    level3Pile[11] = card82;
+
+    Card card83 = {.point = 5, .bonusGem=GREEN, .cardLevel=3, .cardId=83, .cost = {0,7,3,0,0}};
+    level3Pile[12] = card83;
+
+    Card card84 = {.point = 3, .bonusGem=GREEN, .cardLevel=3, .cardId=84, .cost = {5,3,0,3,3}};
+    level3Pile[13] = card84;
+
+    Card card85 = {.point = 4, .bonusGem=BLUE, .cardLevel=3, .cardId=85, .cost = {6,3,0,0,3}};
+    level3Pile[14] = card85;
+
+    Card card86 = {.point = 5, .bonusGem=WHITE, .cardLevel=3, .cardId=86, .cost = {3,0,0,0,7}};
+    level3Pile[15] = card86;
+
+    Card card87 = {.point = 4, .bonusGem=BLUE, .cardLevel=3, .cardId=87, .cost = {7,0,0,0,0}};
+    level3Pile[16] = card87;
+
+    Card card88 = {.point = 3, .bonusGem=RED, .cardLevel=3, .cardId=88, .cost = {3,5,3,0,3}};
+    level3Pile[17] = card88;
+
+    Card card89 = {.point = 3, .bonusGem=WHITE, .cardLevel=3, .cardId=89, .cost = {0,3,3,5,3}};
+    level3Pile[18] = card89;
+
+    Card card90 = {.point = 3, .bonusGem=BLUE, .cardLevel=3, .cardId=90, .cost = {3,0,3,3,5}};
+    level3Pile[19] = card90;
 }
 GameState::GameState(): cardPile(std::make_shared<CardPile>()){
     numPlayer=options.get_option<int>("-p");
+    numTurn=0;
     if(numPlayer==2){
         numNoble=3;
     }

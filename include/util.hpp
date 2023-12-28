@@ -46,7 +46,7 @@ class Options {
             _options["-n"]="10";
 
             // if HumanVSComputer
-            _options["-s"]="1";
+            _options["-i"]="1";
 
             // if Qlearning
             _options["-no-training"]="0";

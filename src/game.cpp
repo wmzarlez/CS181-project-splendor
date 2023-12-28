@@ -26,7 +26,7 @@ Game::Game(){
               /////////////////////for wmz
         }
 
-        else{
+        else if(options.get_option<std::string>("-m")==std::string("HumanVsComputer")){
            int humanId=options.get_option<int>("-i");                    //人机对抗
            if(humanId<1||humanId>3){                         //玩家id不合法
                 options.usage();   
@@ -74,6 +74,10 @@ Game::Game(){
                 state=GameState();
            }
         }
+        else{
+            options.usage();      //model 不合法
+            exit(0);
+        }
     }
     else if(options.get_option<int>("-p")==int(4)){         //四人游戏
         numPlayer=4;
@@ -81,8 +85,7 @@ Game::Game(){
         if(options.get_option<std::string>("-m")==std::string("SelfTrain")){
               /////////////////////for wmz
         }
-
-        else{        //人机对抗
+        else if(options.get_option<std::string>("-m")==std::string("HumanVsComputer")){
            int humanId=options.get_option<int>("-i");
            if(humanId<1||humanId>4){                         //玩家id不合法
                 options.usage();   
@@ -130,7 +133,10 @@ Game::Game(){
                 state=GameState();
            }
         }
-
+        else{
+            options.usage();      //model 不合法
+            exit(0);
+        }
     }
     else if (options.get_option<int>("-p")==int(2)){                                                     //两人游戏（default）
         numPlayer=2;
@@ -139,7 +145,7 @@ Game::Game(){
             /////////////////////for wmz
         }
 
-        else{       //人机对抗
+        else if(options.get_option<std::string>("-m")==std::string("HumanVsComputer")){         //人机对抗
            int humanId=options.get_option<int>("-i");
            if(humanId<1||humanId>2){                         //玩家id不合法
                 options.usage();   
@@ -185,12 +191,15 @@ Game::Game(){
                     exit(0);
                 }
                 state=GameState();
-           }
-        }
+            }
 
+        }
+        else{
+             options.usage();      //model 不合法
+            exit(0);
+        }
     }
 }
-
 void Game::run(){
     /*
     While(!state.is_win())
