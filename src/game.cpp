@@ -195,7 +195,7 @@ Game::Game(){
 
         }
         else{
-             options.usage();      //model 不合法
+            options.usage();      //model 不合法
             exit(0);
         }
     }

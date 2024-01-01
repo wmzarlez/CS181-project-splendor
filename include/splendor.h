@@ -32,7 +32,8 @@ struct Card{
 //Card card = {.point = -2, .bonusGem, .cost = {10,10,10,10,10}}
 
 struct Noble{
-    int point = 3;
+    int nobleid=0;   //nobleid start from 1
+    int point = 0;
     int bonusRequired[5] = {10,10,10,10,10};
 };
 
@@ -79,6 +80,11 @@ struct CardPile{
     CardPile();
 };
 
+struct NoblePile{           //存放所有贵族牌信息，初始化游戏时随机从中抽取需要个数的贵族
+    Noble allNoble[10];
+    NoblePile();
+};
+
 class GameState{
 public:
     // GameState init
@@ -108,6 +114,7 @@ public:
     Card market[3][4];
     std::shared_ptr<CardPile> cardPile;
 
+    std::shared_ptr<NoblePile> totalNobalPile;
     Noble noblePile[5];
     int numNoble = 3;
 

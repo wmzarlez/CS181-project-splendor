@@ -5,6 +5,37 @@ extern Options options;
 PlayerBoard::PlayerBoard(){
     
 }
+NoblePile::NoblePile(){
+    Noble noble1={.nobleid=1, .point=3, .bonusRequired={0,0,0,4,4}};
+    allNoble[0]=noble1;
+    
+    Noble noble2={.nobleid=2, .point=3, .bonusRequired={4,4,0,0,0}};
+    allNoble[1]=noble2;
+
+    Noble noble3={.nobleid=3, .point=3, .bonusRequired={3,0,0,3,3}};
+    allNoble[2]=noble3;
+
+    Noble noble4={.nobleid=4, .point=3, .bonusRequired={3,3,0,0,3}};
+    allNoble[3]=noble4;
+
+    Noble noble5={.nobleid=5, .point=3, .bonusRequired={4,0,0,0,4}};
+    allNoble[4]=noble5;
+
+    Noble noble6={.nobleid=6, .point=3, .bonusRequired={0,4,4,0,0}};
+    allNoble[5]=noble6;
+
+    Noble noble7={.nobleid=7, .point=3, .bonusRequired={3,3,3,0,0}};
+    allNoble[6]=noble7;
+
+    Noble noble8={.nobleid=8, .point=3, .bonusRequired={0,3,3,3,0}};
+    allNoble[7]=noble8;
+
+    Noble noble9={.nobleid=9, .point=3, .bonusRequired={0,0,4,4,0}};
+    allNoble[8]=noble9;
+
+    Noble noble10={.nobleid=10, .point=3, .bonusRequired={0,0,3,3,3}};
+    allNoble[9]=noble10;
+}
 CardPile::CardPile(){
     level1CardRemained=40;
     level2CardRemained=30;
@@ -360,5 +391,8 @@ void GameState::add_noble_explicit(int nobleIndex, int nobleId){
 
 }
 void GameState::remove_noble(int nobleIndex){
+
+}
+void update_cardmarket(){                         //用于更新市场（当有卡牌被买走之后）
 
 }

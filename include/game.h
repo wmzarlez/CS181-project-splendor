@@ -14,7 +14,7 @@ public:
     // train for approximate Q-Learning
     void train();
 
-private:
+//private:
     GameState state;
     std::vector<std::unique_ptr<Agent>> players;
     int numPlayer;
