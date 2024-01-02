@@ -1,6 +1,6 @@
 #include "util.hpp"
 #include "game.h"
-
+#include"splendor.h"
 Options options = Options();
 
 int main(int argc, const char* argv[]){

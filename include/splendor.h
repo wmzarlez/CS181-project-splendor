@@ -123,3 +123,4 @@ public:
 
     Visualization* paintbrush;
 };
+Card get_card(CardPile &cardPile,int level);

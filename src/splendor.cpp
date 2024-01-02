@@ -393,6 +393,72 @@ void GameState::add_noble_explicit(int nobleIndex, int nobleId){
 void GameState::remove_noble(int nobleIndex){
 
 }
-void update_cardmarket(){                         //用于更新市场（当有卡牌被买走之后）
-
+Card get_card(CardPile &cardPile,int level){                       //输入派对，随机抽卡
+    //std::cout<<"hello";
+    Card defaultCard = {.point = -2, .bonusGem=BLANK_, .cardLevel=0, .cardId=0, .cost = {10,10,10,10,10}};
+    //std::cout<<defaultCard.point<<" ";
+    srand((unsigned) time(NULL));
+    if(level==1){
+        if(cardPile.level1CardRemained==0){
+            return defaultCard;
+        }
+        int count=0;
+        int goal=rand()%(cardPile.level1CardRemained);
+        for (int i=0;i<40;i++){
+            if(cardPile.level1Pile[i].point!=-2){
+                if(count==goal){
+                    Card mid=cardPile.level1Pile[i];
+                    cardPile.level1Pile[i]=defaultCard;
+                    cardPile.level1CardRemained--;
+                    return mid;
+                }
+                else{
+                    count++;
+                }
+            }
+        }
+    }
+    else if(level==2){
+        if(cardPile.level2CardRemained==0){
+            return defaultCard;
+        }
+        int count=0;
+        int goal=rand()%(cardPile.level2CardRemained);
+        for (int i=0;i<30;i++){
+            if(cardPile.level2Pile[i].point!=-2){
+                if(count==goal){
+                    Card mid=cardPile.level2Pile[i];
+                    cardPile.level2Pile[i]=defaultCard;
+                    cardPile.level2CardRemained--;
+                    return mid;
+                }
+                else{
+                    count++;
+                }
+            }
+        }
+    }
+    else if(level==3){
+        if(cardPile.level3CardRemained==0){
+            return defaultCard;
+        }
+        int count=0;
+        int goal=rand()%(cardPile.level3CardRemained);
+        for (int i=0;i<20;i++){
+            if(cardPile.level3Pile[i].point!=-2){
+                if(count==goal){
+                    Card mid=cardPile.level3Pile[i];
+                    cardPile.level3Pile[i]=defaultCard;
+                    cardPile.level3CardRemained--;
+                    return mid;
+                }
+                else{
+                    count++;
+                }
+            }
+        }
+    }
+    else{
+        std::cout<<"getcard input level illegal"<<std::endl;
+    }
 }
