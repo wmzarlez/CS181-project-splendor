@@ -2,18 +2,19 @@
 
 extern Options options;
 
-PlayerBoard::PlayerBoard(){
-    for (int i = 0; i < 5; ++i) {
-        bonuses[i] = 0;
-    }
+// PlayerBoard::PlayerBoard(){
+//     for (int i = 0; i < 5; ++i) {
+//         bonuses[i] = 0;
+//     }
 
-    for (int i = 0; i < 6; ++i) {
-        gemsOwnwd[i] = 0;
-    }
-    for(int i=0;i<3;i++){
-        reservedCards[i]={};
-    }
-}
+//     for (int i = 0; i < 6; ++i) {
+//         gemsOwnwd[i] = 0;
+//     }
+//     for(int i=0;i<3;i++){
+//         reservedCards[i]={};
+//     }
+//     score=0;
+// }
 NoblePile::NoblePile(){
     Noble noble1={.nobleid=1, .point=3, .bonusRequired={0,0,0,4,4}};
     allNoble[0]=noble1;
@@ -325,10 +326,10 @@ CardPile::CardPile(){
     level3Pile[19] = card90;
 }
 GameState::GameState(): cardPile(std::make_shared<CardPile>()),totalNobalPile(std::make_shared<NoblePile>()){
-    for(int i=0;i<3;i++){                                               //初始化market    col1   col2   col3
-        for(int j=0;j<4;j++){                                           ////// level1 r1  00     01      02
-            market[i][j]=get_card(*(cardPile.get()),i+1);                 ////// level2 r2  10     11      12
-        }                                                               ////// level3 r3  20     21      22
+    for(int i=0;i<3;i++){                                                   //初始化market    col1   col2   col3
+        for(int j=0;j<4;j++){                                               ////// level1 r1  00     01      02
+            market[i][j]=get_card(*(cardPile.get()),i+1);                   ////// level2 r2  10     11      12
+        }                                                                   ////// level3 r3  20     21      22
     }
     numPlayer=options.get_option<int>("-p");
     numTurn=0;
@@ -398,14 +399,41 @@ void GameState::apply_action(Action action){
     
 }
 
-bool GameState::is_win(){
-    // check if some one wins
-    
-    return false;
+bool GameState::is_win() {
+    // check if someone wins
+    int playnum = options.get_option<int>("-p");
+    bool pan = false;
+    const int WINNING_SCORE = 15;
+
+    if (playnum >= 2 && playnum <= 4) {
+        for (int i = 0; i < playnum; ++i) {
+            if (playerBoards[i].score >= WINNING_SCORE) {
+                pan = true;
+                std::cout << "Player " << i + 1 << " wins" << std::endl;
+            }
+        }
+        return pan;
+    } else {
+        std::cout << "Illegal number of players";
+        options.usage();
+        exit(0);
+    }
 }
 
 void GameState::check_noble(int playerIndex){
+    int playnum = options.get_option<int>("-p");
+    if(playnum==2){
 
+    }
+    else if(playnum==3){
+
+    }
+    else if(playnum==4){
+
+    }
+    else{
+        
+    }
 }
 
 void GameState::print_table() const{
@@ -504,6 +532,8 @@ Card get_card(CardPile &cardPile,int level){                       //输入派�
     }
     else{
         std::cout<<"getcard input level illegal"<<std::endl;
+        options.usage();   
+        exit(0);
     }
 }
 std::vector<Noble> get_noble(NoblePile &noblepile, int num) {

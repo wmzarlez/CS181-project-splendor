@@ -63,11 +63,12 @@ struct Action{
 class PlayerBoard{
 public:
     // PlayerBoard init
-    PlayerBoard();
-private:
-    int bonuses[5];
-    int gemsOwnwd[6];
-    Card reservedCards[3];
+    //PlayerBoard();
+//private:
+    int bonuses[5]={};
+    int gemsOwnwd[6]={};
+    Card reservedCards[3]={};
+    int score=0;
 };
 
 struct CardPile{
@@ -114,7 +115,8 @@ public:
     Card market[3][4];
     std::shared_ptr<CardPile> cardPile;
 
-    std::shared_ptr<NoblePile> totalNobalPile;
+    std::shared_ptr<NoblePile> totalNobalPile;          
+    //储存了所有的贵族卡信息，唯一的作用就是初始化noblepile
     Noble noblePile[5];
     int numNoble = 3;
 
