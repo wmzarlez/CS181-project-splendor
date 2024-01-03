@@ -3,7 +3,16 @@
 extern Options options;
 
 PlayerBoard::PlayerBoard(){
-    
+    for (int i = 0; i < 5; ++i) {
+        bonuses[i] = 0;
+    }
+
+    for (int i = 0; i < 6; ++i) {
+        gemsOwnwd[i] = 0;
+    }
+    for(int i=0;i<3;i++){
+        reservedCards[i]={};
+    }
 }
 NoblePile::NoblePile(){
     Noble noble1={.nobleid=1, .point=3, .bonusRequired={0,0,0,4,4}};
@@ -315,27 +324,62 @@ CardPile::CardPile(){
     Card card90 = {.point = 3, .bonusGem=BLUE, .cardLevel=3, .cardId=90, .cost = {3,0,3,3,5}};
     level3Pile[19] = card90;
 }
-GameState::GameState(): cardPile(std::make_shared<CardPile>()){
+GameState::GameState(): cardPile(std::make_shared<CardPile>()),totalNobalPile(std::make_shared<NoblePile>()){
+    for(int i=0;i<3;i++){                                               //初始化market    col1   col2   col3
+        for(int j=0;j<4;j++){                                           ////// level1 r1  00     01      02
+            market[i][j]=get_card(*(cardPile.get()),i+1);                 ////// level2 r2  10     11      12
+        }                                                               ////// level3 r3  20     21      22
+    }
     numPlayer=options.get_option<int>("-p");
     numTurn=0;
-    if(numPlayer==2){
-        numNoble=3;
+    if(numPlayer==2){                    //两个玩家
+        numNoble=3;                      //贵族个数
+         for(int i=0;i<6;i++){
+            if(i==5){
+                gemPile[i]=5;            //初始化宝石堆
+            }
+            else{
+                gemPile[i]=4;
+            }
+        }
+        for(int i=0;i<2;i++){
+            playerBoards[i]={};    //初始化playboard
+        }
+        std::vector<Noble> numble_vector=get_noble(*(totalNobalPile.get()),numNoble);         //初始化贵族
+        for(int i=0;i<3;i++){
+            noblePile[i]=numble_vector[i];
+        }
+        
     }
     else if(numPlayer==3){
-        numNoble=4;
+        numNoble=4;                    //贵族数
         for(int i=0;i<6;i++){
-            gemPile[i]=5;
+            gemPile[i]=5;             //宝石堆
+        }
+        for(int i=0;i<3;i++){
+            playerBoards[i]={};     //playboard
+        }
+        std::vector<Noble> numble_vector=get_noble(*(totalNobalPile.get()),numNoble);    //初始化贵族
+        for(int i=0;i<4;i++){
+            noblePile[i]=numble_vector[i];
         }
     }
-    else if (numPlayer==4){
-        numNoble=5;
+    else if (numPlayer==4){ 
+        numNoble=5;             //贵族数
         for(int i=0;i<6;i++){
             if(i==5){
-                gemPile[i]=5;
+                gemPile[i]=5;      //宝石堆
             }
             else{
                 gemPile[i]=7;
             }
+        }
+        for(int i=0;i<4;i++){
+            playerBoards[i]={};     //playboard
+        }
+        std::vector<Noble> numble_vector=get_noble(*(totalNobalPile.get()),numNoble);    //初始化贵族
+        for(int i=0;i<5;i++){
+            noblePile[i]=numble_vector[i];
         }
     }
     else{
@@ -461,4 +505,18 @@ Card get_card(CardPile &cardPile,int level){                       //输入派�
     else{
         std::cout<<"getcard input level illegal"<<std::endl;
     }
+}
+std::vector<Noble> get_noble(NoblePile &noblepile, int num) {
+    srand((unsigned)time(NULL));
+    std::vector<Noble> ans;
+    int countnum = 0;
+    while (countnum < num) {
+        int index = rand() % 10;
+        if (noblepile.allNoble[index].point != 0) {
+            ans.push_back(noblepile.allNoble[index]);
+            noblepile.allNoble[index] = {};      // 重置被选中的noble
+            countnum++;
+        }
+    }
+    return ans;
 }

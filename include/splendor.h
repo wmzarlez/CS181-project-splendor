@@ -124,3 +124,4 @@ public:
     Visualization* paintbrush;
 };
 Card get_card(CardPile &cardPile,int level);
+std::vector<Noble> get_noble(NoblePile &noblepile, int num);
