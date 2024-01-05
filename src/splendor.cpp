@@ -2,19 +2,6 @@
 
 extern Options options;
 
-// PlayerBoard::PlayerBoard(){
-//     for (int i = 0; i < 5; ++i) {
-//         bonuses[i] = 0;
-//     }
-
-//     for (int i = 0; i < 6; ++i) {
-//         gemsOwnwd[i] = 0;
-//     }
-//     for(int i=0;i<3;i++){
-//         reservedCards[i]={};
-//     }
-//     score=0;
-// }
 NoblePile::NoblePile(){
     Noble noble1={.nobleid=1, .point=3, .bonusRequired={0,0,0,4,4}};
     allNoble[0]=noble1;
@@ -343,9 +330,7 @@ GameState::GameState(): cardPile(std::make_shared<CardPile>()),totalNobalPile(st
                 gemPile[i]=4;
             }
         }
-        for(int i=0;i<2;i++){
-            playerBoards[i]={};    //初始化playboard
-        }
+
         std::vector<Noble> numble_vector=get_noble(*(totalNobalPile.get()),numNoble);         //初始化贵族
         for(int i=0;i<3;i++){
             noblePile[i]=numble_vector[i];
@@ -357,9 +342,7 @@ GameState::GameState(): cardPile(std::make_shared<CardPile>()),totalNobalPile(st
         for(int i=0;i<6;i++){
             gemPile[i]=5;             //宝石堆
         }
-        for(int i=0;i<3;i++){
-            playerBoards[i]={};     //playboard
-        }
+        
         std::vector<Noble> numble_vector=get_noble(*(totalNobalPile.get()),numNoble);    //初始化贵族
         for(int i=0;i<4;i++){
             noblePile[i]=numble_vector[i];
@@ -375,9 +358,7 @@ GameState::GameState(): cardPile(std::make_shared<CardPile>()),totalNobalPile(st
                 gemPile[i]=7;
             }
         }
-        for(int i=0;i<4;i++){
-            playerBoards[i]={};     //playboard
-        }
+
         std::vector<Noble> numble_vector=get_noble(*(totalNobalPile.get()),numNoble);    //初始化贵族
         for(int i=0;i<5;i++){
             noblePile[i]=numble_vector[i];
@@ -423,16 +404,61 @@ bool GameState::is_win() {
 void GameState::check_noble(int playerIndex){
     int playnum = options.get_option<int>("-p");
     if(playnum==2){
-
+        for(int i=0;i<3;i++){
+            bool satisfy=true;
+            for(int j=0;j<5;j++){
+                if(noblePile[i].bonusRequired[j]==playerBoards->bonuses[j]){
+                    continue;
+                }
+                else{
+                    satisfy=false;
+                }
+            }
+            if(satisfy==true){
+                playerBoards->score+=3;
+                remove_noble(i);
+            }
+        }
     }
     else if(playnum==3){
-
+        for(int i=0;i<4;i++){
+            bool satisfy=true;
+            for(int j=0;j<5;j++){
+                if(noblePile[i].bonusRequired[j]==playerBoards->bonuses[j]){
+                    continue;
+                }
+                else{
+                    satisfy=false;
+                }
+            }
+            if(satisfy==true){
+                playerBoards->score+=3;
+                remove_noble(i);
+            }
+        }
     }
     else if(playnum==4){
-
+        for(int i=0;i<5;i++){
+            bool satisfy=true;
+            for(int j=0;j<5;j++){
+                if(noblePile[i].bonusRequired[j]==playerBoards->bonuses[j]){
+                    continue;
+                }
+                else{
+                    satisfy=false;
+                }
+            }
+            if(satisfy==true){
+                playerBoards->score+=3;
+                remove_noble(i);
+                remove_noble(noblePile[i].nobleid);
+            }
+        }
     }
     else{
-        
+        std::cout<<"playernum error"<<std::endl;
+        options.usage();   
+        exit(0);
     }
 }
 
@@ -442,29 +468,51 @@ void GameState::print_table() const{
 }
 
 void GameState::add_card_random(int cardLevel, int cardColumnIndex){
-
+    Card newcard=get_card(*(cardPile.get()),cardLevel);
+    add_card_explicit(cardLevel,cardColumnIndex,newcard.cardId);
 }
 void GameState::add_card_explicit(int cardLevel, int cardColumnIndex, int cardId){
-
+    if(cardId>0&&cardId<41){
+        Card newcard=(*(cardPile.get())).level1Pile[cardId-1];
+        market[cardLevel-1][cardColumnIndex]=newcard;
+        (*(cardPile.get())).level1Pile[cardId-1]={};
+    }
+    else if(cardId>40&&cardId<71){
+        Card newcard=(*(cardPile.get())).level2Pile[cardId-1-40];
+        market[cardLevel-1][cardColumnIndex]=newcard;
+        (*(cardPile.get())).level2Pile[cardId-1-40]={};
+    }
+    else if(cardId>70&&cardId<91){
+        Card newcard=(*(cardPile.get())).level3Pile[cardId-1-40-30];
+        market[cardLevel-1][cardColumnIndex]=newcard;
+        (*(cardPile.get())).level3Pile[cardId-1-40-30]={};
+    }
+    else if(cardId==0){
+        Card newcard={};
+        market[cardLevel-1][cardColumnIndex]=newcard;
+    }
+    else{
+        std::cout << "add Illegal explicit card";
+        options.usage();
+        exit(0);
+    }
+    std::cout << "add Illegal explicit card";
+    options.usage();
+    exit(0);
 }
 void GameState::remove_card(int cardLevel, int cardColumnIndex){
-
+    market[cardLevel-1][cardColumnIndex]={};
 }
 void GameState::add_gem(Gem gemType){
-
+    gemPile[gemType]+=1;
 }
 void GameState::remove_gem(Gem gemType){
-
-}
-void GameState::add_noble_random(int nobleIndex){
-
-}
-void GameState::add_noble_explicit(int nobleIndex, int nobleId){
-
+    gemPile[gemType]-=1;
 }
 void GameState::remove_noble(int nobleIndex){
-
+    noblePile[nobleIndex]={};
 }
+
 Card get_card(CardPile &cardPile,int level){                       //输入派对，随机抽卡
     //std::cout<<"hello";
     Card defaultCard = {.point = -2, .bonusGem=BLANK_, .cardLevel=0, .cardId=0, .cost = {10,10,10,10,10}};
@@ -480,7 +528,7 @@ Card get_card(CardPile &cardPile,int level){                       //输入派�
             if(cardPile.level1Pile[i].point!=-2){
                 if(count==goal){
                     Card mid=cardPile.level1Pile[i];
-                    cardPile.level1Pile[i]=defaultCard;
+                    //cardPile.level1Pile[i]=defaultCard;
                     cardPile.level1CardRemained--;
                     return mid;
                 }
@@ -500,7 +548,7 @@ Card get_card(CardPile &cardPile,int level){                       //输入派�
             if(cardPile.level2Pile[i].point!=-2){
                 if(count==goal){
                     Card mid=cardPile.level2Pile[i];
-                    cardPile.level2Pile[i]=defaultCard;
+                    //cardPile.level2Pile[i]=defaultCard;
                     cardPile.level2CardRemained--;
                     return mid;
                 }
@@ -520,7 +568,7 @@ Card get_card(CardPile &cardPile,int level){                       //输入派�
             if(cardPile.level3Pile[i].point!=-2){
                 if(count==goal){
                     Card mid=cardPile.level3Pile[i];
-                    cardPile.level3Pile[i]=defaultCard;
+                    //cardPile.level3Pile[i]=defaultCard;
                     cardPile.level3CardRemained--;
                     return mid;
                 }

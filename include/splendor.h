@@ -60,11 +60,7 @@ struct Action{
     int params[6];
 };
 
-class PlayerBoard{
-public:
-    // PlayerBoard init
-    //PlayerBoard();
-//private:
+struct PlayerBoard{
     int bonuses[5]={};
     int gemsOwnwd[6]={};
     Card reservedCards[3]={};
@@ -105,8 +101,6 @@ public:
     void remove_card(int cardLevel, int cardColumnIndex);
     void add_gem(Gem gemType);
     void remove_gem(Gem gemType);
-    void add_noble_random(int nobleIndex);
-    void add_noble_explicit(int nobleIndex, int nobleId);
     void remove_noble(int nobleIndex);
     int numTurn = 0;
 
@@ -120,7 +114,7 @@ public:
     Noble noblePile[5];
     int numNoble = 3;
 
-    PlayerBoard playerBoards[4];
+    PlayerBoard playerBoards[4]={};
     int numPlayer ;
 
     Visualization* paintbrush;
