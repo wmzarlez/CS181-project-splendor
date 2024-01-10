@@ -3,34 +3,34 @@
 extern Options options;
 
 NoblePile::NoblePile(){
-    Noble noble1={.nobleid=1, .point=3, .bonusRequired={0,0,0,4,4}};
+    Noble noble1={.nobleId=1, .point=3, .bonusRequired={0,0,0,4,4}};
     allNoble[0]=noble1;
     
-    Noble noble2={.nobleid=2, .point=3, .bonusRequired={4,4,0,0,0}};
+    Noble noble2={.nobleId=2, .point=3, .bonusRequired={4,4,0,0,0}};
     allNoble[1]=noble2;
 
-    Noble noble3={.nobleid=3, .point=3, .bonusRequired={3,0,0,3,3}};
+    Noble noble3={.nobleId=3, .point=3, .bonusRequired={3,0,0,3,3}};
     allNoble[2]=noble3;
 
-    Noble noble4={.nobleid=4, .point=3, .bonusRequired={3,3,0,0,3}};
+    Noble noble4={.nobleId=4, .point=3, .bonusRequired={3,3,0,0,3}};
     allNoble[3]=noble4;
 
-    Noble noble5={.nobleid=5, .point=3, .bonusRequired={4,0,0,0,4}};
+    Noble noble5={.nobleId=5, .point=3, .bonusRequired={4,0,0,0,4}};
     allNoble[4]=noble5;
 
-    Noble noble6={.nobleid=6, .point=3, .bonusRequired={0,4,4,0,0}};
+    Noble noble6={.nobleId=6, .point=3, .bonusRequired={0,4,4,0,0}};
     allNoble[5]=noble6;
 
-    Noble noble7={.nobleid=7, .point=3, .bonusRequired={3,3,3,0,0}};
+    Noble noble7={.nobleId=7, .point=3, .bonusRequired={3,3,3,0,0}};
     allNoble[6]=noble7;
 
-    Noble noble8={.nobleid=8, .point=3, .bonusRequired={0,3,3,3,0}};
+    Noble noble8={.nobleId=8, .point=3, .bonusRequired={0,3,3,3,0}};
     allNoble[7]=noble8;
 
-    Noble noble9={.nobleid=9, .point=3, .bonusRequired={0,0,4,4,0}};
+    Noble noble9={.nobleId=9, .point=3, .bonusRequired={0,0,4,4,0}};
     allNoble[8]=noble9;
 
-    Noble noble10={.nobleid=10, .point=3, .bonusRequired={0,0,3,3,3}};
+    Noble noble10={.nobleId=10, .point=3, .bonusRequired={0,0,3,3,3}};
     allNoble[9]=noble10;
 }
 CardPile::CardPile(){
@@ -370,6 +370,25 @@ GameState::GameState(): cardPile(std::make_shared<CardPile>()),totalNobalPile(st
     }
 }
 
+GameState::GameState(const GameState &other):numTurn(other.numTurn), cardPile(other.cardPile), totalNobalPile(other.totalNobalPile),
+    numNoble(other.numNoble), numPlayer(other.numPlayer), paintbrush(nullptr) {  
+    for(int i=0;i<6;i++){
+        gemPile[i]=other.gemPile[i];
+    }
+    for(int i=0;i<3;i++){
+        for(int j=0;j<4;j++){
+            market[i][j]=other.market[i][j];
+        }
+    }
+    for(int i=0;i<5;i++){
+        noblePile[i]=other.noblePile[i];
+    }
+    for(int i=0;i<numPlayer;i++){
+        playerBoards[i]=other.playerBoards[i];
+    }
+
+}
+
 std::vector<Action> GameState::get_legal_action(int playerIndex) const{
     
     return std::vector<Action>();
@@ -451,7 +470,7 @@ void GameState::check_noble(int playerIndex){
             if(satisfy==true){
                 playerBoards->score+=3;
                 remove_noble(i);
-                remove_noble(noblePile[i].nobleid);
+                remove_noble(noblePile[i].nobleId);
             }
         }
     }

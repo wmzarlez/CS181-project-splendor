@@ -32,7 +32,7 @@ struct Card{
 //Card card = {.point = -2, .bonusGem, .cost = {10,10,10,10,10}}
 
 struct Noble{
-    int nobleid=0;   //nobleid start from 1
+    int nobleId=0;   //nobleId start from 1
     int point = 0;
     int bonusRequired[5] = {10,10,10,10,10};
 };
@@ -86,6 +86,7 @@ class GameState{
 public:
     // GameState init
     GameState();
+    GameState(const GameState &other);
     std::vector<Action> get_legal_action(int playerIndex) const;
     void apply_action(Action action);
     // return true if one player wins
@@ -108,14 +109,14 @@ public:
 
     Card market[3][4];
     std::shared_ptr<CardPile> cardPile;
-
-    std::shared_ptr<NoblePile> totalNobalPile;          
     //储存了所有的贵族卡信息，唯一的作用就是初始化noblepile
+    std::shared_ptr<NoblePile> totalNobalPile;          
+    
     Noble noblePile[5];
     int numNoble = 3;
 
     PlayerBoard playerBoards[4]={};
-    int numPlayer ;
+    int numPlayer;
 
     Visualization* paintbrush;
 };
