@@ -426,7 +426,7 @@ void GameState::check_noble(int playerIndex){
         for(int i=0;i<3;i++){
             bool satisfy=true;
             for(int j=0;j<5;j++){
-                if(noblePile[i].bonusRequired[j]==playerBoards->bonuses[j]){
+                if(noblePile[i].bonusRequired[j]==playerBoards[playerIndex-1].bonuses[j]){
                     continue;
                 }
                 else{
@@ -443,7 +443,7 @@ void GameState::check_noble(int playerIndex){
         for(int i=0;i<4;i++){
             bool satisfy=true;
             for(int j=0;j<5;j++){
-                if(noblePile[i].bonusRequired[j]==playerBoards->bonuses[j]){
+                if(noblePile[i].bonusRequired[j]==playerBoards[playerIndex-1].bonuses[j]){
                     continue;
                 }
                 else{
@@ -460,7 +460,7 @@ void GameState::check_noble(int playerIndex){
         for(int i=0;i<5;i++){
             bool satisfy=true;
             for(int j=0;j<5;j++){
-                if(noblePile[i].bonusRequired[j]==playerBoards->bonuses[j]){
+                if(noblePile[i].bonusRequired[j]==playerBoards[playerIndex-1].bonuses[j]){
                     continue;
                 }
                 else{
@@ -531,7 +531,27 @@ void GameState::remove_gem(Gem gemType){
 void GameState::remove_noble(int nobleIndex){
     noblePile[nobleIndex]={};
 }
-
+bool GameState::ableToBuy(int playerIndex,Card theCard){                //辅助函数，getaction时使用帮助判断
+    int numyellow=playerBoards[playerIndex-1].gemsOwnwd[5];
+    bool able=true;
+    for (int i=0;i<5;i++){
+        if(playerBoards[playerIndex-1].gemsOwnwd[i]+playerBoards[playerIndex-1].bonuses[i]>=theCard.cost[i]){
+            continue;
+        }
+        else{
+            int remain=theCard.cost[i]-playerBoards[playerIndex-1].gemsOwnwd[i]-playerBoards[playerIndex-1].bonuses[i];
+            if(remain<=numyellow){
+                numyellow-=remain;
+                continue;
+            }
+            else{
+                able=false;
+                break;
+            }
+        }
+    }
+    return able;
+}  
 Card get_card(CardPile &cardPile,int level){                       //输入派对，随机抽卡
     //std::cout<<"hello";
     Card defaultCard = {.point = -2, .bonusGem=BLANK_, .cardLevel=0, .cardId=0, .cost = {10,10,10,10,10}};
@@ -617,3 +637,4 @@ std::vector<Noble> get_noble(NoblePile &noblepile, int num) {
     }
     return ans;
 }
+        

@@ -105,6 +105,7 @@ public:
     void add_gem(Gem gemType);
     void remove_gem(Gem gemType);
     void remove_noble(int nobleIndex);
+    bool ableToBuy(int playerIndex,Card theCard);
     int numTurn = 0;
 
     int gemPile[6] = {4,4,4,4,4,5};
