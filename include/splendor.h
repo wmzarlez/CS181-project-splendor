@@ -88,7 +88,7 @@ public:
     GameState();
     GameState(const GameState &other);
     std::vector<Action> get_legal_action(int playerIndex) const;
-    void apply_action(Action action);
+    void apply_action(Action action,int playerindex);
     // return true if one player wins
     bool is_win();
     // Check whether a player can get a noble.

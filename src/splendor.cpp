@@ -394,9 +394,103 @@ std::vector<Action> GameState::get_legal_action(int playerIndex) const{
     return std::vector<Action>();
 }
 
-void GameState::apply_action(Action action){
+void GameState::apply_action(Action action, int playerindex){          //改变玩家playboard的还没实现
     // check_nobel and print_table should be used in this function
-    
+    if(action.type==0){                      //SELECTGEMS = 0
+        if(action.params[2]==6){             //拿一种宝石两颗
+            remove_gem(findGemType(action.params[0]));
+            remove_gem(findGemType(action.params[1]));
+            for(int i=3;i<6;i++){                             //drop 宝石，若type 为 blank 自动跳过
+                add_gem(findGemType(action.params[i]));
+            }
+            playerBoards[playerindex].gemsOwnwd[action.params[0]]+=2;
+        }
+        else{                                //拿三种不同的宝石
+            remove_gem(findGemType(action.params[0]));
+            remove_gem(findGemType(action.params[1]));
+            remove_gem(findGemType(action.params[2]));
+            for(int i=3;i<6;i++){
+                add_gem(findGemType(action.params[i]));
+            }
+            playerBoards[playerindex].gemsOwnwd[action.params[0]]++;
+            playerBoards[playerindex].gemsOwnwd[action.params[1]]++;
+            playerBoards[playerindex].gemsOwnwd[action.params[2]]++;
+        }
+        int playernum=options.get_option<int>("-p");
+        for(int i=0;i<playernum;i++){
+            check_noble(i);
+        }
+        print_table();
+    }
+    else if(action.type==1){                  //  BUYCARD = 1
+        int cardscore=market[action.params[0]][action.params[1]].point;    
+        int helpgem[6]={0};            //记录被买的卡多少钱
+        int playerInitGem[6]={};      //记录玩家在购买该牌之前原有宝石情况
+        int gemcost[6]={0};            //最终花费了什么种类的宝石分别多少个
+        for (int i=0;i<6;i++){
+            helpgem[i]=market[action.params[0]][action.params[1]].cost[i];               
+        }
+        for (int i=0;i<6;i++){
+            playerInitGem[i]=playerBoards[playerindex].gemsOwnwd[i];     
+        }
+        for (int i=0;i<6;i++){                //先扣除玩家已有宝石，再把这些宝石放回宝石堆
+            playerBoards[playerindex].gemsOwnwd[i]-=helpgem[i];          //假设全部花费普通宝石，之后再去扣除特殊宝石
+        }
+        for (int i=0;i<6;i++){                
+           if(playerBoards[playerindex].gemsOwnwd[i]<0){
+                playerBoards[playerindex].gemsOwnwd[5]+=playerBoards[playerindex].gemsOwnwd[i];    //不够就说明花万能宝石
+                playerBoards[playerindex].gemsOwnwd[i]=0;     //扣除玩家宝石
+           }
+        }
+        for (int i=0;i<6;i++){                
+            gemcost[i]=playerInitGem[i]-playerBoards[playerindex].gemsOwnwd[i];  //玩家花费了哪些宝石
+        }
+        for (int i=0;i<6;i++){                
+            if(gemcost[i]>0){           //表示购买花费了这种宝石
+                for(int j=0;j<gemcost[i];j++){       //花费几个放回几次
+                    add_gem(findGemType(i));      //回到宝石堆
+                }
+            }
+        }
+
+        playerBoards[playerindex].score+=cardscore;
+        playerBoards[playerindex].bonuses[findGemType(market[action.params[0]][action.params[1]].bonusGem)]++;      //获得bonus
+        add_card_random(action.params[0]+1,action.params[1]);     //替换掉被买的牌
+        int playernum=options.get_option<int>("-p");
+        for(int i=0;i<playernum;i++){
+            check_noble(i);
+        }
+        print_table();
+    }
+    else if(action.type==2){                  //  RESERVECARD = 2
+        if(action.params[2]==1){
+            playerBoards[playerindex].gemsOwnwd[5]++;
+        }
+        for(int i=0;i<3;i++){
+            if(playerBoards[playerindex].reservedCards[i].cardId!=0){
+                playerBoards[playerindex].reservedCards[i]=market[action.params[0]][action.params[1]];
+                break;
+            }
+        }
+        remove_card(action.params[0]+1,action.params[1]);
+        int playernum=options.get_option<int>("-p");
+        for(int i=0;i<playernum;i++){
+            check_noble(i);
+        }
+        print_table();
+    }
+    else if(action.type==3){                  // SKIP = 3
+        int playernum=options.get_option<int>("-p");
+        for(int i=0;i<playernum;i++){
+            check_noble(i);
+        }
+        print_table();
+    }
+    else{
+        std::cout << "apply wring action type!!";
+        options.usage();
+        exit(0);
+    }
 }
 
 bool GameState::is_win() {
@@ -426,7 +520,7 @@ void GameState::check_noble(int playerIndex){
         for(int i=0;i<3;i++){
             bool satisfy=true;
             for(int j=0;j<5;j++){
-                if(noblePile[i].bonusRequired[j]==playerBoards[playerIndex-1].bonuses[j]){
+                if(noblePile[i].bonusRequired[j]==playerBoards[playerIndex].bonuses[j]){
                     continue;
                 }
                 else{
@@ -443,7 +537,7 @@ void GameState::check_noble(int playerIndex){
         for(int i=0;i<4;i++){
             bool satisfy=true;
             for(int j=0;j<5;j++){
-                if(noblePile[i].bonusRequired[j]==playerBoards[playerIndex-1].bonuses[j]){
+                if(noblePile[i].bonusRequired[j]==playerBoards[playerIndex].bonuses[j]){
                     continue;
                 }
                 else{
@@ -451,7 +545,7 @@ void GameState::check_noble(int playerIndex){
                 }
             }
             if(satisfy==true){
-                playerBoards->score+=3;
+                playerBoards[playerIndex-1].score+=3;
                 remove_noble(i);
             }
         }
@@ -460,7 +554,7 @@ void GameState::check_noble(int playerIndex){
         for(int i=0;i<5;i++){
             bool satisfy=true;
             for(int j=0;j<5;j++){
-                if(noblePile[i].bonusRequired[j]==playerBoards[playerIndex-1].bonuses[j]){
+                if(noblePile[i].bonusRequired[j]==playerBoards[playerIndex].bonuses[j]){
                     continue;
                 }
                 else{
@@ -526,20 +620,22 @@ void GameState::add_gem(Gem gemType){
     gemPile[gemType]+=1;
 }
 void GameState::remove_gem(Gem gemType){
-    gemPile[gemType]-=1;
+    if(gemType!=6){
+        gemPile[gemType]-=1;
+    }
 }
 void GameState::remove_noble(int nobleIndex){
     noblePile[nobleIndex]={};
 }
 bool GameState::ableToBuy(int playerIndex,Card theCard){                //辅助函数，getaction时使用帮助判断
-    int numyellow=playerBoards[playerIndex-1].gemsOwnwd[5];
+    int numyellow=playerBoards[playerIndex].gemsOwnwd[5];
     bool able=true;
     for (int i=0;i<5;i++){
-        if(playerBoards[playerIndex-1].gemsOwnwd[i]+playerBoards[playerIndex-1].bonuses[i]>=theCard.cost[i]){
+        if(playerBoards[playerIndex].gemsOwnwd[i]+playerBoards[playerIndex].bonuses[i]>=theCard.cost[i]){
             continue;
         }
         else{
-            int remain=theCard.cost[i]-playerBoards[playerIndex-1].gemsOwnwd[i]-playerBoards[playerIndex-1].bonuses[i];
+            int remain=theCard.cost[i]-playerBoards[playerIndex].gemsOwnwd[i]-playerBoards[playerIndex].bonuses[i];
             if(remain<=numyellow){
                 numyellow-=remain;
                 continue;
@@ -637,4 +733,25 @@ std::vector<Noble> get_noble(NoblePile &noblepile, int num) {
     }
     return ans;
 }
-        
+Gem findGemType(int input){
+    switch (input)
+    {
+    case 0:
+        return WHITE;
+    case 1:
+        return BLUE;
+    case 2:
+        return GREEN;
+    case 3:
+        return RED;
+    case 4:
+        return BLACK;
+    case 5:
+        return YELLOW;
+    case 6:
+        return BLANK_;
+    default:
+        std::cout<<"findGemType input error";
+        break;
+    }
+}
