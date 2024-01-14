@@ -456,6 +456,11 @@ void GameState::apply_action(Action action, int playerindex){          //改变�
         playerBoards[playerindex].score+=cardscore;
         playerBoards[playerindex].bonuses[findGemType(market[action.params[0]][action.params[1]].bonusGem)]++;      //获得bonus
         add_card_random(action.params[0]+1,action.params[1]);     //替换掉被买的牌
+        if(playerBoards[playerindex].gemsOwnwd[5]<0){     //扣除过多，报错
+            std::cout<<"apply action 输入非法,买了买不起的牌"<<std::endl;
+            options.usage();   
+            exit(0);
+        }
         int playernum=options.get_option<int>("-p");
         for(int i=0;i<playernum;i++){
             check_noble(i);
@@ -487,7 +492,7 @@ void GameState::apply_action(Action action, int playerindex){          //改变�
         print_table();
     }
     else{
-        std::cout << "apply wring action type!!";
+        std::cout << "apply wrong action type or action illegal!!";
         options.usage();
         exit(0);
     }
