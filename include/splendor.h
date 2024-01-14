@@ -46,6 +46,7 @@ struct Noble{
  * BUYCARD:
  * (params[0],params[1]) represents (cardLevel-1,cardIndex)
  * they can be just used as market[params[0]][params[1]]
+ * if params[0]==3, then player buys the reserved card with index params[1]
  * params remained are useless
  * RESERVECARD:
  * the first 2 params are similar with BUYCARD
