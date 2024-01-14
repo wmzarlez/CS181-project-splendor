@@ -18,7 +18,8 @@ typedef enum{
     SELECTGEMS = 0,
     BUYCARD = 1,
     RESERVECARD = 2,
-    SKIP = 3
+    SKIP = 3,
+    ILLEGAL = 4
 } ActionType;
 
 struct Card{
@@ -50,13 +51,14 @@ struct Noble{
  * the first 2 params are similar with BUYCARD
  * the third param is an indicator of whether a gold/YELLOW gem can be got
  * 0 -- no YELLOW gem, 1 -- get a YELLOW gem
+ * the fourth param is the gem player may droped (usually BLANK(6))
  * params remained are useless
  * SKIP:
  * all params are useless
 */
 
 struct Action{
-    ActionType type = SKIP;
+    ActionType type = ILLEGAL;
     int params[6];
 };
 
