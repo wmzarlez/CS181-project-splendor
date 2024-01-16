@@ -390,10 +390,115 @@ GameState::GameState(const GameState &other):numTurn(other.numTurn), cardPile(ot
 }
 
 std::vector<Action> GameState::get_legal_action(int playerIndex) const{
-    
-    return std::vector<Action>();
+    //SELECTGEMS = 0,
+    //BUYCARD = 1,
+    //RESERVECARD = 2,
+    //SKIP = 3,
+    //ILLEGAL = 4
+    std::vector<Action> answerAction;
+    answerAction=get_legal_selectgems_action(playerIndex,answerAction);
+    answerAction=get_legal_buycards_action(playerIndex,answerAction);
+    answerAction=get_legal_reservecard_action(playerIndex,answerAction);
+    Action skipaction;
+    skipaction.type=SKIP;
+    answerAction.push_back(skipaction);
+    return answerAction;
 }
 
+std::vector<Action> GameState::get_legal_selectgems_action (int playerIndex,std::vector<Action> &ActionVector) const{
+    for (int i=0;i<6;i++){        //同样颜色拿两颗
+        if(gemPile[i]>=4){
+            Action getTwoSameGemsAction;
+            getTwoSameGemsAction.type=SELECTGEMS;
+            getTwoSameGemsAction.params[0]=i;
+            getTwoSameGemsAction.params[1]=i;
+            getTwoSameGemsAction.params[2]=6;
+            getTwoSameGemsAction.params[3]=6;
+            getTwoSameGemsAction.params[4]=6;
+            getTwoSameGemsAction.params[5]=6;
+            ActionVector.push_back(getTwoSameGemsAction);
+        }
+    }
+     for (int i=0;i<6;i++){        //三颗不同颜色
+        if(gemPile[i]>=1){
+           for(int j=i+1;j<6;j++){
+                if(gemPile[i]>=1){
+                    for(int z=j+1;z<6;z++){
+                        if(gemPile[z]>=1){
+                            Action getThreeGemsAction;
+                            getThreeGemsAction.type=SELECTGEMS;
+                            getThreeGemsAction.params[0]=i;
+                            getThreeGemsAction.params[1]=j;
+                            getThreeGemsAction.params[2]=z;
+                            getThreeGemsAction.params[3]=6;
+                            getThreeGemsAction.params[4]=6;
+                            getThreeGemsAction.params[5]=6;
+                            ActionVector.push_back(getThreeGemsAction);
+                        }
+                    }
+                }
+           }
+        }
+    }
+    return ActionVector;
+};
+std::vector<Action> GameState::get_legal_buycards_action (int playerIndex,std::vector<Action> &ActionVector) const{
+    for(int i=0;i<3;i++){
+        for(int j=0;i<3;i++){
+            if(ableToBuy(playerIndex,market[i][j])==true){
+                Action buyCardAction;
+                buyCardAction.type=BUYCARD;
+                buyCardAction.params[0]=i;
+                buyCardAction.params[1]=j;
+                ActionVector.push_back(buyCardAction);
+            }
+        }
+    }
+    for(int i=0;i<3;i++){
+        if(ableToBuy(playerIndex,playerBoards[playerIndex].reservedCards[i])==true){
+            Action buyCardAction;
+            buyCardAction.type=BUYCARD;
+            buyCardAction.params[0]=3;
+            buyCardAction.params[1]=i;
+            ActionVector.push_back(buyCardAction);
+        }
+    }
+    return ActionVector;
+};
+std::vector<Action> GameState::get_legal_reservecard_action (int playerIndex,std::vector<Action> &ActionVector) const{
+    bool ableToReserve=false;
+    for(int i=0;i<3;i++){
+        if(playerBoards[playerIndex].reservedCards[i].cardId!=0){
+            ableToReserve=true;
+            break;
+        }
+    }
+    if(ableToReserve){
+        for(int i=0;i<3;i++){
+            for(int j=0;i<3;i++){
+                if(market[i][j].cardId!=0){
+                    Action reserveCard;
+                    reserveCard.type=RESERVECARD;
+                    if(gemPile[5]>0){
+                        reserveCard.params[0]=i;
+                        reserveCard.params[1]=j;
+                        reserveCard.params[2]=1;
+                    }
+                    else{
+                        reserveCard.params[0]=i;
+                        reserveCard.params[1]=j;
+                        reserveCard.params[2]=0;
+                    }
+                    ActionVector.push_back(reserveCard);
+                }
+            }
+        }
+    }
+    else{
+        return ActionVector;
+    }
+    return ActionVector;
+};
 void GameState::apply_action(Action action, int playerindex){          //改变玩家playboard的还没实现
     // check_nobel and print_table should be used in this function
     if(action.type==0){                      //SELECTGEMS = 0
@@ -684,7 +789,7 @@ void GameState::remove_gem(Gem gemType){
 void GameState::remove_noble(int nobleIndex){
     noblePile[nobleIndex]={};
 }
-bool GameState::ableToBuy(int playerIndex,Card theCard){                //辅助函数，getaction时使用帮助判断
+bool GameState::ableToBuy(int playerIndex,Card theCard) const{                //辅助函数，getaction时使用帮助判断
     int numyellow=playerBoards[playerIndex].gemsOwnwd[5];
     bool able=true;
     for (int i=0;i<5;i++){

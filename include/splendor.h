@@ -91,6 +91,9 @@ public:
     GameState();
     GameState(const GameState &other);
     std::vector<Action> get_legal_action(int playerIndex) const;
+    std::vector<Action> get_legal_selectgems_action(int playerIndex,std::vector<Action> & ActionVector) const;
+    std::vector<Action> get_legal_buycards_action(int playerIndex,std::vector<Action> & ActionVector) const;
+    std::vector<Action> get_legal_reservecard_action(int playerIndex,std::vector<Action> & ActionVector) const;
     void apply_action(Action action,int playerindex);
     // return true if one player wins
     bool is_win();
@@ -106,7 +109,7 @@ public:
     void add_gem(Gem gemType);
     void remove_gem(Gem gemType);
     void remove_noble(int nobleIndex);
-    bool ableToBuy(int playerIndex,Card theCard);
+    bool ableToBuy(int playerIndex,Card theCard) const;
     int numTurn = 0;
 
     int gemPile[6] = {4,4,4,4,4,5};
