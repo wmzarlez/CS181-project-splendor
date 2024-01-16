@@ -106,24 +106,24 @@ Action GreedyAgent::getLegalAction(const GameState& state) const{
 // }
 
 // Initial depth 0, num(searchDepth) = num(actions taken). If searchDepth = 5, then take 5 sequential actions and return at depth 5. 
-// Action GreedyAgent::getAction(const GameState& state){
-//     Action bestAction = Action();
-//     float bestPoint = std::numeric_limits<float>::min();
-//     std::vector<Action> legalActions = state.get_legal_action(playerIndex);
-//      if(!legalActions.size()){
-//         std::cout << "No legal action available. It is not supposed to be happening since agent is expecting state.get_legal_action() to always return an actionType::SKIP.\n";
-//         return Action();
-//     }
-//     for(int i=0; i<legalActions.size(); ++i){
-//         GameState newState = state;
-//         newState.apply_action(legalActions[i], playerIndex);
-//         // float tmpPoint = getActionHelper(newState, 1, playerIndex);
-//         if(bestPoint < tmpPoint){
-//             bestPoint = tmpPoint;
-//             bestAction = legalActions[i];
-//         }
-//     }
-//     return bestAction;
-// }
+Action GreedyAgent::getAction(const GameState& state){
+    Action bestAction = Action();
+    // float bestPoint = std::numeric_limits<float>::min();
+    // std::vector<Action> legalActions = state.get_legal_action(playerIndex);
+    //  if(!legalActions.size()){
+    //     std::cout << "No legal action available. It is not supposed to be happening since agent is expecting state.get_legal_action() to always return an actionType::SKIP.\n";
+    //     return Action();
+    // }
+    // for(int i=0; i<legalActions.size(); ++i){
+    //     GameState newState = state;
+    //     newState.apply_action(legalActions[i], playerIndex);
+    //     // float tmpPoint = getActionHelper(newState, 1, playerIndex);
+    //     if(bestPoint < tmpPoint){
+    //         bestPoint = tmpPoint;
+    //         bestAction = legalActions[i];
+    //     }
+    // }
+    return bestAction;
+}
 
 

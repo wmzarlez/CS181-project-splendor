@@ -10,10 +10,12 @@ std::uint16_t HumanAgent::getGemAvailable(const GameState& state) const{
   return total;
 }
 
-bool isLegalAction(const GameState& state, const Action myAction){
-  int gameStateGem[6]; memcpy(reinterpret_cast<void*>(gameStateGem), reinterpret_cast<const void*>(state.gemPile), 6*sizeof(int));
+bool HumanAgent::isLegalAction(const GameState& state, const Action myAction) const{
   if(myAction.type == ActionType::SELECTGEMS){
     int getGemCount[5] = {0};
+    int doubleGemCnt = 0;
+    int gameStateGem[6]; memcpy(reinterpret_cast<void*>(gameStateGem), reinterpret_cast<const void*>(state.gemPile), 6*sizeof(int));
+    int playerGem[6]; memcpy(reinterpret_cast<void*>(playerGem), reinterpret_cast<const void*>(state.playerBoards[playerIndex].gemsOwnwd), 6*sizeof(int));
     for(std::uint16_t i=0; i<3; ++i){
       if(myAction.params[i] == Gem::BLANK_) continue;
       else if(myAction.params[i] == Gem::YELLOW) return false;
@@ -23,49 +25,50 @@ bool isLegalAction(const GameState& state, const Action myAction){
         -- gameStateGem[myAction.params[i]];
       }
     }
-
-    for(short i=0; i<3; ++i){
-      if(gamestateGem[myAction.params[i]] == 0) return false;
-      else{
-        --gamestateGem[myAction.params[i]];
-        ++playerGem[myAction.params[i]];
-      }
-    }
-    for(short i=3; i<6; ++i){
+    for(std::uint16_t i=0; i<5; ++i) if(getGemCount[i] > 2) doubleGemCnt += 1;
+    if(doubleGemCnt > 1) return false;
+    for(std::uint16_t i=0; i<6; playerGem[i] += getGemCount[i], ++i);
+    for(std::uint16_t i=0; i<6; ++i){
       if(myAction.params[i] == Gem::BLANK_) continue;
-      else{
-        if(playerGem[myAction.params[i]] == 0) return false;
-        else --playerGem[myAction.params[i]];
-      }
+      if(!playerGem[myAction.params[i]]) return false;
+      else --playerGem[myAction.params[i]];
     }
     return true;
   }
 
   else if(myAction.type == ActionType::BUYCARD){
-    for(short i=0; i<5; ++i){
-      if(playerGem[i] < cardGemCost[i]){
-        cardGemCost[i] -= playerGem[i];
-        playerGem[i] = 0;
-      }
-      else{
-        playerGem[i] -= cardGemCost[i];
-        cardGemCost[i] = 0;
-      }
+    int playerGem[6]; memcpy(reinterpret_cast<void*>(playerGem), reinterpret_cast<const void*>(state.playerBoards[playerIndex].gemsOwnwd), 6*sizeof(int));
+    if(myAction.params[0] >= 0 && myAction.params[0] <= 2 && myAction.params[1] >=0 && myAction.params[1] <= 3){
+      if(!state.market[myAction.params[0]][myAction.params[1]].cardId) return false;
+      int cardCost[5]; memcpy(reinterpret_cast<void*>(cardCost), reinterpret_cast<const void*>(state.market[myAction.params[0]][myAction.params[1]].cost), 5*sizeof(int));
+      int lack = 0;
+      for(std::uint16_t i=0; i<5; ++i) lack += (playerGem - cardCost) >= 0? 0: cardCost - playerGem;
+      if(lack > playerGem[5]) return false;
+      return true;
     }
-    int tmpLackGem = 0;
-    for(auto i=0; i<5; tmpLackGem += cardGemCost[i++]);
-    if(playerGem[5] < tmpLackGem) return false;
-    else return true;
+    else if(myAction.params[0] == 3 && myAction.params[1] >=0 && myAction.params[1] <= 2){
+      if(!state.playerBoards[playerIndex].reservedCards[myAction.params[1]].cardId) return false;
+      int cardCost[5]; memcpy(reinterpret_cast<void*>(cardCost), reinterpret_cast<const void*>(state.playerBoards[playerIndex].reservedCards[myAction.params[1]].cost), 5*sizeof(int));
+      int lack = 0;
+      for(std::uint16_t i=0; i<5; ++i) lack += (playerGem - cardCost) >= 0? 0: cardCost - playerGem;
+      if(lack > playerGem[5]) return false;
+      return true;
+    }
+    return false;
   }
 
   else if(myAction.type == ActionType::RESERVECARD){
-    playerGem[5] += 1; 
-    if(myAction.params[2] != Gem::BLANK_){
-      if(playerGem[myAction.params[2]] == 0) return false;
-      else return true;
+    int playerGem[6]; memcpy(reinterpret_cast<void*>(playerGem), reinterpret_cast<const void*>(state.playerBoards[playerIndex].gemsOwnwd), 6*sizeof(int));
+    if(myAction.params[0] >= 0 && myAction.params[0] <= 2 && myAction.params[1] >=0 && myAction.params[1] <= 3 && state.market[myAction.params[0]][myAction.params[1]].cardId){}
+    else return false;
+    if(myAction.params[2] == 1 && getGemAvailable(state) == 10){
+      if(myAction.params[3] < 0 || myAction.params[3] > 5) return false;
+      if(myAction.params[3] == Gem::YELLOW) return true;
+      else if(playerGem[myAction.params[3]] == 0) return false;
     }
+
+
   }
-  else if(myAction.type == ActionType::SKIP) return true;
   return true;
 }
 
