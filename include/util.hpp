@@ -9,6 +9,7 @@
 #include <stdexcept>
 #include <assert.h>
 #include <format>
+#include <stdlib.h>
 
 class Options {
     private:
@@ -40,7 +41,7 @@ class Options {
             _options["-m"]="HumanVsComputer";
             _options["-no-graphyics"]="0";
             _options["-no-terminal-outputs"]="0";
-            _options["-a"]="QLearning";
+            _options["-a"]="Greedy";
 
             // if SelfTrain
             _options["-n"]="10";

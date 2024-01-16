@@ -16,6 +16,7 @@ private:
     float State_Value(const GameState& state);
     float get_reward(const GameState& state);
 
+    bool noTraining;
     int latestModel=0;
     int playerIndex;
     std::unordered_map<std::string, float> weights;

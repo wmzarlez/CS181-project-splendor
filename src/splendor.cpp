@@ -568,6 +568,10 @@ void GameState::get_legal_reservecard_action (int playerIndex,std::vector<Action
             break;
         }
     }
+    int numGem=0;
+    for(int i=0;i<6;i++){
+        numGem+=playerBoards[playerIndex].gemsOwnwd[i];
+    }
     if(ableToReserve){
         for(int i=0;i<3;i++){
             for(int j=0;j<4;j++){
@@ -576,7 +580,7 @@ void GameState::get_legal_reservecard_action (int playerIndex,std::vector<Action
                     reserveCard.type=RESERVECARD;
                     reserveCard.params[0]=i;
                     reserveCard.params[1]=j;
-                    if(gemPile[5]>0){
+                    if(gemPile[5]>0 && numGem<=9){
                         reserveCard.params[2]=1;
                     }
                     else{

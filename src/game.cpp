@@ -23,7 +23,17 @@ Game::Game(){
     }
     else{
         if(options.get_option<std::string>("-m")==std::string("SelfTrain")){      
-              /////////////////////for wmz
+            int qAgentIndex=rand()%numPlayer;
+            std::unique_ptr<Agent> q_ptr = std::make_unique<QLearningAgent>(qAgentIndex);
+            for(int i=0;i<numPlayer;i++){
+                if(i==qAgentIndex){
+                    players.emplace_back(std::move(q_ptr));
+                }
+                else{
+                    std::unique_ptr<Agent> trainer_ptr = std::make_unique<GreedyAgent>(i);
+                    players.emplace_back(std::move(trainer_ptr));
+                }
+            }
         }
         else if(options.get_option<std::string>("-m")==std::string("HumanVsComputer")){
            int humanId=options.get_option<int>("-i");                    //人机对抗
@@ -87,10 +97,14 @@ void Game::run(){
             state.apply_action(a)
     check who wins...
     */
+    bool noTerminalOutputs=options.get_option<bool>("-no-terminal-outputs");
+    if(!noTerminalOutputs)state.print_table();
+
     while(!state.is_win()){
         for (int i=0;i<numPlayer;i++){
             Action turnAction = (*(players[i].get())).getAction(state);
             state.apply_action(turnAction,i);
+            if(!noTerminalOutputs)state.print_table();
         }
     }
     std::cout<<"Game over"<<std::endl;
@@ -99,5 +113,11 @@ void Game::run(){
 
 void Game::train(){
     // for wmz
-    std::cout<<"Start training!"<<std::endl;
+     while(!state.is_win()){
+        for (int i=0;i<numPlayer;i++){
+            Action turnAction = (*(players[i].get())).getAction(state);
+            state.apply_action(turnAction,i);
+        }
+    }
+    std::cout<<"Game over"<<std::endl;
 }

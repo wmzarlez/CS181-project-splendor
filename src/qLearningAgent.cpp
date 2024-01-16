@@ -1,6 +1,5 @@
 #include <fstream>
 #include <sstream>
-#include <stdlib.h>
 #include <algorithm>
 #include "qLearningAgent.h"
 
@@ -124,9 +123,24 @@ float QLearningAgent::get_feature(const GameState& state, std::string featureNam
     }
     else if(featureName=="points-opponents-get-after-2-turns"){
         int maxPoint=0;
+        for(int i=0;i<state.numPlayer;i++){
+            if(i==playerIndex)continue;
 
-
-
+            int opponentScoreNow=state.playerBoards[i].score;
+            for(auto a1:state.get_legal_action(i)){
+                GameState s1=state;
+                s1.apply_action(a1,i);
+                for(auto a2:s1.get_legal_action(i)){
+                    GameState s2=s1;
+                    s2.apply_action(a2,i);
+                    int opponentScoreAfter2Turns=s2.playerBoards[i].score;
+                    if(opponentScoreAfter2Turns-opponentScoreNow>maxPoint){
+                        maxPoint=opponentScoreAfter2Turns-opponentScoreNow;
+                    }
+                }
+            }
+        }
+        
         return (float)maxPoint;
     }
     else if(featureName=="4-max-card-values-to-me"){
@@ -226,6 +240,7 @@ float QLearningAgent::get_reward(const GameState& state){
 QLearningAgent::QLearningAgent(int index, int alpha, int gamma):
     playerIndex(index), alpha(alpha), gamma(gamma){
     load_weights();
+    noTraining=options.get_option<bool>("-no-training");
 }
 
 Action QLearningAgent::getAction(const GameState& state){
@@ -249,7 +264,7 @@ Action QLearningAgent::getAction(const GameState& state){
     }
     else{
         update_weights(state,bestAction);
-        store_weights();
+        if(!noTraining)store_weights();
         lastState=state;
         lastAction=bestAction;
     }
