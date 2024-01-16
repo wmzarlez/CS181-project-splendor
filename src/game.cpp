@@ -208,8 +208,15 @@ void Game::run(){
             state.apply_action(a)
     check who wins...
     */
-   std::cout<<"Game start!"<<std::endl;
-   // players[0]->getAction(state);
+    int playnum = options.get_option<int>("-p");
+    while(!state.is_win()){
+        for (int i=0;i<playnum;i++){
+            Action turnAction = (*(players[i].get())).getAction(state);
+            state.apply_action(turnAction,i);
+        }
+    }
+    std::cout<<"Game over"<<std::endl;
+    // players[0]->getAction(state);
 
 }
 
