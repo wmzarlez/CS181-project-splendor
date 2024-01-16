@@ -7,7 +7,7 @@
 #include <array>
 
 extern Options options;
-constexpr int searchDepth = 5;
+
 GreedyAgent::GreedyAgent(int index): playerIndex(index){}
 
 // inline int fetchCardPoint(int cardLevel, int cardIndex){
@@ -74,50 +74,56 @@ GreedyAgent::GreedyAgent(int index): playerIndex(index){}
 //     return Action();
 // }
 
-inline float evaluatePoint(GameState& state, int playerIndex) {
-    float evaluatePoints = state.playerBoards[playerIndex].score / 2;
-    for(short i=0; i<6; evaluatePoints += static_cast<float>(state.playerBoards[playerIndex].gemsOwnwd[i]) * (0.2 * (i / 5) + 0.1), ++i);
-    for(short i=0; i<5; evaluatePoints += state.playerBoards[playerIndex].bonuses[i++] / 10);
+float GreedyAgent::evaluatePoint(const GameState& state) const{
+    float evaluatePoints = state.playerBoards[playerIndex].score / 2.;
+    for(short i=0; i<5; evaluatePoints += state.playerBoards[playerIndex].gemsOwnwd[i++] / 10.);
+    evaluatePoints += state.playerBoards[playerIndex].gemsOwnwd[5] * .3;
+    for(short i=0; i<5; evaluatePoints += state.playerBoards[playerIndex].bonuses[i++] / 10.);
     return evaluatePoints;
 }
-float getActionHelper(GameState state, int depth, int playerIndex){
-    if(depth > searchDepth) return evaluatePoint(state, playerIndex);
-    std::vector<Action> legalActions = state.get_legal_action(playerIndex);
-    float bestPoint = std::numeric_limits<float>::min();
 
-    if(!legalActions.size()){
-        std::cout << "No legal action available at some points in depth " << depth << ". It is not supposed to be happening since agent is expecting state.get_legal_action() to always return an actionType::SKIP.\n";
-        return evaluatePoint(state, playerIndex);
-    }
 
-    for(int i=0; i<legalActions.size(); ++i){
-        GameState newState = state;
-        newState.apply_action(legalActions[i]);
-        float tmpPoint = getActionHelper(newState, depth+1, playerIndex);
-        if(bestPoint < tmpPoint) bestPoint = tmpPoint; 
-    }
-    return bestPoint;
+Action GreedyAgent::getLegalAction(const GameState& state) const{
+    
 }
+// float getActionHelper(GameState state, int depth, int playerIndex){
+//     if(depth > searchDepth) return evaluatePoint(state);
+//     std::vector<Action> legalActions = state.get_legal_action(playerIndex);
+//     float bestPoint = std::numeric_limits<float>::min();
+
+//     if(!legalActions.size()){
+//         std::cout << "No legal action available at some points in depth " << depth << ". It is not supposed to be happening since agent is expecting state.get_legal_action() to always return an actionType::SKIP.\n";
+//         return evaluatePoint(state);
+//     }
+
+//     for(int i=0; i<legalActions.size(); ++i){
+//         GameState newState = state;
+//         newState.apply_action(legalActions[i], playerIndex);
+//         float tmpPoint = getActionHelper(newState, depth+1, playerIndex);
+//         if(bestPoint < tmpPoint) bestPoint = tmpPoint; 
+//     }
+//     return bestPoint;
+// }
 
 // Initial depth 0, num(searchDepth) = num(actions taken). If searchDepth = 5, then take 5 sequential actions and return at depth 5. 
-Action GreedyAgent::getAction(const GameState& state){
-    Action bestAction = Action();
-    float bestPoint = std::numeric_limits<float>::min();
-    std::vector<Action> legalActions = state.get_legal_action(playerIndex);
-     if(!legalActions.size()){
-        std::cout << "No legal action available. It is not supposed to be happening since agent is expecting state.get_legal_action() to always return an actionType::SKIP.\n";
-        return Action();
-    }
-    for(int i=0; i<legalActions.size(); ++i){
-        GameState newState = state;
-        newState.apply_action(legalActions[i]);
-        float tmpPoint = getActionHelper(newState, 1, playerIndex);
-        if(bestPoint < tmpPoint){
-            bestPoint = tmpPoint;
-            bestAction = legalActions[i];
-        }
-    }
-    return bestAction;
-}
+// Action GreedyAgent::getAction(const GameState& state){
+//     Action bestAction = Action();
+//     float bestPoint = std::numeric_limits<float>::min();
+//     std::vector<Action> legalActions = state.get_legal_action(playerIndex);
+//      if(!legalActions.size()){
+//         std::cout << "No legal action available. It is not supposed to be happening since agent is expecting state.get_legal_action() to always return an actionType::SKIP.\n";
+//         return Action();
+//     }
+//     for(int i=0; i<legalActions.size(); ++i){
+//         GameState newState = state;
+//         newState.apply_action(legalActions[i], playerIndex);
+//         // float tmpPoint = getActionHelper(newState, 1, playerIndex);
+//         if(bestPoint < tmpPoint){
+//             bestPoint = tmpPoint;
+//             bestAction = legalActions[i];
+//         }
+//     }
+//     return bestAction;
+// }
 
 
