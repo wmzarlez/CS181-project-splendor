@@ -39,7 +39,7 @@ class Options {
         Options(){
             _options["-p"]="2";
             _options["-m"]="HumanVsComputer";
-            _options["-no-graphyics"]="0";
+            _options["-no-graphyics"]="1";
             _options["-no-terminal-outputs"]="0";
             _options["-a"]="Greedy";
 

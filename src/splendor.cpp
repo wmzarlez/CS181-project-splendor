@@ -426,6 +426,9 @@ GameState::GameState(): cardPile(std::make_shared<CardPile>()), totalNobalPile(s
         std::vector<Noble> numble_vector=get_noble(*(totalNobalPile.get()),numNoble);         //初始化贵族
         for(int i=0;i<3;i++){
             noblePile[i]=numble_vector[i];
+            if(!options.get_option<bool>("-no-graphics")){
+                paintbrush->draw_noble(i,numble_vector[i].nobleId);
+            }
         }
         
     }
@@ -438,6 +441,9 @@ GameState::GameState(): cardPile(std::make_shared<CardPile>()), totalNobalPile(s
         std::vector<Noble> numble_vector=get_noble(*(totalNobalPile.get()),numNoble);    //初始化贵族
         for(int i=0;i<4;i++){
             noblePile[i]=numble_vector[i];
+            if(!options.get_option<bool>("-no-graphics")){
+                paintbrush->draw_noble(i,numble_vector[i].nobleId);
+            }
         }
     }
     else if (numPlayer==4){ 
@@ -454,6 +460,9 @@ GameState::GameState(): cardPile(std::make_shared<CardPile>()), totalNobalPile(s
         std::vector<Noble> numble_vector=get_noble(*(totalNobalPile.get()),numNoble);    //初始化贵族
         for(int i=0;i<5;i++){
             noblePile[i]=numble_vector[i];
+            if(!options.get_option<bool>("-no-graphics")){
+                paintbrush->draw_noble(i,numble_vector[i].nobleId);
+            }
         }
     }
     else{
@@ -503,7 +512,7 @@ void GameState::get_legal_selectgems_action (int playerIndex,std::vector<Action>
     for(int i=0;i<6;i++){
         numGem+=playerBoards[playerIndex].gemsOwnwd[i];
     }
-    for (int i=0;i<6;i++){        //同样颜色拿两颗
+    for (int i=0;i<5;i++){        //同样颜色拿两颗
         if(gemPile[i]>=4 && numGem<=8){
             Action getTwoSameGemsAction;
             getTwoSameGemsAction.type=SELECTGEMS;
@@ -516,12 +525,12 @@ void GameState::get_legal_selectgems_action (int playerIndex,std::vector<Action>
             ActionVector.push_back(getTwoSameGemsAction);
         }
     }
-     for (int i=0;i<6;i++){        //三颗不同颜色
+     for (int i=0;i<5;i++){        //三颗不同颜色
         if(gemPile[i]>=1){
            for(int j=i+1;j<7;j++){
-                if((j<6 && gemPile[j]>=1 && numGem<=8) || j==6){
+                if((j<5 && gemPile[j]>=1 && numGem<=8) || j==6){
                     for(int z=j;z<7;z++){
-                        if((z<6 && gemPile[z]>=1 && z>j && numGem<=7) || z==6){
+                        if((z<5 && gemPile[z]>=1 && z>j && numGem<=7) || z==6){
                             Action getThreeGemsAction;
                             getThreeGemsAction.type=SELECTGEMS;
                             getThreeGemsAction.params[0]=i;
@@ -705,6 +714,7 @@ void GameState::apply_action(Action action, int playerindex){
     else if(action.type==2){                  //  RESERVECARD = 2
         if(action.params[2]==1){
             playerBoards[playerindex].gemsOwnwd[5]++;
+            remove_gem(YELLOW);
         }
         for(int i=0;i<3;i++){
             if(playerBoards[playerindex].reservedCards[i].cardId!=0){
@@ -822,24 +832,42 @@ void GameState::add_card_explicit(int cardLevel, int cardColumnIndex, int cardId
         std::cout << "add Illegal explicit card";
         exit(1);
     }
+
+    if(!options.get_option<bool>("-no-graphics")){
+        paintbrush->draw_card(cardLevel,cardColumnIndex,cardId);
+    }
 }
 void GameState::remove_card(int cardLevel, int cardColumnIndex){
     market[cardLevel-1][cardColumnIndex]={};
     if(isCopy==true){return;}
+    if(!options.get_option<bool>("-no-graphics")){
+        paintbrush->erase_card(cardLevel,cardColumnIndex);
+    }
 }
 void GameState::add_gem(Gem gemType){
-    gemPile[gemType]+=1;
-    if(isCopy==true){return;}
+    if(gemType<6){
+        gemPile[gemType]+=1;
+        if(isCopy==true){return;}
+        if(!options.get_option<bool>("-no-graphics")){
+            paintbrush->draw_gem((int)gemType);
+        }
+    }
 }
 void GameState::remove_gem(Gem gemType){
     if(gemType<6){
         gemPile[gemType]-=1;
+        if(isCopy==true){return;}
+        if(!options.get_option<bool>("-no-graphics")){
+            paintbrush->erase_gem((int)gemType);
+        }
     }
-    if(isCopy==true){return;}
 }
 void GameState::remove_noble(int nobleIndex){
     noblePile[nobleIndex]={};
     if(isCopy==true){return;}
+    if(!options.get_option<bool>("-no-graphics")){
+        paintbrush->erase_noble(nobleIndex);
+    }
 }
 
 bool GameState::ableToBuy(int playerIndex,Card theCard) const{                //辅助函数，getaction时使用帮助判断
