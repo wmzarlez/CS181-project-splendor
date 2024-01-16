@@ -312,7 +312,99 @@ CardPile::CardPile(){
     Card card90 = {.point = 3, .bonusGem=BLUE, .cardLevel=3, .cardId=90, .cost = {3,0,3,3,5}};
     level3Pile[19] = card90;
 }
-GameState::GameState(): cardPile(std::make_shared<CardPile>()),totalNobalPile(std::make_shared<NoblePile>()){
+
+Card get_card(CardPile &cardPile,int level){                       //输入派对，随机抽卡
+    //std::cout<<"hello";
+    Card defaultCard = {.point = -2, .bonusGem=BLANK_, .cardLevel=0, .cardId=0, .cost = {10,10,10,10,10}};
+    //std::cout<<defaultCard.point<<" ";
+
+    if(level==1){
+        if(cardPile.level1CardRemained==0){
+            return defaultCard;
+        }
+        int count=0;
+        int goal=rand()%(cardPile.level1CardRemained);
+        for (int i=0;i<40;i++){
+            if(cardPile.level1Pile[i].cardId!=0){
+            //if(cardPile.level1Pile[i].point!=-2){
+                if(count==goal){
+                    Card mid=cardPile.level1Pile[i];
+                    //cardPile.level1Pile[i]=defaultCard;
+                    cardPile.level1CardRemained--;
+                    return mid;
+                }
+                else{
+                    count++;
+                }
+            }
+        }
+    }
+    else if(level==2){
+        if(cardPile.level2CardRemained==0){
+            return defaultCard;
+        }
+        int count=0;
+        int goal=rand()%(cardPile.level2CardRemained);
+        for (int i=0;i<30;i++){
+            if(cardPile.level1Pile[i].cardId!=0){
+            //if(cardPile.level2Pile[i].point!=-2){
+                if(count==goal){
+                    Card mid=cardPile.level2Pile[i];
+                    //cardPile.level2Pile[i]=defaultCard;
+                    cardPile.level2CardRemained--;
+                    return mid;
+                }
+                else{
+                    count++;
+                }
+            }
+        }
+    }
+    else if(level==3){
+        if(cardPile.level3CardRemained==0){
+            return defaultCard;
+        }
+        int count=0;
+        int goal=rand()%(cardPile.level3CardRemained);
+        for (int i=0;i<20;i++){
+            if(cardPile.level1Pile[i].cardId!=0){
+            //if(cardPile.level3Pile[i].point!=-2){
+                if(count==goal){
+                    Card mid=cardPile.level3Pile[i];
+                    //cardPile.level3Pile[i]=defaultCard;
+                    cardPile.level3CardRemained--;
+                    return mid;
+                }
+                else{
+                    count++;
+                }
+            }
+        }
+    }
+    else{
+        std::cout<<"getcard input level illegal"<<std::endl;
+        options.usage();   
+        exit(0);
+        return Card();
+    }
+    return Card();
+}
+std::vector<Noble> get_noble(NoblePile &noblepile, int num) {
+    //srand((unsigned)time(NULL));
+    std::vector<Noble> ans;
+    int countnum = 0;
+    while (countnum < num) {
+        int index = rand() % 10;
+        if (noblepile.allNoble[index].nobleId != 0) {
+            ans.push_back(noblepile.allNoble[index]);
+            noblepile.allNoble[index] = {};      // 重置被选中的noble
+            countnum++;
+        }
+    }
+    return ans;
+}
+
+GameState::GameState(): cardPile(std::make_shared<CardPile>()), totalNobalPile(std::make_shared<NoblePile>()), isCopy(false){
     for(int i=0;i<3;i++){                                                   //初始化market    col1   col2   col3
         for(int j=0;j<4;j++){                                               ////// level1 r1  00     01      02
             market[i][j]=get_card(*(cardPile.get()),i+1);                   ////// level2 r2  10     11      12
@@ -365,13 +457,14 @@ GameState::GameState(): cardPile(std::make_shared<CardPile>()),totalNobalPile(st
         }
     }
     else{
+        std::cout << "Illegal number of players";
         options.usage();   
-        exit(0);
+        exit(1);
     }
 }
 
 GameState::GameState(const GameState &other):numTurn(other.numTurn), cardPile(other.cardPile), totalNobalPile(other.totalNobalPile),
-    numNoble(other.numNoble), numPlayer(other.numPlayer), paintbrush(nullptr) {  
+    numNoble(other.numNoble), numPlayer(other.numPlayer), paintbrush(nullptr), isCopy(true) {  
     for(int i=0;i<6;i++){
         gemPile[i]=other.gemPile[i];
     }
@@ -396,18 +489,22 @@ std::vector<Action> GameState::get_legal_action(int playerIndex) const{
     //SKIP = 3,
     //ILLEGAL = 4
     std::vector<Action> answerAction;
-    answerAction=get_legal_selectgems_action(playerIndex,answerAction);
-    answerAction=get_legal_buycards_action(playerIndex,answerAction);
-    answerAction=get_legal_reservecard_action(playerIndex,answerAction);
+    get_legal_buycards_action(playerIndex,answerAction);
+    get_legal_reservecard_action(playerIndex,answerAction);
+    get_legal_selectgems_action(playerIndex,answerAction);
     Action skipaction;
     skipaction.type=SKIP;
     answerAction.push_back(skipaction);
     return answerAction;
 }
 
-std::vector<Action> GameState::get_legal_selectgems_action (int playerIndex,std::vector<Action> &ActionVector) const{
+void GameState::get_legal_selectgems_action (int playerIndex,std::vector<Action> &ActionVector) const{
+    int numGem=0;
+    for(int i=0;i<6;i++){
+        numGem+=playerBoards[playerIndex].gemsOwnwd[i];
+    }
     for (int i=0;i<6;i++){        //同样颜色拿两颗
-        if(gemPile[i]>=4){
+        if(gemPile[i]>=4 && numGem<=8){
             Action getTwoSameGemsAction;
             getTwoSameGemsAction.type=SELECTGEMS;
             getTwoSameGemsAction.params[0]=i;
@@ -421,10 +518,10 @@ std::vector<Action> GameState::get_legal_selectgems_action (int playerIndex,std:
     }
      for (int i=0;i<6;i++){        //三颗不同颜色
         if(gemPile[i]>=1){
-           for(int j=i+1;j<6;j++){
-                if(gemPile[i]>=1){
-                    for(int z=j+1;z<6;z++){
-                        if(gemPile[z]>=1){
+           for(int j=i+1;j<7;j++){
+                if((j<6 && gemPile[j]>=1 && numGem<=8) || j==6){
+                    for(int z=j;z<7;z++){
+                        if((z<6 && gemPile[z]>=1 && z>j && numGem<=7) || z==6){
                             Action getThreeGemsAction;
                             getThreeGemsAction.type=SELECTGEMS;
                             getThreeGemsAction.params[0]=i;
@@ -440,9 +537,8 @@ std::vector<Action> GameState::get_legal_selectgems_action (int playerIndex,std:
            }
         }
     }
-    return ActionVector;
 };
-std::vector<Action> GameState::get_legal_buycards_action (int playerIndex,std::vector<Action> &ActionVector) const{
+void GameState::get_legal_buycards_action (int playerIndex,std::vector<Action> &ActionVector) const{
     for(int i=0;i<3;i++){
         for(int j=0;i<3;i++){
             if(ableToBuy(playerIndex,market[i][j])==true){
@@ -463,9 +559,8 @@ std::vector<Action> GameState::get_legal_buycards_action (int playerIndex,std::v
             ActionVector.push_back(buyCardAction);
         }
     }
-    return ActionVector;
 };
-std::vector<Action> GameState::get_legal_reservecard_action (int playerIndex,std::vector<Action> &ActionVector) const{
+void GameState::get_legal_reservecard_action (int playerIndex,std::vector<Action> &ActionVector) const{
     bool ableToReserve=false;
     for(int i=0;i<3;i++){
         if(playerBoards[playerIndex].reservedCards[i].cardId!=0){
@@ -475,18 +570,16 @@ std::vector<Action> GameState::get_legal_reservecard_action (int playerIndex,std
     }
     if(ableToReserve){
         for(int i=0;i<3;i++){
-            for(int j=0;i<3;i++){
+            for(int j=0;j<4;j++){
                 if(market[i][j].cardId!=0){
                     Action reserveCard;
                     reserveCard.type=RESERVECARD;
+                    reserveCard.params[0]=i;
+                    reserveCard.params[1]=j;
                     if(gemPile[5]>0){
-                        reserveCard.params[0]=i;
-                        reserveCard.params[1]=j;
                         reserveCard.params[2]=1;
                     }
                     else{
-                        reserveCard.params[0]=i;
-                        reserveCard.params[1]=j;
                         reserveCard.params[2]=0;
                     }
                     ActionVector.push_back(reserveCard);
@@ -494,38 +587,25 @@ std::vector<Action> GameState::get_legal_reservecard_action (int playerIndex,std
             }
         }
     }
-    else{
-        return ActionVector;
-    }
-    return ActionVector;
 };
-void GameState::apply_action(Action action, int playerindex){          //改变玩家playboard的还没实现
+void GameState::apply_action(Action action, int playerindex){
     // check_nobel and print_table should be used in this function
     if(action.type==0){                      //SELECTGEMS = 0
-        if(action.params[2]==6){             //拿一种宝石两颗
-            remove_gem(findGemType(action.params[0]));
-            remove_gem(findGemType(action.params[1]));
-            for(int i=3;i<6;i++){                             //drop 宝石，若type 为 blank 自动跳过
-                add_gem(findGemType(action.params[i]));
-            }
-            playerBoards[playerindex].gemsOwnwd[action.params[0]]+=2;
+        remove_gem((Gem)(action.params[0]));
+        remove_gem((Gem)(action.params[1]));
+        remove_gem((Gem)(action.params[2]));
+        add_gem((Gem)(action.params[3]));
+        add_gem((Gem)(action.params[4]));
+        add_gem((Gem)(action.params[5]));
+        for(int i=0;i<3;i++){
+            if(action.params[i]>=6)continue;
+            playerBoards[playerindex].gemsOwnwd[action.params[i]]++;
         }
-        else{                                //拿三种不同的宝石
-            remove_gem(findGemType(action.params[0]));
-            remove_gem(findGemType(action.params[1]));
-            remove_gem(findGemType(action.params[2]));
-            for(int i=3;i<6;i++){
-                add_gem(findGemType(action.params[i]));
-            }
-            playerBoards[playerindex].gemsOwnwd[action.params[0]]++;
-            playerBoards[playerindex].gemsOwnwd[action.params[1]]++;
-            playerBoards[playerindex].gemsOwnwd[action.params[2]]++;
+        for(int i=3;i<6;i++){
+            if(action.params[i]>=6)continue;
+            playerBoards[playerindex].gemsOwnwd[action.params[i]]--;
         }
-        int playernum=options.get_option<int>("-p");
-        for(int i=0;i<playernum;i++){
-            check_noble(i);
-        }
-        print_table();
+        
     }
     else if(action.type==1){                  //  BUYCARD = 1
         if(action.params[0]<3){
@@ -554,24 +634,22 @@ void GameState::apply_action(Action action, int playerindex){          //改变�
             for (int i=0;i<6;i++){                
                 if(gemcost[i]>0){           //表示购买花费了这种宝石
                     for(int j=0;j<gemcost[i];j++){       //花费几个放回几次
-                        add_gem(findGemType(i));      //回到宝石堆
+                        add_gem((Gem)(i));      //回到宝石堆
                     }
                 }
             }
 
             playerBoards[playerindex].score+=cardscore;
-            playerBoards[playerindex].bonuses[findGemType(market[action.params[0]][action.params[1]].bonusGem)]++;      //获得bonus
+            playerBoards[playerindex].bonuses[(Gem)(market[action.params[0]][action.params[1]].bonusGem)]++;      //获得bonus
+            remove_card(action.params[0]+1,action.params[1]);
             add_card_random(action.params[0]+1,action.params[1]);     //替换掉被买的牌
             if(playerBoards[playerindex].gemsOwnwd[5]<0){     //扣除过多，报错
-                std::cout<<"apply action 输入非法,买了买不起的牌"<<std::endl;
-                options.usage();   
-                exit(0);
+                std::cout<<"apply action 输入非法,买了买不起的牌"<<std::endl; 
+                exit(1);
             }
-            int playernum=options.get_option<int>("-p");
-            for(int i=0;i<playernum;i++){
-                check_noble(i);
-            }
-            print_table();
+            
+            check_noble(playerindex);
+
         }
         else if(action.params[0]==3){   //买reserve card
             Card cardBeBought=playerBoards[playerindex].reservedCards[action.params[1]];
@@ -600,28 +678,24 @@ void GameState::apply_action(Action action, int playerindex){          //改变�
             for (int i=0;i<6;i++){                
                 if(gemcost[i]>0){           //表示购买花费了这种宝石
                     for(int j=0;j<gemcost[i];j++){       //花费几个放回几次
-                        add_gem(findGemType(i));      //回到宝石堆
+                        add_gem((Gem)(i));      //回到宝石堆
                     }
                 }
             }
             playerBoards[playerindex].score+=cardscore;
-            playerBoards[playerindex].bonuses[findGemType(market[action.params[0]][action.params[1]].bonusGem)]++;      //获得bonus
+            playerBoards[playerindex].bonuses[(Gem)(market[action.params[0]][action.params[1]].bonusGem)]++;      //获得bonus
             playerBoards[playerindex].reservedCards[action.params[1]]={};
             if(playerBoards[playerindex].gemsOwnwd[5]<0){     //扣除过多，报错
-                std::cout<<"apply action 输入非法,买了买不起的牌"<<std::endl;
-                options.usage();   
-                exit(0);
+                std::cout<<"apply action 输入非法,买了买不起的牌"<<std::endl;  
+                exit(1);
             }
-            int playernum=options.get_option<int>("-p");
-            for(int i=0;i<playernum;i++){
-                check_noble(i);
-            }
-            print_table();
+            
+            check_noble(playerindex);
+            //print_table();
         }
         else{
             std::cout<<"apply action 输入非法, 购买输入错误"<<std::endl;
-            options.usage();   
-            exit(0);
+            exit(1);
         }
     }
     else if(action.type==2){                  //  RESERVECARD = 2
@@ -636,23 +710,14 @@ void GameState::apply_action(Action action, int playerindex){          //改变�
         }
         remove_card(action.params[0]+1,action.params[1]);
         add_card_random(action.params[0]+1,action.params[1]);
-        int playernum=options.get_option<int>("-p");
-        for(int i=0;i<playernum;i++){
-            check_noble(i);
-        }
-        print_table();
     }
     else if(action.type==3){                  // SKIP = 3
-        int playernum=options.get_option<int>("-p");
-        for(int i=0;i<playernum;i++){
-            check_noble(i);
-        }
-        print_table();
+        check_noble(playerindex);
+
     }
     else{
         std::cout << "apply wrong action type or action illegal!!";
-        options.usage();
-        exit(0);
+        exit(1);
     }
 }
 
@@ -660,81 +725,60 @@ bool GameState::is_win() {
     // check if someone wins
     int playnum = options.get_option<int>("-p");
     bool pan = false;
-    const int WINNING_SCORE = 15;
 
     if (playnum >= 2 && playnum <= 4) {
+        int winnerIndex=-1;
+        int winnerPoint=15;
+        int winnerCard=100;
         for (int i = 0; i < playnum; ++i) {
-            if (playerBoards[i].score >= WINNING_SCORE) {
+            if (playerBoards[i].score > winnerPoint) {
                 pan = true;
-                std::cout << "Player " << i + 1 << " wins" << std::endl;
+                winnerIndex=i;
+                winnerPoint=playerBoards[i].score;
+                winnerCard=0;
+                for(int j=0;j<5;j++){
+                    winnerCard+=playerBoards[i].bonuses[j];
+                }
             }
+            else if (playerBoards[i].score == winnerPoint) {
+                pan = true;
+                int playerCard=0;
+                for(int j=0;j<5;j++){
+                    playerCard+=playerBoards[i].bonuses[j];
+                }
+                if(playerCard<=winnerCard){
+                    winnerIndex=i;
+                    winnerPoint=playerBoards[i].score;
+                    winnerCard=playerCard;
+                }
+            }
+        }
+        if(pan){
+            std::cout << "Player " << winnerIndex + 1 << " wins" << std::endl;
         }
         return pan;
     } else {
         std::cout << "Illegal number of players";
-        options.usage();
-        exit(0);
+        exit(1);
     }
 }
 
 void GameState::check_noble(int playerIndex){
-    int playnum = options.get_option<int>("-p");
-    if(playnum==2){
-        for(int i=0;i<3;i++){
-            bool satisfy=true;
-            for(int j=0;j<5;j++){
-                if(noblePile[i].bonusRequired[j]==playerBoards[playerIndex].bonuses[j]){
-                    continue;
-                }
-                else{
-                    satisfy=false;
-                }
+    for(int i=0;i<5;i++){
+        if(noblePile[i].nobleId==0)continue;
+        bool satisfy=true;
+        for(int j=0;j<5;j++){
+            if(noblePile[i].bonusRequired[j]<=playerBoards[playerIndex].bonuses[j]){
+                continue;
             }
-            if(satisfy==true){
-                playerBoards->score+=3;
-                remove_noble(i);
+            else{
+                satisfy=false;
             }
         }
-    }
-    else if(playnum==3){
-        for(int i=0;i<4;i++){
-            bool satisfy=true;
-            for(int j=0;j<5;j++){
-                if(noblePile[i].bonusRequired[j]==playerBoards[playerIndex].bonuses[j]){
-                    continue;
-                }
-                else{
-                    satisfy=false;
-                }
-            }
-            if(satisfy==true){
-                playerBoards[playerIndex-1].score+=3;
-                remove_noble(i);
-            }
+        if(satisfy==true){
+            playerBoards->score+=3;
+            remove_noble(i);
         }
-    }
-    else if(playnum==4){
-        for(int i=0;i<5;i++){
-            bool satisfy=true;
-            for(int j=0;j<5;j++){
-                if(noblePile[i].bonusRequired[j]==playerBoards[playerIndex].bonuses[j]){
-                    continue;
-                }
-                else{
-                    satisfy=false;
-                }
-            }
-            if(satisfy==true){
-                playerBoards->score+=3;
-                remove_noble(i);
-                remove_noble(noblePile[i].nobleId);
-            }
-        }
-    }
-    else{
-        std::cout<<"playernum error"<<std::endl;
-        options.usage();   
-        exit(0);
     }
 }
 
@@ -743,10 +787,14 @@ void GameState::print_table() const{
 }
 
 void GameState::add_card_random(int cardLevel, int cardColumnIndex){
+    if(isCopy==true){return;}
+
     Card newcard=get_card(*(cardPile.get()),cardLevel);
     add_card_explicit(cardLevel,cardColumnIndex,newcard.cardId);
 }
 void GameState::add_card_explicit(int cardLevel, int cardColumnIndex, int cardId){
+    if(isCopy==true){return;}
+
     if(cardId>0&&cardId<41){
         Card newcard=(*(cardPile.get())).level1Pile[cardId-1];
         market[cardLevel-1][cardColumnIndex]=newcard;
@@ -768,27 +816,28 @@ void GameState::add_card_explicit(int cardLevel, int cardColumnIndex, int cardId
     }
     else{
         std::cout << "add Illegal explicit card";
-        options.usage();
-        exit(0);
+        exit(1);
     }
-    std::cout << "add Illegal explicit card";
-    options.usage();
-    exit(0);
 }
 void GameState::remove_card(int cardLevel, int cardColumnIndex){
     market[cardLevel-1][cardColumnIndex]={};
+    if(isCopy==true){return;}
 }
 void GameState::add_gem(Gem gemType){
     gemPile[gemType]+=1;
+    if(isCopy==true){return;}
 }
 void GameState::remove_gem(Gem gemType){
-    if(gemType!=6){
+    if(gemType<6){
         gemPile[gemType]-=1;
     }
+    if(isCopy==true){return;}
 }
 void GameState::remove_noble(int nobleIndex){
     noblePile[nobleIndex]={};
+    if(isCopy==true){return;}
 }
+
 bool GameState::ableToBuy(int playerIndex,Card theCard) const{                //辅助函数，getaction时使用帮助判断
     int numyellow=playerBoards[playerIndex].gemsOwnwd[5];
     bool able=true;
@@ -810,110 +859,3 @@ bool GameState::ableToBuy(int playerIndex,Card theCard) const{                //
     }
     return able;
 }  
-Card get_card(CardPile &cardPile,int level){                       //输入派对，随机抽卡
-    //std::cout<<"hello";
-    Card defaultCard = {.point = -2, .bonusGem=BLANK_, .cardLevel=0, .cardId=0, .cost = {10,10,10,10,10}};
-    //std::cout<<defaultCard.point<<" ";
-    srand((unsigned) time(NULL));
-    if(level==1){
-        if(cardPile.level1CardRemained==0){
-            return defaultCard;
-        }
-        int count=0;
-        int goal=rand()%(cardPile.level1CardRemained);
-        for (int i=0;i<40;i++){
-            if(cardPile.level1Pile[i].point!=-2){
-                if(count==goal){
-                    Card mid=cardPile.level1Pile[i];
-                    //cardPile.level1Pile[i]=defaultCard;
-                    cardPile.level1CardRemained--;
-                    return mid;
-                }
-                else{
-                    count++;
-                }
-            }
-        }
-    }
-    else if(level==2){
-        if(cardPile.level2CardRemained==0){
-            return defaultCard;
-        }
-        int count=0;
-        int goal=rand()%(cardPile.level2CardRemained);
-        for (int i=0;i<30;i++){
-            if(cardPile.level2Pile[i].point!=-2){
-                if(count==goal){
-                    Card mid=cardPile.level2Pile[i];
-                    //cardPile.level2Pile[i]=defaultCard;
-                    cardPile.level2CardRemained--;
-                    return mid;
-                }
-                else{
-                    count++;
-                }
-            }
-        }
-    }
-    else if(level==3){
-        if(cardPile.level3CardRemained==0){
-            return defaultCard;
-        }
-        int count=0;
-        int goal=rand()%(cardPile.level3CardRemained);
-        for (int i=0;i<20;i++){
-            if(cardPile.level3Pile[i].point!=-2){
-                if(count==goal){
-                    Card mid=cardPile.level3Pile[i];
-                    //cardPile.level3Pile[i]=defaultCard;
-                    cardPile.level3CardRemained--;
-                    return mid;
-                }
-                else{
-                    count++;
-                }
-            }
-        }
-    }
-    else{
-        std::cout<<"getcard input level illegal"<<std::endl;
-        options.usage();   
-        exit(0);
-    }
-}
-std::vector<Noble> get_noble(NoblePile &noblepile, int num) {
-    srand((unsigned)time(NULL));
-    std::vector<Noble> ans;
-    int countnum = 0;
-    while (countnum < num) {
-        int index = rand() % 10;
-        if (noblepile.allNoble[index].point != 0) {
-            ans.push_back(noblepile.allNoble[index]);
-            noblepile.allNoble[index] = {};      // 重置被选中的noble
-            countnum++;
-        }
-    }
-    return ans;
-}
-Gem findGemType(int input){
-    switch (input)
-    {
-    case 0:
-        return WHITE;
-    case 1:
-        return BLUE;
-    case 2:
-        return GREEN;
-    case 3:
-        return RED;
-    case 4:
-        return BLACK;
-    case 5:
-        return YELLOW;
-    case 6:
-        return BLANK_;
-    default:
-        std::cout<<"findGemType input error";
-        break;
-    }
-}

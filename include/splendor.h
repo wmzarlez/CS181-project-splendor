@@ -91,9 +91,9 @@ public:
     GameState();
     GameState(const GameState &other);
     std::vector<Action> get_legal_action(int playerIndex) const;
-    std::vector<Action> get_legal_selectgems_action(int playerIndex,std::vector<Action> & ActionVector) const;
-    std::vector<Action> get_legal_buycards_action(int playerIndex,std::vector<Action> & ActionVector) const;
-    std::vector<Action> get_legal_reservecard_action(int playerIndex,std::vector<Action> & ActionVector) const;
+    void get_legal_selectgems_action(int playerIndex,std::vector<Action> & ActionVector) const;
+    void get_legal_buycards_action(int playerIndex,std::vector<Action> & ActionVector) const;
+    void get_legal_reservecard_action(int playerIndex,std::vector<Action> & ActionVector) const;
     void apply_action(Action action,int playerindex);
     // return true if one player wins
     bool is_win();
@@ -109,11 +109,12 @@ public:
     void add_gem(Gem gemType);
     void remove_gem(Gem gemType);
     void remove_noble(int nobleIndex);
+    
     bool ableToBuy(int playerIndex,Card theCard) const;
+    
     int numTurn = 0;
 
     int gemPile[6] = {4,4,4,4,4,5};
-
     Card market[3][4];
     std::shared_ptr<CardPile> cardPile;
     //储存了所有的贵族卡信息，唯一的作用就是初始化noblepile
@@ -126,6 +127,6 @@ public:
     int numPlayer;
 
     Visualization* paintbrush;
+
+    bool isCopy;
 };
-Card get_card(CardPile &cardPile,int level);
-std::vector<Noble> get_noble(NoblePile &noblepile, int num);

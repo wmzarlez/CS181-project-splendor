@@ -5,6 +5,7 @@ Options options = Options();
 
 int main(int argc, const char* argv[]){
 
+    srand((unsigned) time(NULL));
     options.set_args(argc, argv);
     Game game;
     //std::cout<<game.state.noblePile[0].nobleid<<" ";

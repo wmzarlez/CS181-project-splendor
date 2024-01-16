@@ -46,7 +46,7 @@ void QLearningAgent::update_weights(GameState nowState, Action action){
     
     float diff=reward+gamma*nowQValue-lastQValue;
 
-    lastState.apply_action(lastAction);
+    lastState.apply_action(lastAction,playerIndex);
     for(auto iter=weights.begin();iter!=weights.end();iter++){
         iter->second+=alpha*diff*get_feature(lastState,iter->first);
     }
@@ -184,7 +184,7 @@ float QLearningAgent::get_feature(const GameState& state, std::string featureNam
 }
 
 float QLearningAgent::Q_Value(GameState state, Action action){
-    state.apply_action(action);
+    state.apply_action(action,playerIndex);
     return State_Value(state);
 }
 
