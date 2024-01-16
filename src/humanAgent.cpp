@@ -11,61 +11,61 @@ std::uint16_t HumanAgent::getGemAvailable(const GameState& state) const{
 }
 
 bool isLegalAction(const GameState& state, const Action myAction){
-  // int gameStateGem[6]; memcpy(reinterpret_cast<void*>(gameStateGem), reinterpret_cast<const void*>(state.gemPile), 6*sizeof(int));
-  // if(myAction.type == ActionType::SELECTGEMS){
-  //   int getGemCount[5] = {0};
-  //   for(std::uint16_t i=0; i<3; ++i){
-  //     if(myAction.params[i] == Gem::BLANK_) continue;
-  //     else if(myAction.params[i] == Gem::YELLOW) return false;
-  //     else if(!gameStateGem[myAction.params[i]]) return false;
-  //     else{
-  //       ++getGemCount[myAction.params[i]];
-  //       -- gameStateGem[myAction.params[i]];
-  //     }
-  //   }
+  int gameStateGem[6]; memcpy(reinterpret_cast<void*>(gameStateGem), reinterpret_cast<const void*>(state.gemPile), 6*sizeof(int));
+  if(myAction.type == ActionType::SELECTGEMS){
+    int getGemCount[5] = {0};
+    for(std::uint16_t i=0; i<3; ++i){
+      if(myAction.params[i] == Gem::BLANK_) continue;
+      else if(myAction.params[i] == Gem::YELLOW) return false;
+      else if(!gameStateGem[myAction.params[i]]) return false;
+      else{
+        ++getGemCount[myAction.params[i]];
+        -- gameStateGem[myAction.params[i]];
+      }
+    }
 
-  //   for(short i=0; i<3; ++i){
-  //     if(gamestateGem[myAction.params[i]] == 0) return false;
-  //     else{
-  //       --gamestateGem[myAction.params[i]];
-  //       ++playerGem[myAction.params[i]];
-  //     }
-  //   }
-  //   for(short i=3; i<6; ++i){
-  //     if(myAction.params[i] == Gem::BLANK_) continue;
-  //     else{
-  //       if(playerGem[myAction.params[i]] == 0) return false;
-  //       else --playerGem[myAction.params[i]];
-  //     }
-  //   }
-  //   return true;
-  // }
+    for(short i=0; i<3; ++i){
+      if(gamestateGem[myAction.params[i]] == 0) return false;
+      else{
+        --gamestateGem[myAction.params[i]];
+        ++playerGem[myAction.params[i]];
+      }
+    }
+    for(short i=3; i<6; ++i){
+      if(myAction.params[i] == Gem::BLANK_) continue;
+      else{
+        if(playerGem[myAction.params[i]] == 0) return false;
+        else --playerGem[myAction.params[i]];
+      }
+    }
+    return true;
+  }
 
-  // else if(myAction.type == ActionType::BUYCARD){
-  //   for(short i=0; i<5; ++i){
-  //     if(playerGem[i] < cardGemCost[i]){
-  //       cardGemCost[i] -= playerGem[i];
-  //       playerGem[i] = 0;
-  //     }
-  //     else{
-  //       playerGem[i] -= cardGemCost[i];
-  //       cardGemCost[i] = 0;
-  //     }
-  //   }
-  //   int tmpLackGem = 0;
-  //   for(auto i=0; i<5; tmpLackGem += cardGemCost[i++]);
-  //   if(playerGem[5] < tmpLackGem) return false;
-  //   else return true;
-  // }
+  else if(myAction.type == ActionType::BUYCARD){
+    for(short i=0; i<5; ++i){
+      if(playerGem[i] < cardGemCost[i]){
+        cardGemCost[i] -= playerGem[i];
+        playerGem[i] = 0;
+      }
+      else{
+        playerGem[i] -= cardGemCost[i];
+        cardGemCost[i] = 0;
+      }
+    }
+    int tmpLackGem = 0;
+    for(auto i=0; i<5; tmpLackGem += cardGemCost[i++]);
+    if(playerGem[5] < tmpLackGem) return false;
+    else return true;
+  }
 
-  // else if(myAction.type == ActionType::RESERVECARD){
-  //   playerGem[5] += 1; 
-  //   if(myAction.params[2] != Gem::BLANK_){
-  //     if(playerGem[myAction.params[2]] == 0) return false;
-  //     else return true;
-  //   }
-  // }
-  // else if(myAction.type == ActionType::SKIP) return true;
+  else if(myAction.type == ActionType::RESERVECARD){
+    playerGem[5] += 1; 
+    if(myAction.params[2] != Gem::BLANK_){
+      if(playerGem[myAction.params[2]] == 0) return false;
+      else return true;
+    }
+  }
+  else if(myAction.type == ActionType::SKIP) return true;
   return true;
 }
 
