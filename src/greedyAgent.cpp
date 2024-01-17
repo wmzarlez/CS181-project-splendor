@@ -15,7 +15,7 @@ GreedyAgent::GreedyAgent(int index): playerIndex(index){}
 int GreedyAgent::evalPt(const GameState& state) const{
     int evaluatePoints = state.playerBoards[playerIndex].score * 10;
     for(short i=0; i<5; evaluatePoints += state.playerBoards[playerIndex].gemsOwnwd[i++]);
-    evaluatePoints += state.playerBoards[playerIndex].gemsOwnwd[5] * 3;
+    evaluatePoints += state.playerBoards[playerIndex].gemsOwnwd[5] * 5;
     for(short i=0; i<5; evaluatePoints += state.playerBoards[playerIndex].bonuses[i++] * 10);
     return evaluatePoints;
 }
@@ -48,7 +48,7 @@ Action GreedyAgent::getAction(const GameState& state){
         GameState newStat = state;
         newStat.apply_action(possibleActs[i], playerIndex);
         int tmpPt = getActRecursion(newStat, 1);
-        if(optActPair.second < tmpPt) { std::cout << "Yes" ; optActPair = std::make_pair(possibleActs[i], tmpPt); }
+        if(optActPair.second < tmpPt) { optActPair = std::make_pair(possibleActs[i], tmpPt); }
     }
     std::cout << optActPair.second << std::endl;
     std::cout << " It takes " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - startTime).count() << " millisecs.\n" << std::endl;
