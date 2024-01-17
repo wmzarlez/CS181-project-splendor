@@ -66,8 +66,6 @@ bool HumanAgent::isLegalAction(const GameState& state, const Action myAction) co
       if(myAction.params[3] == Gem::YELLOW) return true;
       else if(playerGem[myAction.params[3]] == 0) return false;
     }
-
-
   }
   return true;
 }
