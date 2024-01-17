@@ -42,7 +42,7 @@ bool HumanAgent::isLegalAction(const GameState& state, const Action myAction) co
       if(!state.market[myAction.params[0]][myAction.params[1]].cardId) return false;
       int cardCost[5]; memcpy(reinterpret_cast<void*>(cardCost), reinterpret_cast<const void*>(state.market[myAction.params[0]][myAction.params[1]].cost), 5*sizeof(int));
       int lack = 0;
-      for(std::uint16_t i=0; i<5; ++i) lack += (playerGem - cardCost) >= 0? 0: cardCost - playerGem;
+      for(std::uint16_t i=0; i<5; ++i) lack += ((playerGem[i] - cardCost[i]) >= 0 ? 0: cardCost[i] - playerGem[i]);
       if(lack > playerGem[5]) return false;
       return true;
     }
