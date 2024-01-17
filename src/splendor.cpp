@@ -666,7 +666,7 @@ void GameState::get_legal_selectgems_action (int playerIndex,std::vector<Action>
 };
 void GameState::get_legal_buycards_action (int playerIndex,std::vector<Action> &ActionVector) const{
     for(int i=0;i<3;i++){
-        for(int j=0;i<3;i++){
+        for(int j=0;j<4;j++){
             if(ableToBuy(playerIndex,market[i][j])==true){
                 Action buyCardAction;
                 buyCardAction.type=BUYCARD;
