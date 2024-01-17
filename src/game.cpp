@@ -115,6 +115,7 @@ void Game::train(){
         for (int i=0;i<numPlayer;i++){
             Action turnAction = (*(players[i].get())).getAction(state);
             state.apply_action(turnAction,i);
+            getchar();
         }
     }
     std::cout<<"Game over"<<std::endl;

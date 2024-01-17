@@ -689,7 +689,7 @@ void GameState::get_legal_buycards_action (int playerIndex,std::vector<Action> &
 void GameState::get_legal_reservecard_action (int playerIndex,std::vector<Action> &ActionVector) const{
     bool ableToReserve=false;
     for(int i=0;i<3;i++){
-        if(playerBoards[playerIndex].reservedCards[i].cardId!=0){
+        if(playerBoards[playerIndex].reservedCards[i].cardId==0){
             ableToReserve=true;
             break;
         }
