@@ -33,6 +33,7 @@ void QLearningAgent::load_weights(){
 
 void QLearningAgent::store_weights(){
     std::ofstream weightData("../qTrainingLog/"+std::string(std::to_string(latestModel+1))+".txt");
+    //latestModel++;
     for(auto iter=weights.begin();iter!=weights.end();iter++){
         weightData<<iter->first<<'\t'<<iter->second<<std::endl;
     }
@@ -254,6 +255,16 @@ Action QLearningAgent::getAction(const GameState& state){
         if(qValue>maxQValue){
             maxQValue=qValue;
             bestAction=*iter;
+        }
+    }
+
+    if(!noTraining){
+        int prob=rand()%100;
+        epsilon=30;
+        if(prob<epsilon){
+            int numAction=actionVector.size();
+            prob=rand()%(numAction);
+            bestAction=actionVector[prob];
         }
     }
 
