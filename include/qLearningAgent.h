@@ -3,7 +3,7 @@
 
 class QLearningAgent: public Agent{
 public:
-    QLearningAgent(int index, int alpha=0.01, int gamma=0.9);
+    QLearningAgent(int index, float alpha=0.01, float gamma=0.9);
     virtual Action getAction(const GameState& state);
 private:
     void load_weights();
@@ -20,8 +20,8 @@ private:
     int latestModel=0;
     int playerIndex;
     std::unordered_map<std::string, float> weights;
-    int alpha;
-    int gamma;
+    float alpha;
+    float gamma;
     float penaltyTable[7]={1.0/5.0, 1.0/4.0, 1.0/3.0, 1.0/3.0, 0.5, 0.5, 0.5};
     GameState lastState;
     Action lastAction;

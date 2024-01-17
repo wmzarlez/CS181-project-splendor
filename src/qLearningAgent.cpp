@@ -237,7 +237,7 @@ float QLearningAgent::get_reward(const GameState& state){
     return reward;
 }
 
-QLearningAgent::QLearningAgent(int index, int alpha, int gamma):
+QLearningAgent::QLearningAgent(int index, float alpha, float gamma):
     playerIndex(index), alpha(alpha), gamma(gamma){
     load_weights();
     noTraining=options.get_option<bool>("-no-training");
