@@ -469,11 +469,11 @@ std::string gem_to_string(int gem){
 }
 std::string card_to_string(const Card &card){
     if(card.cardId==0)return "";
-    std::string cardString="{Bonus: ";
+    std::string cardString="{Bonus:";
     cardString+=gem_to_string((int)card.bonusGem);
-    cardString+=" Point";
+    cardString+=" Point:";
     cardString+=std::to_string(card.point);
-    cardString+=" Cost: ";
+    cardString+=" Cost:";
     for(int i=0;i<5;i++){
         if(card.cost[i]<=0)continue;
         cardString+=std::to_string(card.cost[i]);
@@ -485,9 +485,9 @@ std::string card_to_string(const Card &card){
 }
 std::string noble_to_string(const Noble &noble){
     if(noble.nobleId==0)return "";
-    std::string nobleString="{Point: ";
+    std::string nobleString="{Point:";
     nobleString+=std::to_string(noble.point);
-    nobleString+=" Amass: ";
+    nobleString+=" Amass:";
     for(int i=0;i<5;i++){
         if(noble.bonusRequired[i]<=0)continue;
         nobleString+=std::to_string(noble.bonusRequired[i]);
@@ -565,7 +565,6 @@ GameState::GameState(): cardPile(std::make_shared<CardPile>()), totalNobalPile(s
         exit(1);
     }
 }
-
 GameState::GameState(const GameState &other):numTurn(other.numTurn), cardPile(other.cardPile), totalNobalPile(other.totalNobalPile),
     numNoble(other.numNoble), numPlayer(other.numPlayer), paintbrush(nullptr), isCopy(true) {  
     for(int i=0;i<6;i++){
@@ -583,6 +582,30 @@ GameState::GameState(const GameState &other):numTurn(other.numTurn), cardPile(ot
         playerBoards[i]=other.playerBoards[i];
     }
 
+}
+GameState& GameState::operator=(const GameState &other){
+    numTurn=other.numTurn;
+    for(int i=0;i<6;i++){
+        gemPile[i]=other.gemPile[i];
+    }
+    for(int i=0;i<3;i++){
+        for(int j=0;j<4;j++){
+            market[i][j]=other.market[i][j];
+        }
+    }
+    cardPile=other.cardPile;
+    totalNobalPile=other.totalNobalPile;
+    for(int i=0;i<5;i++){
+        noblePile[i]=other.noblePile[i];
+    }
+    numNoble=other.numNoble;
+    for(int i=0;i<numPlayer;i++){
+        playerBoards[i]=other.playerBoards[i];
+    }
+    numPlayer=other.numPlayer;
+    paintbrush=nullptr;
+    isCopy=true;
+    return *this;
 }
 
 std::vector<Action> GameState::get_legal_action(int playerIndex) const{
@@ -906,9 +929,86 @@ void GameState::print_table() const{
     if(isCopy){
         return;
     }
-    std::cout<<std::format("{:<20}","Noble Pile: ");
-    std::cout<<std::format("{:<30}","Development Card Pile: ");
 
+    std::cout<<std::endl;
+
+    bool noTerminalOutputs=options.get_option<bool>("-no-terminal-outputs");
+    if(!noTerminalOutputs){
+    std::cout<<std::format("{:<13}","Noble Pile: ");
+    for(int i=0;i<numPlayer+1;i++){
+        std::cout<<std::format("{:<40}",noble_to_string(noblePile[i]));
+    }
+    std::cout<<std::endl;
+
+    std::cout<<std::format("{:<20}","Public Gem Pile: ");
+    for(int i=0;i<6;i++){
+        std::cout<<std::format("{:<10}",gem_to_string(i));
+    }
+    std::cout<<std::endl;
+    std::cout<<std::format("{:<20}"," ");
+    for(int i=0;i<6;i++){
+        std::cout<<std::format("{:<10}",std::to_string(gemPile[i]));
+    }
+    std::cout<<std::endl;
+
+    std::cout<<std::format("{:<30}","Development Card Pile: ");
+    for(int i=1;i<=4;i++){
+        std::cout<<std::format("{:<50}","Column "+std::to_string(i));
+    }
+    std::cout<<std::endl;
+
+    //level 3
+    std::cout<<std::format("{:<10}","Level 3");
+    std::cout<<std::format("{:<20}","left "+std::to_string(cardPile->level3CardRemained)+" cards");
+    for(int i=0;i<4;i++){
+        std::cout<<std::format("{:<50}",card_to_string(market[2][i]));
+    }
+    std::cout<<std::endl;
+
+    //level 2
+    std::cout<<std::format("{:<10}","Level 2");
+    std::cout<<std::format("{:<20}","left "+std::to_string(cardPile->level2CardRemained)+" cards");
+    for(int i=0;i<4;i++){
+        std::cout<<std::format("{:<50}",card_to_string(market[1][i]));
+    }
+    std::cout<<std::endl;
+
+    //level 1
+    std::cout<<std::format("{:<10}","Level 1");
+    std::cout<<std::format("{:<20}","left "+std::to_string(cardPile->level1CardRemained)+" cards");
+    for(int i=0;i<4;i++){
+        std::cout<<std::format("{:<50}",card_to_string(market[0][i]));
+    }
+    std::cout<<std::endl;
+    std::cout<<std::endl;
+    }
+
+    // playerBoard
+    for(int i=0;i<numPlayer;i++){
+        std::cout<<std::format("{:<20}","Player "+std::to_string(i+1))<<std::endl;
+        std::cout<<std::format("{:<10}"," ");
+        for(int j=0;j<6;j++){
+            std::cout<<std::format("{:<8}",gem_to_string(j));
+        }
+        std::cout<<std::endl;
+        std::cout<<std::format("{:<10}","Gem:");
+        for(int j=0;j<6;j++){
+            std::cout<<std::format("{:<8}",std::to_string(playerBoards[i].gemsOwnwd[j]));
+        }
+        std::cout<<std::endl;
+        std::cout<<std::format("{:<10}","Bonus:");
+        for(int j=0;j<5;j++){
+            std::cout<<std::format("{:<8}",std::to_string(playerBoards[i].bonuses[j]));
+        }
+        std::cout<<std::endl;
+        std::cout<<std::format("{:<15}","Reserved Card: ");
+        for(int j=0;j<3;j++){
+            std::cout<<std::format("{:<50}",card_to_string(playerBoards[i].reservedCards[j]));
+        }
+        std::cout<<std::endl;
+    }
+
+    std::cout<<std::endl;std::cout<<std::endl;
 }
 void GameState::print_action(Action action, int playerIndex) const{
     if(isCopy){

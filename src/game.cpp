@@ -80,7 +80,7 @@ Game::Game(){
                     options.usage();      //agent 不合法
                     exit(1);
                 }
-                state=GameState();
+                //state=GameState();
            }
         }
         else{
@@ -98,16 +98,17 @@ void Game::run(){
     check who wins...
     */
     bool noTerminalOutputs=options.get_option<bool>("-no-terminal-outputs");
-    if(!noTerminalOutputs)state.print_table();
+    state.print_table();
 
     while(!state.is_win()){
         state.numTurn++;
+        std::cout<<std::endl<<"Turn "<<state.numTurn<<" Start"<<std::endl;
         for (int i=0;i<numPlayer;i++){
             std::cout<<std::endl;
             std::cout<<"Player "<<i+1<<"'s turn:"<<std::endl;
             Action turnAction = (*(players[i].get())).getAction(state);
             state.apply_action(turnAction,i);
-            if(!noTerminalOutputs)state.print_table();
+            state.print_table();
         }
     }
     std::cout<<"Game over"<<std::endl;

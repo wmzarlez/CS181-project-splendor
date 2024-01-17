@@ -90,6 +90,7 @@ public:
     // GameState init
     GameState();
     GameState(const GameState &other);
+    GameState& operator=(const GameState &other);
     std::vector<Action> get_legal_action(int playerIndex) const;
     void get_legal_selectgems_action(int playerIndex,std::vector<Action> & ActionVector) const;
     void get_legal_buycards_action(int playerIndex,std::vector<Action> & ActionVector) const;
