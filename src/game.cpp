@@ -90,13 +90,6 @@ Game::Game(){
     }
 }
 void Game::run(){
-    /*
-    While(!state.is_win())
-        for p in players:
-            a=p->getAction(state)
-            state.apply_action(a)
-    check who wins...
-    */
     bool noTerminalOutputs=options.get_option<bool>("-no-terminal-outputs");
     state.print_table();
 

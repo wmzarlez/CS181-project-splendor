@@ -22,6 +22,7 @@ private:
     std::unordered_map<std::string, float> weights;
     float alpha;
     float gamma;
+    float epsilon;
     float penaltyTable[7]={1.0/5.0, 1.0/4.0, 1.0/3.0, 1.0/3.0, 0.5, 0.5, 0.5};
     GameState lastState;
     Action lastAction;

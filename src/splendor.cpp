@@ -845,7 +845,7 @@ void GameState::apply_action(Action action, int playerindex){
             remove_gem(YELLOW);
         }
         for(int i=0;i<3;i++){
-            if(playerBoards[playerindex].reservedCards[i].cardId!=0){
+            if(playerBoards[playerindex].reservedCards[i].cardId==0){
                 playerBoards[playerindex].reservedCards[i]=market[action.params[0]][action.params[1]];
                 break;
             }
