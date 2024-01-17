@@ -985,7 +985,10 @@ void GameState::print_table() const{
 
     // playerBoard
     for(int i=0;i<numPlayer;i++){
-        std::cout<<std::format("{:<20}","Player "+std::to_string(i+1))<<std::endl;
+        std::cout<<std::format("{:<20}","Player "+std::to_string(i+1));
+        std::cout<<std::format("{:<20}","Score: "+std::to_string(playerBoards[i].score));
+        std::cout<<std::endl;
+
         std::cout<<std::format("{:<10}"," ");
         for(int j=0;j<6;j++){
             std::cout<<std::format("{:<8}",gem_to_string(j));
@@ -1160,6 +1163,9 @@ bool GameState::ableToBuy(int playerIndex,Card theCard) const{                //
                 break;
             }
         }
+    }
+    if(numyellow<0){
+        able=false;
     }
     return able;
 }  
