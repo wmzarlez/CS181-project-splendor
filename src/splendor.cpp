@@ -836,7 +836,7 @@ void GameState::apply_action(Action action, int playerindex){
             std::cout << "\n";
             // std::cout << "Ind = (" << action.params[0] << ", " << action.params[1] << ")\n";
             // std::cout << market[action.params[0]][action.params[1]].bonusGem << std::endl;
-            playerBoards[playerindex].bonuses[static_cast<int>(market[action.params[0]][action.params[1]].bonusGem)]++;      //获得bonus
+            playerBoards[playerindex].bonuses[static_cast<int>(playerBoards[playerindex].reservedCards[action.params[1]].bonusGem)]++;      //获得bonus
             playerBoards[playerindex].reservedCards[action.params[1]]={};
             
 
