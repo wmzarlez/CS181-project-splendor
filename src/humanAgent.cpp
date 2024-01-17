@@ -72,7 +72,7 @@ bool HumanAgent::isLegalAction(const GameState& state, const Action myAction) co
   return true;
 }
 
-Action HumanAgent::getAction(const GameState& state) const{
+Action HumanAgent::getAction(const GameState& state){
   std::uint16_t gemNum = getGemAvailable(state);
   Action myAction = Action();
   int myActionType = -1;
@@ -112,4 +112,5 @@ Action HumanAgent::getAction(const GameState& state) const{
     if(isLegalAction(state, myAction)) break;
     else std::cout << "ILLEGAL ACTION\n";
   }
+  return myAction;
 }

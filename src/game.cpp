@@ -101,6 +101,7 @@ void Game::run(){
     if(!noTerminalOutputs)state.print_table();
 
     while(!state.is_win()){
+        state.numTurn++;
         for (int i=0;i<numPlayer;i++){
             Action turnAction = (*(players[i].get())).getAction(state);
             state.apply_action(turnAction,i);
@@ -114,6 +115,7 @@ void Game::run(){
 void Game::train(){
     // for wmz
      while(!state.is_win()){
+        state.numTurn++;
         for (int i=0;i<numPlayer;i++){
             Action turnAction = (*(players[i].get())).getAction(state);
             state.apply_action(turnAction,i);
