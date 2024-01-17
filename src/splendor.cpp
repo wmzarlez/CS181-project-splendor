@@ -1,5 +1,5 @@
 #include "splendor.h"
-
+#include <cstdint>
 extern Options options;
 
 NoblePile::NoblePile(){
@@ -750,6 +750,10 @@ void GameState::apply_action(Action action, int playerindex){
             for (int i=0;i<5;i++){
                 helpgem[i]=market[action.params[0]][action.params[1]].cost[i];
             }
+            for(std::uint16_t i=0; i<5; ++i){
+                if(playerBoards[playerindex].bonuses[i] > helpgem[i]) helpgem[i] = 0;
+                else helpgem[i] -= playerBoards[playerindex].bonuses[i];
+            }
             for (int i=0;i<6;i++){
                 playerInitGem[i]=playerBoards[playerindex].gemsOwnwd[i];     
             }
@@ -796,8 +800,12 @@ void GameState::apply_action(Action action, int playerindex){
             int helpgem[5]={0};            //记录被买的卡多少钱
             int playerInitGem[6]={};      //记录玩家在购买该牌之前原有宝石情况
             int gemcost[6]={0};            //最终花费了什么种类的宝石分别多少个
-            for (int i=0;i<5;i++){
-                helpgem[i]=cardBeBought.cost[i];               
+            memcpy(reinterpret_cast<void*>(helpgem), reinterpret_cast<const void*>(cardBeBought.cost), 5*sizeof(int));
+            for(std::uint16_t i=0; i<5; ++i){
+                if(playerBoards[playerindex].bonuses[i] > helpgem[i]){
+                    helpgem[i] = 0;
+                }
+                else helpgem[i] -= playerBoards[playerindex].bonuses[i];
             }
             for (int i=0;i<6;i++){
                 playerInitGem[i]=playerBoards[playerindex].gemsOwnwd[i];     
@@ -807,8 +815,8 @@ void GameState::apply_action(Action action, int playerindex){
             }
             for (int i=0;i<5;i++){                
             if(playerBoards[playerindex].gemsOwnwd[i]<0){
-                    playerBoards[playerindex].gemsOwnwd[5]+=playerBoards[playerindex].gemsOwnwd[i];    //不够就说明花万能宝石
-                    playerBoards[playerindex].gemsOwnwd[i]=0;     //扣除玩家宝石
+                playerBoards[playerindex].gemsOwnwd[5]+=playerBoards[playerindex].gemsOwnwd[i];    //不够就说明花万能宝石
+                playerBoards[playerindex].gemsOwnwd[i]=0;     //扣除玩家宝石
             }
             }
 
@@ -817,7 +825,7 @@ void GameState::apply_action(Action action, int playerindex){
             }
 
             if(playerBoards[playerindex].gemsOwnwd[5]<0){     //扣除过多，报错
-                std::cout<<"apply action 输入非法,买了买不起的牌"<<std::endl;  
+                std::cout<<"Apply action illegal: buying a card which is not affordable.\n";  
                 exit(1);
             }
 
@@ -833,7 +841,6 @@ void GameState::apply_action(Action action, int playerindex){
 
             playerBoards[playerindex].score+=cardscore;
 
-            std::cout << "\n";
             // std::cout << "Ind = (" << action.params[0] << ", " << action.params[1] << ")\n";
             // std::cout << market[action.params[0]][action.params[1]].bonusGem << std::endl;
             playerBoards[playerindex].bonuses[static_cast<int>(playerBoards[playerindex].reservedCards[action.params[1]].bonusGem)]++;      //获得bonus
@@ -843,7 +850,7 @@ void GameState::apply_action(Action action, int playerindex){
             check_noble(playerindex);
         }
         else{
-            std::cout<<"apply action 输入非法, 购买输入错误"<<std::endl;
+            std::cout<<"Not a valid action type. (action param 0)"<<std::endl;
             exit(1);
         }
     }
