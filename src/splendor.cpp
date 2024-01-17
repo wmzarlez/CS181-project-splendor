@@ -1145,7 +1145,10 @@ void GameState::remove_noble(int nobleIndex){
     }
 }
 
-bool GameState::ableToBuy(int playerIndex,Card theCard) const{                //辅助函数，getaction时使用帮助判断
+bool GameState::ableToBuy(int playerIndex,Card theCard) const{
+    if(theCard.cardId==0){
+        return false;
+    }
     int numyellow=playerBoards[playerIndex].gemsOwnwd[5];
     bool able=true;
     for (int i=0;i<5;i++){
