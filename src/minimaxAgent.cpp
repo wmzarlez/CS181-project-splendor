@@ -33,14 +33,16 @@ Action MinimaxAgent::getLegalAction_SELECTGEMS(const GameState& state) const{
     // Each gem is at cost 1/3 turn at each turn SELECTGEMS. 1/2 turn if you choose 2 same ones.
 
     // Then if you can make up the gap with (8/9/10 -> 10), e.t.c., use 1/2/3 to trade 2/3 gems, 
-
+    return Action();
 }
 
 Action MinimaxAgent::getLegalAction_BUYCARD(const GameState& state) const{
+    return Action();
     // Rule of thumb: use up regular gems first, then use golden gem. 
 }
 
 Action MinimaxAgent::getLegalAction_RESERVECARD(const GameState& state) const{
+    return Action();
     
 }
 

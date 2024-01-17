@@ -72,7 +72,7 @@ bool HumanAgent::isLegalAction(const GameState& state, const Action myAction) co
   return true;
 }
 
-Action HumanAgent::getAction(const GameState& state) const{
+Action HumanAgent::getAction(const GameState& state){
   std::uint16_t gemNum = getGemAvailable(state);
   Action myAction = Action();
   int myActionType = -1;
@@ -85,7 +85,7 @@ Action HumanAgent::getAction(const GameState& state) const{
     myAction.type = static_cast<ActionType>(myActionType);
     if(myActionType == ActionType::SELECTGEMS){
       for(std::uint16_t i=0; i<6; myAction.params[i++] = Gem::BLANK_);
-      std::cout << "Enter gem type:\n\tWHITE     -> 0\n\tBLUE      -> 1\n\tGREEN     -> 2\n\tRED       -> 3\n\tBLACK     -> 4\n\tYELLOW    -> 5\n\tNONE      -> 6.\n";
+      std::cout << "Enter gem type:\n\tWHITE     -> 0\n\tBLUE      -> 1\n\tGREEN     -> 2\n\tRED       -> 3\n\tBLACK     -> 4\n\tNONE      -> 6.\n";
       for(std::uint16_t i=0; i<3; ++i){
         std::cin >> myAction.params[i];
         if(myAction.params[i] != Gem::BLANK_) gemNum += 1;
@@ -112,4 +112,5 @@ Action HumanAgent::getAction(const GameState& state) const{
     if(isLegalAction(state, myAction)) break;
     else std::cout << "ILLEGAL ACTION\n";
   }
+  return myAction;
 }

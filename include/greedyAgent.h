@@ -6,8 +6,8 @@
 class GreedyAgent: public Agent{
 public:
     virtual Action getAction(const GameState& state);
-    virtual float evaluatePoint(const GameState& state) const;
-    virtual Action getLegalAction(const GameState& state) const;
+    float evalPt(const GameState& state) const;
+    float getActRecursion(GameState state, int depth);
 
     GreedyAgent(int index);
 private:
