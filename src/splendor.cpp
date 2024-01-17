@@ -429,16 +429,73 @@ void cout_gem(int gem){
     }
 }
 void cout_card(const Card &card){
+    if(card.cardId==0)return;
     std::cout<<"{Bonus: ";
     cout_gem((int)card.bonusGem);
     std::cout<<" Point: "<<card.point<<" Cost: ";
     for(int i=0;i<5;i++){
         if(card.cost[i]<=0)continue;
-        cout_gem(i);
         std::cout<<card.cost[i];
+        cout_gem(i);
         std::cout<<" ";
     }
     std::cout<<"}";
+}
+std::string gem_to_string(int gem){
+    switch (gem)
+    {
+    case 0:
+        return "White";
+        break;
+    case 1:
+        return "Blue";
+        break;
+    case 2:
+        return "Green";
+        break;
+    case 3:
+        return "Red";
+        break;
+    case 4:
+        return "Black";
+        break;
+    case 5:
+        return "Gold(Yellow)";
+        break;
+    default:
+        return "";
+        break;
+    }
+}
+std::string card_to_string(const Card &card){
+    if(card.cardId==0)return "";
+    std::string cardString="{Bonus: ";
+    cardString+=gem_to_string((int)card.bonusGem);
+    cardString+=" Point";
+    cardString+=std::to_string(card.point);
+    cardString+=" Cost: ";
+    for(int i=0;i<5;i++){
+        if(card.cost[i]<=0)continue;
+        cardString+=std::to_string(card.cost[i]);
+        cardString+=gem_to_string(i);
+        cardString+=" ";
+    }
+    cardString+="}";
+    return cardString;
+}
+std::string noble_to_string(const Noble &noble){
+    if(noble.nobleId==0)return "";
+    std::string nobleString="{Point: ";
+    nobleString+=std::to_string(noble.point);
+    nobleString+=" Amass: ";
+    for(int i=0;i<5;i++){
+        if(noble.bonusRequired[i]<=0)continue;
+        nobleString+=std::to_string(noble.bonusRequired[i]);
+        nobleString+=gem_to_string(i);
+        nobleString+=" ";
+    }
+    nobleString+="}";
+    return nobleString;
 }
 
 GameState::GameState(): cardPile(std::make_shared<CardPile>()), totalNobalPile(std::make_shared<NoblePile>()), isCopy(false){
@@ -849,6 +906,8 @@ void GameState::print_table() const{
     if(isCopy){
         return;
     }
+    std::cout<<std::format("{:<20}","Noble Pile: ");
+    std::cout<<std::format("{:<30}","Development Card Pile: ");
 
 }
 void GameState::print_action(Action action, int playerIndex) const{

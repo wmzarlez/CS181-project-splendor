@@ -63,7 +63,7 @@ class Options {
 
             int curr = 1;
             
-            if((argc>=2) && (strcmp(argv[1],"-h") || strcmp(argv[1],"-help"))){
+            if((argc>=2) && ((strcmp(argv[1],"-h")==0 || strcmp(argv[1],"-help")==0))){
                 usage();
                 exit(0);
             }
