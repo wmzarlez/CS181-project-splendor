@@ -244,7 +244,7 @@ QLearningAgent::QLearningAgent(int index, float alpha, float gamma):
 }
 
 Action QLearningAgent::getAction(const GameState& state){
-    std::cout<<"QLearningAgent getAction()"<<std::endl;
+    //std::cout<<"QLearningAgent getAction()"<<std::endl;
     Action bestAction;
     float maxQValue=-65535;
     auto actionVector=state.get_legal_action(playerIndex);
