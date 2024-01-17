@@ -403,6 +403,43 @@ std::vector<Noble> get_noble(NoblePile &noblepile, int num) {
     }
     return ans;
 }
+void cout_gem(int gem){
+    switch (gem)
+    {
+    case 0:
+        std::cout<<"White";
+        break;
+    case 1:
+        std::cout<<"Blue";
+        break;
+    case 2:
+        std::cout<<"Green";
+        break;
+    case 3:
+        std::cout<<"Red";
+        break;
+    case 4:
+        std::cout<<"Black";
+        break;
+    case 5:
+        std::cout<<"Gold(Yellow)";
+        break;
+    default:
+        break;
+    }
+}
+void cout_card(const Card &card){
+    std::cout<<"{Bonus: ";
+    cout_gem((int)card.bonusGem);
+    std::cout<<" Point: "<<card.point<<" Cost: ";
+    for(int i=0;i<5;i++){
+        if(card.cost[i]<=0)continue;
+        cout_gem(i);
+        std::cout<<card.cost[i];
+        std::cout<<" ";
+    }
+    std::cout<<"}";
+}
 
 GameState::GameState(): cardPile(std::make_shared<CardPile>()), totalNobalPile(std::make_shared<NoblePile>()), isCopy(false){
     for(int i=0;i<3;i++){                                                   //初始化market    col1   col2   col3
@@ -525,12 +562,12 @@ void GameState::get_legal_selectgems_action (int playerIndex,std::vector<Action>
             ActionVector.push_back(getTwoSameGemsAction);
         }
     }
-     for (int i=0;i<5;i++){        //三颗不同颜色
-        if(gemPile[i]>=1){
-           for(int j=i+1;j<7;j++){
-                if((j<5 && gemPile[j]>=1 && numGem<=8) || j==6){
+    for (int i=0;i<5;i++){        //三颗不同颜色
+        if(gemPile[i]>=1 && numGem<=9){
+            for(int j=i+1;j<7;j++){
+                if((j<5 && gemPile[j]>=1 && numGem<=8) || (j==6 && numGem==9)){
                     for(int z=j;z<7;z++){
-                        if((z<5 && gemPile[z]>=1 && z>j && numGem<=7) || z==6){
+                        if((z<5 && gemPile[z]>=1 && z>j && numGem<=7) || (z==6 && numGem>=8)){
                             Action getThreeGemsAction;
                             getThreeGemsAction.type=SELECTGEMS;
                             getThreeGemsAction.params[0]=i;
@@ -543,7 +580,7 @@ void GameState::get_legal_selectgems_action (int playerIndex,std::vector<Action>
                         }
                     }
                 }
-           }
+            }
         }
     }
 };
@@ -615,9 +652,13 @@ void GameState::apply_action(Action action, int playerindex){
             playerBoards[playerindex].gemsOwnwd[action.params[i]]++;
         }
         for(int i=3;i<6;i++){
-            if(action.params[i]>=6)continue;
+            if(action.params[i]>=6){
+                continue;
+            }
             playerBoards[playerindex].gemsOwnwd[action.params[i]]--;
         }
+
+        print_action(action,playerindex);
         
     }
     else if(action.type==1){                  //  BUYCARD = 1
@@ -652,19 +693,22 @@ void GameState::apply_action(Action action, int playerindex){
                 }
             }
 
-            playerBoards[playerindex].score+=cardscore;
-            playerBoards[playerindex].bonuses[(Gem)(market[action.params[0]][action.params[1]].bonusGem)]++;      //获得bonus
-            remove_card(action.params[0]+1,action.params[1]);
-            add_card_random(action.params[0]+1,action.params[1]);     //替换掉被买的牌
             if(playerBoards[playerindex].gemsOwnwd[5]<0){     //扣除过多，报错
                 std::cout<<"apply action 输入非法,买了买不起的牌"<<std::endl; 
                 exit(1);
             }
+
+            print_action(action,playerindex);
+
+            playerBoards[playerindex].score+=cardscore;
+            playerBoards[playerindex].bonuses[(Gem)(market[action.params[0]][action.params[1]].bonusGem)]++;      //获得bonus
+            remove_card(action.params[0]+1,action.params[1]);
+            add_card_random(action.params[0]+1,action.params[1]);     //替换掉被买的牌
             
             check_noble(playerindex);
 
         }
-        else if(action.params[0]==3){   //买reserve card
+        else if(action.params[0]>=3){   //买reserve card
             Card cardBeBought=playerBoards[playerindex].reservedCards[action.params[1]];
             int cardscore=cardBeBought.point;    
             int helpgem[6]={0};            //记录被买的卡多少钱
@@ -695,16 +739,20 @@ void GameState::apply_action(Action action, int playerindex){
                     }
                 }
             }
-            playerBoards[playerindex].score+=cardscore;
-            playerBoards[playerindex].bonuses[(Gem)(market[action.params[0]][action.params[1]].bonusGem)]++;      //获得bonus
-            playerBoards[playerindex].reservedCards[action.params[1]]={};
+
             if(playerBoards[playerindex].gemsOwnwd[5]<0){     //扣除过多，报错
                 std::cout<<"apply action 输入非法,买了买不起的牌"<<std::endl;  
                 exit(1);
             }
+
+            print_action(action,playerindex);
+
+            playerBoards[playerindex].score+=cardscore;
+            playerBoards[playerindex].bonuses[(Gem)(market[action.params[0]][action.params[1]].bonusGem)]++;      //获得bonus
+            playerBoards[playerindex].reservedCards[action.params[1]]={};
             
+
             check_noble(playerindex);
-            //print_table();
         }
         else{
             std::cout<<"apply action 输入非法, 购买输入错误"<<std::endl;
@@ -722,12 +770,13 @@ void GameState::apply_action(Action action, int playerindex){
                 break;
             }
         }
+        print_action(action,playerindex);
+
         remove_card(action.params[0]+1,action.params[1]);
         add_card_random(action.params[0]+1,action.params[1]);
     }
     else if(action.type==3){                  // SKIP = 3
-        check_noble(playerindex);
-
+        print_action(action,playerindex);
     }
     else{
         std::cout << "apply wrong action type or action illegal!!";
@@ -797,7 +846,71 @@ void GameState::check_noble(int playerIndex){
 }
 
 void GameState::print_table() const{
-    // use std::format
+    if(isCopy){
+        return;
+    }
+
+}
+void GameState::print_action(Action action, int playerIndex) const{
+    if(isCopy){
+        return;
+    }
+    if(action.type==SELECTGEMS){
+        std::cout<<"Player "<<playerIndex+1<<" select gem: ";
+        for(int i=0;i<3;i++){
+            if(action.params[i]>=6)continue;
+            cout_gem(action.params[i]);
+            std::cout<<" ";
+        }
+        std::cout<<std::endl;
+        int numDrop=0;
+        for(int i=3;i<6;i++){
+            if(action.params[i]>=6)continue;
+            numDrop++;
+        }
+        if(numDrop){
+            std::cout<<"Player "<<playerIndex+1<<" drop gem: ";
+            for(int i=3;i<6;i++){
+                if(action.params[i]>=6)continue;
+                cout_gem(action.params[i]);
+                std::cout<<" ";
+            }
+            std::cout<<std::endl;
+        }
+    }
+    else if(action.type==BUYCARD){
+        if(action.params[0]>=0 && action.params[0]<=2){
+            std::cout<<"Player "<<playerIndex+1<<" buy the "<<action.params[1]+1<<"th card of level "<<action.params[0]+1<<std::endl;;
+            cout_card(market[action.params[0]][action.params[1]]);
+        }
+        else if(action.params[0]>=3){
+            std::cout<<"Player "<<playerIndex+1<<" buy the "<<action.params[1]+1<<"th card from the reserved cards";
+            cout_card(playerBoards[playerIndex].reservedCards[action.params[1]]);
+        }
+        else{
+            std::cout<<"Error action!"<<std::endl;;
+        }
+    }
+    else if(action.type==RESERVECARD){
+        if(action.params[0]>=0 && action.params[0]<=2){
+            std::cout<<"Player "<<playerIndex+1<<" reserve the "<<action.params[1]+1<<"th card of level "<<action.params[0]+1<<std::endl;;
+            cout_card(market[action.params[0]][action.params[1]]);
+            std::cout<<std::endl;
+            if(action.params[2]==1){
+                std::cout<<"And get a Golden/Yellow gem"<<std::endl;
+            }
+        }
+        else{
+            std::cout<<"Error action!"<<std::endl;
+        }
+    }
+    else if(action.type==SKIP){
+        std::cout<<"Player "<<playerIndex+1<<" skip"<<std::endl;
+    }
+    else{
+        std::cout<<"Error Action type!"<<std::endl;
+    }
+    
 }
 
 void GameState::add_card_random(int cardLevel, int cardColumnIndex){

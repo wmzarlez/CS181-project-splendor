@@ -101,6 +101,7 @@ public:
     // If true, increase the player's point, and remove that noble
     void check_noble(int playerIndex);
     void print_table() const;
+    void print_action(Action action, int playerIndex) const;
 
     //  when you need to add/remove tokens, use functions below
     void add_card_random(int cardLevel, int cardColumnIndex);

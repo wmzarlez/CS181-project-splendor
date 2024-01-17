@@ -103,6 +103,8 @@ void Game::run(){
     while(!state.is_win()){
         state.numTurn++;
         for (int i=0;i<numPlayer;i++){
+            std::cout<<std::endl;
+            std::cout<<"Player "<<i+1<<"'s turn:"<<std::endl;
             Action turnAction = (*(players[i].get())).getAction(state);
             state.apply_action(turnAction,i);
             if(!noTerminalOutputs)state.print_table();
