@@ -748,7 +748,7 @@ void GameState::apply_action(Action action, int playerindex){
             int playerInitGem[6]={};      //记录玩家在购买该牌之前原有宝石情况
             int gemcost[6]={0};            //最终花费了什么种类的宝石分别多少个
             for (int i=0;i<5;i++){
-                helpgem[i]=market[action.params[0]][action.params[1]].cost[i];               
+                helpgem[i]=market[action.params[0]][action.params[1]].cost[i];
             }
             for (int i=0;i<6;i++){
                 playerInitGem[i]=playerBoards[playerindex].gemsOwnwd[i];     
@@ -793,38 +793,40 @@ void GameState::apply_action(Action action, int playerindex){
         else if(action.params[0]>=3){   //买reserve card
             Card cardBeBought=playerBoards[playerindex].reservedCards[action.params[1]];
             int cardscore=cardBeBought.point;    
-            int helpgem[6]={0};            //记录被买的卡多少钱
+            int helpgem[5]={0};            //记录被买的卡多少钱
             int playerInitGem[6]={};      //记录玩家在购买该牌之前原有宝石情况
             int gemcost[6]={0};            //最终花费了什么种类的宝石分别多少个
-            for (int i=0;i<6;i++){
+            for (int i=0;i<5;i++){
                 helpgem[i]=cardBeBought.cost[i];               
             }
             for (int i=0;i<6;i++){
                 playerInitGem[i]=playerBoards[playerindex].gemsOwnwd[i];     
             }
-            for (int i=0;i<6;i++){                //先扣除玩家已有宝石，再把这些宝石放回宝石堆
+            for (int i=0;i<5;i++){                //先扣除玩家已有宝石，再把这些宝石放回宝石堆
                 playerBoards[playerindex].gemsOwnwd[i]-=helpgem[i];          //假设全部花费普通宝石，之后再去扣除特殊宝石
             }
-            for (int i=0;i<6;i++){                
+            for (int i=0;i<5;i++){                
             if(playerBoards[playerindex].gemsOwnwd[i]<0){
                     playerBoards[playerindex].gemsOwnwd[5]+=playerBoards[playerindex].gemsOwnwd[i];    //不够就说明花万能宝石
                     playerBoards[playerindex].gemsOwnwd[i]=0;     //扣除玩家宝石
             }
             }
+
             for (int i=0;i<6;i++){                
                 gemcost[i]=playerInitGem[i]-playerBoards[playerindex].gemsOwnwd[i];  //玩家花费了哪些宝石
             }
+
+            if(playerBoards[playerindex].gemsOwnwd[5]<0){     //扣除过多，报错
+                std::cout<<"apply action 输入非法,买了买不起的牌"<<std::endl;  
+                exit(1);
+            }
+
             for (int i=0;i<6;i++){                
                 if(gemcost[i]>0){           //表示购买花费了这种宝石
                     for(int j=0;j<gemcost[i];j++){       //花费几个放回几次
                         add_gem((Gem)(i));      //回到宝石堆
                     }
                 }
-            }
-
-            if(playerBoards[playerindex].gemsOwnwd[5]<0){     //扣除过多，报错
-                std::cout<<"apply action 输入非法,买了买不起的牌"<<std::endl;  
-                exit(1);
             }
 
             print_action(action,playerindex);
