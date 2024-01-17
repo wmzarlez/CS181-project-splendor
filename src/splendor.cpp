@@ -783,7 +783,7 @@ void GameState::apply_action(Action action, int playerindex){
             print_action(action,playerindex);
 
             playerBoards[playerindex].score+=cardscore;
-            playerBoards[playerindex].bonuses[(Gem)(market[action.params[0]][action.params[1]].bonusGem)]++;      //获得bonus
+            playerBoards[playerindex].bonuses[static_cast<int>(market[action.params[0]][action.params[1]].bonusGem)]++;      //获得bonus
             remove_card(action.params[0]+1,action.params[1]);
             add_card_random(action.params[0]+1,action.params[1]);     //替换掉被买的牌
             
@@ -832,7 +832,11 @@ void GameState::apply_action(Action action, int playerindex){
             print_action(action,playerindex);
 
             playerBoards[playerindex].score+=cardscore;
-            playerBoards[playerindex].bonuses[(Gem)(market[action.params[0]][action.params[1]].bonusGem)]++;      //获得bonus
+
+            std::cout << "\n";
+            // std::cout << "Ind = (" << action.params[0] << ", " << action.params[1] << ")\n";
+            // std::cout << market[action.params[0]][action.params[1]].bonusGem << std::endl;
+            playerBoards[playerindex].bonuses[static_cast<int>(market[action.params[0]][action.params[1]].bonusGem)]++;      //获得bonus
             playerBoards[playerindex].reservedCards[action.params[1]]={};
             
 
