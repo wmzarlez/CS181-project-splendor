@@ -91,7 +91,7 @@ Action HumanAgent::getAction(const GameState& state){
         if(myAction.params[i] != Gem::BLANK_) gemNum += 1;
       }
       if(gemNum > 10){
-        std::cout << "Too much gems, enter " << gemNum - 10 << " gems:\n\tWHITE     -> 0\n\tBLUE      -> 1\n\tGREEN     -> 2\n\tRED       -> 3\n\tBLACK     -> 4\nYELLOW    -> 5.\n";
+        std::cout << "Too much gems, enter " << gemNum - 10 << " gems:\n\tWHITE     -> 0\n\tBLUE      -> 1\n\tGREEN     -> 2\n\tRED       -> 3\n\tBLACK     -> 4\n\tYELLOW    -> 5.\n";
         for(std::uint16_t i=3; i<gemNum-7; std::cin >> myAction.params[i++]);
         gemNum = 10;
       }
