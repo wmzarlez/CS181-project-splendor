@@ -2,6 +2,7 @@
 #include <sstream>
 #include <algorithm>
 #include "qLearningAgent.h"
+#include <omp.h>
 
 extern Options options;
 
@@ -122,21 +123,25 @@ float QLearningAgent::get_feature(const GameState& state, std::string featureNam
     else if(featureName=="my-points"){
         return state.playerBoards[playerIndex].score/2.0;
     }
-    else if(featureName=="points-opponents-get-after-2-turns"){
+    else if(featureName=="points-opponents-get-after-3-turns"){
         int maxPoint=0;
         for(int i=0;i<state.numPlayer;i++){
             if(i==playerIndex)continue;
 
             int opponentScoreNow=state.playerBoards[i].score;
+            #pragma omp parallel for
             for(auto a1:state.get_legal_action(i)){
                 GameState s1=state;
                 s1.apply_action(a1,i);
                 for(auto a2:s1.get_legal_action(i)){
                     GameState s2=s1;
                     s2.apply_action(a2,i);
-                    int opponentScoreAfter2Turns=s2.playerBoards[i].score;
-                    if(opponentScoreAfter2Turns-opponentScoreNow>maxPoint){
-                        maxPoint=opponentScoreAfter2Turns-opponentScoreNow;
+                    for(auto a3:s2.get_legal_action(i)){
+                        GameState s3=s2;
+                        s3.apply_action(a3,i);
+                        int opponentScoreAfter3Turns=s3.playerBoards[i].score;
+                        #pragma omp critical
+                        if(opponentScoreAfter3Turns-opponentScoreNow>maxPoint){maxPoint=opponentScoreAfter3Turns-opponentScoreNow;}
                     }
                 }
             }
@@ -144,7 +149,7 @@ float QLearningAgent::get_feature(const GameState& state, std::string featureNam
         
         return (float)maxPoint;
     }
-    else if(featureName=="4-max-card-values-to-me"){
+    else if(featureName=="6-max-card-values-to-me"){
         float feature=0;
         std::vector<float> cardValueVector;
         for(int i=0;i<3;i++){
@@ -160,7 +165,7 @@ float QLearningAgent::get_feature(const GameState& state, std::string featureNam
             cardValueVector.push_back(0.8*market_card_value(state,card,playerIndex));
         }
         std::sort(cardValueVector.begin(),cardValueVector.end(),std::greater<float>());
-        for(int i=0;i<4;i++){
+        for(int i=0;i<6;i++){
             feature+=cardValueVector[i];
         }
         return feature/4.0;

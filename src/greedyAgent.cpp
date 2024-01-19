@@ -46,13 +46,14 @@ Action GreedyAgent::getAction(const GameState& state){
     std::pair<Action, int> optActPair = std::make_pair(Action(), std::numeric_limits<int>::min());
     
     std::vector<Action> possibleActs = state.get_legal_action(playerIndex);
+    int size=possibleActs.size();
     #pragma omp parallel for
-    for(std::uint16_t i=0; i<possibleActs.size(); ++i){
+    for(std::uint16_t i=0; i<size; ++i){
         GameState newStat = state;
         newStat.apply_action(possibleActs[i], playerIndex);
         int tmpPt = getActRecursion(newStat, 1);
         #pragma omp critical
-        if(optActPair.second < tmpPt) optActPair = std::make_pair(possibleActs[i], tmpPt); 
+        if(optActPair.second < tmpPt){optActPair = std::make_pair(possibleActs[i], tmpPt);}
     }
     std::cout << " It takes " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - startTime).count() << " millisecs.\n" << std::endl;
     return optActPair.first;
