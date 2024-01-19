@@ -15,11 +15,11 @@ extern Options options;
 GreedyAgent::GreedyAgent(int index): playerIndex(index){}
 
 int GreedyAgent::evalPt(const GameState& state) const{
-    if(state.playerBoards[playerIndex].score == 15) return std::numeric_limits<int>::max();
-    int evaluatePoints = state.playerBoards[playerIndex].score * 10;
+    if(state.playerBoards[playerIndex].score >= 15) return std::numeric_limits<int>::max();
+    int evaluatePoints = state.playerBoards[playerIndex].score * 20;
     for(short i=0; i<5; evaluatePoints += state.playerBoards[playerIndex].gemsOwnwd[i++]);
-    evaluatePoints += state.playerBoards[playerIndex].gemsOwnwd[5] * 5;
-    for(short i=0; i<5; evaluatePoints += state.playerBoards[playerIndex].bonuses[i++] * 10);
+    evaluatePoints += state.playerBoards[playerIndex].gemsOwnwd[5] * 2.9;
+    for(short i=0; i<5; evaluatePoints += state.playerBoards[playerIndex].bonuses[i++] * 4);
     return evaluatePoints;
 }
 
