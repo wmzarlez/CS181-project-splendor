@@ -314,13 +314,9 @@ CardPile::CardPile(){
 }
 
 Card get_card(CardPile &cardPile,int level){                       //输入派对，随机抽卡
-    //std::cout<<"hello";
-    Card defaultCard = {.point = -2, .bonusGem=BLANK_, .cardLevel=0, .cardId=0, .cost = {10,10,10,10,10}};
-    //std::cout<<defaultCard.point<<" ";
-
     if(level==1){
         if(cardPile.level1CardRemained==0){
-            return defaultCard;
+            return Card();
         }
         int count=0;
         int goal=rand()%(cardPile.level1CardRemained);
@@ -329,7 +325,7 @@ Card get_card(CardPile &cardPile,int level){                       //输入派�
             //if(cardPile.level1Pile[i].point!=-2){
                 if(count==goal){
                     Card mid=cardPile.level1Pile[i];
-                    //cardPile.level1Pile[i]=defaultCard;
+                    //cardPile.level1Pile[i]=Card();
                     cardPile.level1CardRemained--;
                     return mid;
                 }
@@ -341,16 +337,16 @@ Card get_card(CardPile &cardPile,int level){                       //输入派�
     }
     else if(level==2){
         if(cardPile.level2CardRemained==0){
-            return defaultCard;
+            return Card();
         }
         int count=0;
         int goal=rand()%(cardPile.level2CardRemained);
         for (int i=0;i<30;i++){
-            if(cardPile.level1Pile[i].cardId!=0){
+            if(cardPile.level2Pile[i].cardId!=0){
             //if(cardPile.level2Pile[i].point!=-2){
                 if(count==goal){
                     Card mid=cardPile.level2Pile[i];
-                    //cardPile.level2Pile[i]=defaultCard;
+                    //cardPile.level2Pile[i]=Card();
                     cardPile.level2CardRemained--;
                     return mid;
                 }
@@ -362,16 +358,16 @@ Card get_card(CardPile &cardPile,int level){                       //输入派�
     }
     else if(level==3){
         if(cardPile.level3CardRemained==0){
-            return defaultCard;
+            return Card();
         }
         int count=0;
         int goal=rand()%(cardPile.level3CardRemained);
         for (int i=0;i<20;i++){
-            if(cardPile.level1Pile[i].cardId!=0){
+            if(cardPile.level3Pile[i].cardId!=0){
             //if(cardPile.level3Pile[i].point!=-2){
                 if(count==goal){
                     Card mid=cardPile.level3Pile[i];
-                    //cardPile.level3Pile[i]=defaultCard;
+                    //cardPile.level3Pile[i]=Card();
                     cardPile.level3CardRemained--;
                     return mid;
                 }
@@ -966,33 +962,393 @@ void GameState::print_table() const{
     }
     std::cout<<std::endl;
 
-    std::cout<<std::format("{:<30}","Development Card Pile: ");
+    std::cout<<std::format("{:<27}","Development Card Pile: ");
     for(int i=1;i<=4;i++){
-        std::cout<<std::format("{:<50}","Column "+std::to_string(i));
+        std::cout<<std::format("{:<16}","Column "+std::to_string(i));
     }
     std::cout<<std::endl;
 
+    int levelIndex=2;
     //level 3
     std::cout<<std::format("{:<10}","Level 3");
-    std::cout<<std::format("{:<20}","left "+std::to_string(cardPile->level3CardRemained)+" cards");
+    std::cout<<std::format("{:<17}","left "+std::to_string(cardPile->level3CardRemained)+" cards");
+    // line 1
     for(int i=0;i<4;i++){
-        std::cout<<std::format("{:<50}",card_to_string(market[2][i]));
+        if(market[levelIndex][i].cardId==0){
+            std::cout<<std::format("{:<16}","");
+            continue;
+        }
+        std::cout<<std::format("{:<16}","/-----------\\");
     }
+    std::cout<<std::endl;
+    // line 2
+    std::cout<<std::format("{:<27}","");
+    for(int i=0;i<4;i++){
+        if(market[levelIndex][i].cardId==0){
+            std::cout<<std::format("{:<16}","");
+            continue;
+        }
+        std::cout<<std::format("|{:<11}|   ","Bonus:"+gem_to_string((int)market[levelIndex][i].bonusGem));
+    }
+    std::cout<<std::endl;
+    // line 3
+    std::cout<<std::format("{:<27}","");
+    for(int i=0;i<4;i++){
+        if(market[levelIndex][i].cardId==0){
+            std::cout<<std::format("{:<16}","");
+            continue;
+        }
+        std::cout<<std::format("|{:<11}|   ","Point:"+std::to_string(market[levelIndex][i].point));
+    }
+    std::cout<<std::endl;
+    // line 4
+    std::cout<<std::format("{:<27}","");
+    for(int i=0;i<4;i++){
+        if(market[levelIndex][i].cardId==0){
+            std::cout<<std::format("{:<16}","");
+            continue;
+        }
+        std::cout<<std::format("|{:<11}|   ","Cost:");
+
+    }
+    std::cout<<std::endl;
+    // line 5
+    std::cout<<std::format("{:<27}","");
+    for(int i=0;i<4;i++){
+        if(market[levelIndex][i].cardId==0){
+            std::cout<<std::format("{:<16}","");
+            continue;
+        }
+        int typeNum=0;
+        for(int j=0;j<5;j++){
+            if(market[levelIndex][i].cost[j]!=0)typeNum++;
+            if(typeNum==1){
+                std::cout<<std::format("|{:<11}|   "," "+gem_to_string(j)+" "+std::to_string(market[levelIndex][i].cost[j]));
+                break;
+            }
+        }
+        if(typeNum<1)std::cout<<std::format("|{:<11}|   ","");
+    }
+    std::cout<<std::endl;
+    // line 6
+    std::cout<<std::format("{:<27}","");
+    for(int i=0;i<4;i++){
+        if(market[levelIndex][i].cardId==0){
+            std::cout<<std::format("{:<16}","");
+            continue;
+        }
+        int typeNum=0;
+        for(int j=0;j<5;j++){
+            if(market[levelIndex][i].cost[j]!=0)typeNum++;
+            if(typeNum==2){
+                std::cout<<std::format("|{:<11}|   "," "+gem_to_string(j)+" "+std::to_string(market[levelIndex][i].cost[j]));
+                break;
+            }
+        }
+        if(typeNum<2)std::cout<<std::format("|{:<11}|   ","");
+    }
+    std::cout<<std::endl;
+    // line 7
+    std::cout<<std::format("{:<27}","");
+    for(int i=0;i<4;i++){
+        if(market[levelIndex][i].cardId==0){
+            std::cout<<std::format("{:<16}","");
+            continue;
+        }
+        int typeNum=0;
+        for(int j=0;j<5;j++){
+            if(market[levelIndex][i].cost[j]!=0)typeNum++;
+            if(typeNum==3){
+                std::cout<<std::format("|{:<11}|   "," "+gem_to_string(j)+" "+std::to_string(market[levelIndex][i].cost[j]));
+                break;
+            }
+        }
+        if(typeNum<3)std::cout<<std::format("|{:<11}|   ","");
+    }
+    std::cout<<std::endl;
+    // line 8
+    std::cout<<std::format("{:<27}","");
+    for(int i=0;i<4;i++){
+        if(market[levelIndex][i].cardId==0){
+            std::cout<<std::format("{:<16}","");
+            continue;
+        }
+        int typeNum=0;
+        for(int j=0;j<5;j++){
+            if(market[levelIndex][i].cost[j]!=0)typeNum++;
+            if(typeNum==4){
+                std::cout<<std::format("|{:<11}|   "," "+gem_to_string(j)+" "+std::to_string(market[levelIndex][i].cost[j]));
+                break;
+            }
+        }
+        if(typeNum<4)std::cout<<std::format("|{:<11}|   ","");
+    }
+    std::cout<<std::endl;
+    // line 9
+    std::cout<<std::format("{:<27}","");
+    for(int i=0;i<4;i++){
+        if(market[levelIndex][i].cardId==0){
+            std::cout<<std::format("{:<16}","");
+            continue;
+        }
+        std::cout<<std::format("{:<16}","\\-----------/");
+    }
+    std::cout<<std::endl;
+
     std::cout<<std::endl;
 
     //level 2
+    levelIndex=1;
     std::cout<<std::format("{:<10}","Level 2");
-    std::cout<<std::format("{:<20}","left "+std::to_string(cardPile->level2CardRemained)+" cards");
+    std::cout<<std::format("{:17}","left "+std::to_string(cardPile->level2CardRemained)+" cards");
+// line 1
     for(int i=0;i<4;i++){
-        std::cout<<std::format("{:<50}",card_to_string(market[1][i]));
+        if(market[levelIndex][i].cardId==0){
+            std::cout<<std::format("{:<16}","");
+            continue;
+        }
+        std::cout<<std::format("{:<16}","/-----------\\");
     }
+    std::cout<<std::endl;
+    // line 2
+    std::cout<<std::format("{:<27}","");
+    for(int i=0;i<4;i++){
+        if(market[levelIndex][i].cardId==0){
+            std::cout<<std::format("{:<16}","");
+            continue;
+        }
+        std::cout<<std::format("|{:<11}|   ","Bonus:"+gem_to_string((int)market[levelIndex][i].bonusGem));
+    }
+    std::cout<<std::endl;
+    // line 3
+    std::cout<<std::format("{:<27}","");
+    for(int i=0;i<4;i++){
+        if(market[levelIndex][i].cardId==0){
+            std::cout<<std::format("{:<16}","");
+            continue;
+        }
+        std::cout<<std::format("|{:<11}|   ","Point:"+std::to_string(market[levelIndex][i].point));
+    }
+    std::cout<<std::endl;
+    // line 4
+    std::cout<<std::format("{:<27}","");
+    for(int i=0;i<4;i++){
+        if(market[levelIndex][i].cardId==0){
+            std::cout<<std::format("{:<16}","");
+            continue;
+        }
+        std::cout<<std::format("|{:<11}|   ","Cost:");
+
+    }
+    std::cout<<std::endl;
+    // line 5
+    std::cout<<std::format("{:<27}","");
+    for(int i=0;i<4;i++){
+        if(market[levelIndex][i].cardId==0){
+            std::cout<<std::format("{:<16}","");
+            continue;
+        }
+        int typeNum=0;
+        for(int j=0;j<5;j++){
+            if(market[levelIndex][i].cost[j]!=0)typeNum++;
+            if(typeNum==1){
+                std::cout<<std::format("|{:<11}|   "," "+gem_to_string(j)+" "+std::to_string(market[levelIndex][i].cost[j]));
+                break;
+            }
+        }
+        if(typeNum<1)std::cout<<std::format("|{:<11}|   ","");
+    }
+    std::cout<<std::endl;
+    // line 6
+    std::cout<<std::format("{:<27}","");
+    for(int i=0;i<4;i++){
+        if(market[levelIndex][i].cardId==0){
+            std::cout<<std::format("{:<16}","");
+            continue;
+        }
+        int typeNum=0;
+        for(int j=0;j<5;j++){
+            if(market[levelIndex][i].cost[j]!=0)typeNum++;
+            if(typeNum==2){
+                std::cout<<std::format("|{:<11}|   "," "+gem_to_string(j)+" "+std::to_string(market[levelIndex][i].cost[j]));
+                break;
+            }
+        }
+        if(typeNum<2)std::cout<<std::format("|{:<11}|   ","");
+    }
+    std::cout<<std::endl;
+    // line 7
+    std::cout<<std::format("{:<27}","");
+    for(int i=0;i<4;i++){
+        if(market[levelIndex][i].cardId==0){
+            std::cout<<std::format("{:<16}","");
+            continue;
+        }
+        int typeNum=0;
+        for(int j=0;j<5;j++){
+            if(market[levelIndex][i].cost[j]!=0)typeNum++;
+            if(typeNum==3){
+                std::cout<<std::format("|{:<11}|   "," "+gem_to_string(j)+" "+std::to_string(market[levelIndex][i].cost[j]));
+                break;
+            }
+        }
+        if(typeNum<3)std::cout<<std::format("|{:<11}|   ","");
+    }
+    std::cout<<std::endl;
+    // line 8
+    std::cout<<std::format("{:<27}","");
+    for(int i=0;i<4;i++){
+        if(market[levelIndex][i].cardId==0){
+            std::cout<<std::format("{:<16}","");
+            continue;
+        }
+        int typeNum=0;
+        for(int j=0;j<5;j++){
+            if(market[levelIndex][i].cost[j]!=0)typeNum++;
+            if(typeNum==4){
+                std::cout<<std::format("|{:<11}|   "," "+gem_to_string(j)+" "+std::to_string(market[levelIndex][i].cost[j]));
+                break;
+            }
+        }
+        if(typeNum<4)std::cout<<std::format("|{:<11}|   ","");
+    }
+    std::cout<<std::endl;
+    // line 9
+    std::cout<<std::format("{:<27}","");
+    for(int i=0;i<4;i++){
+        if(market[levelIndex][i].cardId==0){
+            std::cout<<std::format("{:<16}","");
+            continue;
+        }
+        std::cout<<std::format("{:<16}","\\-----------/");
+    }
+    std::cout<<std::endl;
     std::cout<<std::endl;
 
     //level 1
+    levelIndex=0;
     std::cout<<std::format("{:<10}","Level 1");
-    std::cout<<std::format("{:<20}","left "+std::to_string(cardPile->level1CardRemained)+" cards");
+    std::cout<<std::format("{:<17}","left "+std::to_string(cardPile->level1CardRemained)+" cards");
+    // line 1
     for(int i=0;i<4;i++){
-        std::cout<<std::format("{:<50}",card_to_string(market[0][i]));
+        if(market[levelIndex][i].cardId==0){
+            std::cout<<std::format("{:<16}","");
+            continue;
+        }
+        std::cout<<std::format("{:<16}","/-----------\\");
+    }
+    std::cout<<std::endl;
+    // line 2
+    std::cout<<std::format("{:<27}","");
+    for(int i=0;i<4;i++){
+        if(market[levelIndex][i].cardId==0){
+            std::cout<<std::format("{:<16}","");
+            continue;
+        }
+        std::cout<<std::format("|{:<11}|   ","Bonus:"+gem_to_string((int)market[levelIndex][i].bonusGem));
+    }
+    std::cout<<std::endl;
+    // line 3
+    std::cout<<std::format("{:<27}","");
+    for(int i=0;i<4;i++){
+        if(market[levelIndex][i].cardId==0){
+            std::cout<<std::format("{:<16}","");
+            continue;
+        }
+        std::cout<<std::format("|{:<11}|   ","Point:"+std::to_string(market[levelIndex][i].point));
+    }
+    std::cout<<std::endl;
+    // line 4
+    std::cout<<std::format("{:<27}","");
+    for(int i=0;i<4;i++){
+        if(market[levelIndex][i].cardId==0){
+            std::cout<<std::format("{:<16}","");
+            continue;
+        }
+        std::cout<<std::format("|{:<11}|   ","Cost:");
+
+    }
+    std::cout<<std::endl;
+    // line 5
+    std::cout<<std::format("{:<27}","");
+    for(int i=0;i<4;i++){
+        if(market[levelIndex][i].cardId==0){
+            std::cout<<std::format("{:<16}","");
+            continue;
+        }
+        int typeNum=0;
+        for(int j=0;j<5;j++){
+            if(market[levelIndex][i].cost[j]!=0)typeNum++;
+            if(typeNum==1){
+                std::cout<<std::format("|{:<11}|   "," "+gem_to_string(j)+" "+std::to_string(market[levelIndex][i].cost[j]));
+                break;
+            }
+        }
+        if(typeNum<1)std::cout<<std::format("|{:<11}|   ","");
+    }
+    std::cout<<std::endl;
+    // line 6
+    std::cout<<std::format("{:<27}","");
+    for(int i=0;i<4;i++){
+        if(market[levelIndex][i].cardId==0){
+            std::cout<<std::format("{:<16}","");
+            continue;
+        }
+        int typeNum=0;
+        for(int j=0;j<5;j++){
+            if(market[levelIndex][i].cost[j]!=0)typeNum++;
+            if(typeNum==2){
+                std::cout<<std::format("|{:<11}|   "," "+gem_to_string(j)+" "+std::to_string(market[levelIndex][i].cost[j]));
+                break;
+            }
+        }
+        if(typeNum<2)std::cout<<std::format("|{:<11}|   ","");
+    }
+    std::cout<<std::endl;
+    // line 7
+    std::cout<<std::format("{:<27}","");
+    for(int i=0;i<4;i++){
+        if(market[levelIndex][i].cardId==0){
+            std::cout<<std::format("{:<16}","");
+            continue;
+        }
+        int typeNum=0;
+        for(int j=0;j<5;j++){
+            if(market[levelIndex][i].cost[j]!=0)typeNum++;
+            if(typeNum==3){
+                std::cout<<std::format("|{:<11}|   "," "+gem_to_string(j)+" "+std::to_string(market[levelIndex][i].cost[j]));
+                break;
+            }
+        }
+        if(typeNum<3)std::cout<<std::format("|{:<11}|   ","");
+    }
+    std::cout<<std::endl;
+    // line 8
+    std::cout<<std::format("{:<27}","");
+    for(int i=0;i<4;i++){
+        if(market[levelIndex][i].cardId==0){
+            std::cout<<std::format("{:<16}","");
+            continue;
+        }
+        int typeNum=0;
+        for(int j=0;j<5;j++){
+            if(market[levelIndex][i].cost[j]!=0)typeNum++;
+            if(typeNum==4){
+                std::cout<<std::format("|{:<11}|   "," "+gem_to_string(j)+" "+std::to_string(market[levelIndex][i].cost[j]));
+                break;
+            }
+        }
+        if(typeNum<4)std::cout<<std::format("|{:<11}|   ","");
+    }
+    std::cout<<std::endl;
+    // line 9
+    std::cout<<std::format("{:<27}","");
+    for(int i=0;i<4;i++){
+        if(market[levelIndex][i].cardId==0){
+            std::cout<<std::format("{:<16}","");
+            continue;
+        }
+        std::cout<<std::format("{:<16}","\\-----------/");
     }
     std::cout<<std::endl;
     std::cout<<std::endl;
@@ -1057,11 +1413,11 @@ void GameState::print_action(Action action, int playerIndex) const{
     }
     else if(action.type==BUYCARD){
         if(action.params[0]>=0 && action.params[0]<=2){
-            std::cout<<"Player "<<playerIndex+1<<" buy the "<<action.params[1]+1<<"th card of level "<<action.params[0]+1<<std::endl;;
+            std::cout<<"Player "<<playerIndex+1<<" buy the "<<action.params[1]+1<<"th card of level "<<action.params[0]+1<<std::endl;
             cout_card(market[action.params[0]][action.params[1]]);
         }
         else if(action.params[0]>=3){
-            std::cout<<"Player "<<playerIndex+1<<" buy the "<<action.params[1]+1<<"th card from the reserved cards";
+            std::cout<<"Player "<<playerIndex+1<<" buy the "<<action.params[1]+1<<"th card from the reserved cards"<<std::endl;
             cout_card(playerBoards[playerIndex].reservedCards[action.params[1]]);
         }
         else{
@@ -1095,6 +1451,7 @@ void GameState::add_card_random(int cardLevel, int cardColumnIndex){
 
     Card newcard=get_card(*(cardPile.get()),cardLevel);
     add_card_explicit(cardLevel,cardColumnIndex,newcard.cardId);
+    //std::cout<<"CardId is "<<newcard.cardId<<std::endl;
 }
 void GameState::add_card_explicit(int cardLevel, int cardColumnIndex, int cardId){
     if(isCopy==true){return;}
@@ -1115,8 +1472,7 @@ void GameState::add_card_explicit(int cardLevel, int cardColumnIndex, int cardId
         (*(cardPile.get())).level3Pile[cardId-1-40-30]={};
     }
     else if(cardId==0){
-        Card newcard={};
-        market[cardLevel-1][cardColumnIndex]=newcard;
+        market[cardLevel-1][cardColumnIndex]=Card();
     }
     else{
         std::cout << "add Illegal explicit card";

@@ -157,7 +157,7 @@ float QLearningAgent::get_feature(const GameState& state, std::string featureNam
         for(int i=0;i<3;i++){
             Card card=state.playerBoards[playerIndex].reservedCards[i];
             if(card.cardId==0)continue;
-            cardValueVector.push_back(1.5*market_card_value(state,card,playerIndex));
+            cardValueVector.push_back(0.8*market_card_value(state,card,playerIndex));
         }
         std::sort(cardValueVector.begin(),cardValueVector.end(),std::greater<float>());
         for(int i=0;i<4;i++){
@@ -176,11 +176,11 @@ float QLearningAgent::get_feature(const GameState& state, std::string featureNam
                     cardValueVector.push_back(market_card_value(state,card,pIndex));
                 }
             }
-            for(int i=0;i<3;i++){
-                Card card=state.playerBoards[pIndex].reservedCards[i];
-                if(card.cardId==0)continue;
-                cardValueVector.push_back(1.5*market_card_value(state,card,pIndex));
-            }
+            // for(int i=0;i<3;i++){
+            //     Card card=state.playerBoards[pIndex].reservedCards[i];
+            //     if(card.cardId==0)continue;
+            //     cardValueVector.push_back(0.5*market_card_value(state,card,pIndex));
+            // }
         }
         
         std::sort(cardValueVector.begin(),cardValueVector.end(),std::greater<float>());
@@ -228,12 +228,12 @@ float QLearningAgent::get_reward(const GameState& state){
         }
     }
 
-    for(int i=0;i<3;i++){
-        if(state.playerBoards[playerIndex].reservedCards[i].cardLevel==3 &&
-            lastState.playerBoards[playerIndex].reservedCards[i].cardLevel!=3){
-            reward+=1;
-        }
-    }
+    // for(int i=0;i<3;i++){
+    //     if(state.playerBoards[playerIndex].reservedCards[i].cardLevel==3 &&
+    //         lastState.playerBoards[playerIndex].reservedCards[i].cardLevel!=3){
+    //         reward+=1;
+    //     }
+    // }
 
     return reward;
 }
