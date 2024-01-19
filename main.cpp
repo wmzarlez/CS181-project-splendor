@@ -36,11 +36,11 @@ int main(int argc, const char* argv[]){
     }
     else if(options.get_option<std::string>("-m")==std::string("SelfTrain")){
         int numTrain=options.get_option<int>("-n");
-        //numTrain=1;
+        numTrain=1;
         for(int i=0;i<numTrain;i++){
             Game game;
             game.train();
-            update_version();
+            //update_version();
         }
     }
     else{

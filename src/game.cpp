@@ -7,6 +7,7 @@
 extern Options options;
 
 Game::Game(){
+    
     numPlayer=options.get_option<int>("-p");
     if(numPlayer<int(2)||numPlayer>int(4)){             //游戏人数不合法
         options.usage();   
@@ -79,12 +80,10 @@ Game::Game(){
         }
         else if(options.get_option<std::string>("-m")==std::string("ComputerBattle")){      
             int qAgentIndex=rand()%numPlayer;
-            //std::unique_ptr<Agent> q_ptr = std::make_unique<QLearningAgent>(qAgentIndex);
-            std::unique_ptr<Agent> q_ptr = std::make_unique<GreedyAgent>(qAgentIndex);
+            std::unique_ptr<Agent> q_ptr = std::make_unique<QLearningAgent>(qAgentIndex);
             for(int i=0;i<numPlayer;i++){
                 if(i==qAgentIndex){
                     players.emplace_back(std::move(q_ptr));
-                    //std::cout<<"Q-Learning Agent is player "<<qAgentIndex+1<<std::endl;
                 }
                 else{
                     std::unique_ptr<Agent> trainer_ptr = std::make_unique<GreedyAgent>(i);
@@ -111,6 +110,7 @@ void Game::run(){
             Action turnAction = (*(players[i].get())).getAction(state);
             state.apply_action(turnAction,i);
             state.print_table();
+            getchar();
         }
     }
     std::cout<<"Game over"<<std::endl;
@@ -127,6 +127,7 @@ void Game::train(){
             Action turnAction = (*(players[i].get())).getAction(state);
             state.apply_action(turnAction,i);
             //state.print_table();
+            //getchar();
         }
     }
     std::cout<<"Game over"<<std::endl;

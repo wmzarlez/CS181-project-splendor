@@ -13,9 +13,9 @@ GreedyAgent::GreedyAgent(int index): playerIndex(index){}
 
 int GreedyAgent::evalPt(const GameState& state) const{
     //if(state.playerBoards[playerIndex].score >= 15) return std::numeric_limits<int>::max();
-    int evaluatePoints = state.playerBoards[playerIndex].score * 2000;
-    for(short i=0; i<5; evaluatePoints += 100 * state.playerBoards[playerIndex].gemsOwnwd[i++]);
-    evaluatePoints += state.playerBoards[playerIndex].gemsOwnwd[5] * 120;
+    int evaluatePoints = state.playerBoards[playerIndex].score * 1000;
+    for(short i=0; i<5; evaluatePoints += 50 * state.playerBoards[playerIndex].gemsOwnwd[i++]);
+    evaluatePoints += state.playerBoards[playerIndex].gemsOwnwd[5] * 60;
     for(short i=0; i<5; evaluatePoints += state.playerBoards[playerIndex].bonuses[i++] * 420);
     if(state.playerBoards[playerIndex].reservedCards[0].cardId!=0){
         evaluatePoints+=state.playerBoards[playerIndex].reservedCards[0].point;

@@ -497,7 +497,7 @@ std::string noble_to_string(const Noble &noble){
 GameState::GameState(): cardPile(std::make_shared<CardPile>()), totalNobalPile(std::make_shared<NoblePile>()), isCopy(false){
     for(int i=0;i<3;i++){                                                   //初始化market    col1   col2   col3
         for(int j=0;j<4;j++){                                               ////// level1 r1  00     01      02
-            market[i][j]=get_card(*(cardPile.get()),i+1);                   ////// level2 r2  10     11      12
+            add_card_random(i+1,j);                                         ////// level2 r2  10     11      12
         }                                                                   ////// level3 r3  20     21      22
     }
     numPlayer=options.get_option<int>("-p");
