@@ -1,18 +1,21 @@
 #include "greedyAgent.h"
 
-
+// ######################################## NOTICE: ADD -fopenmp ##########################################
+ 
 #include <tuple>
 #include <optional>
 #include <numeric>
 #include <array>
 #include <cstdint>
 #include <chrono>
+#include <omp.h>
 
 extern Options options;
 
 GreedyAgent::GreedyAgent(int index): playerIndex(index){}
 
 int GreedyAgent::evalPt(const GameState& state) const{
+    if(state.playerBoards[playerIndex].score == 15) return std::numeric_limits<int>::max();
     int evaluatePoints = state.playerBoards[playerIndex].score * 10;
     for(short i=0; i<5; evaluatePoints += state.playerBoards[playerIndex].gemsOwnwd[i++]);
     evaluatePoints += state.playerBoards[playerIndex].gemsOwnwd[5] * 5;
@@ -40,19 +43,17 @@ int GreedyAgent::getActRecursion(GameState state, int depth){
 Action GreedyAgent::getAction(const GameState& state){
     std::cout << "Greedy agent choosing action...";
     std::chrono::high_resolution_clock::time_point startTime = std::chrono::high_resolution_clock::now();
-
     std::pair<Action, int> optActPair = std::make_pair(Action(), std::numeric_limits<int>::min());
     
     std::vector<Action> possibleActs = state.get_legal_action(playerIndex);
+    #pragma omp parallel for
     for(std::uint16_t i=0; i<possibleActs.size(); ++i){
         GameState newStat = state;
         newStat.apply_action(possibleActs[i], playerIndex);
         int tmpPt = getActRecursion(newStat, 1);
-        if(optActPair.second < tmpPt) { 
-            std::cout << "A better action is found.\n";
-            optActPair = std::make_pair(possibleActs[i], tmpPt); }
+        #pragma omp critical
+        if(optActPair.second < tmpPt) optActPair = std::make_pair(possibleActs[i], tmpPt); 
     }
-    std::cout << optActPair.second << std::endl;
     std::cout << " It takes " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - startTime).count() << " millisecs.\n" << std::endl;
     return optActPair.first;
 }

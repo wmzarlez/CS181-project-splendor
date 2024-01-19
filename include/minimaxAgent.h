@@ -4,11 +4,10 @@
 class MinimaxAgent: public Agent{
 public:
     virtual Action getAction(const GameState& state);
-    virtual float evaluatePlayerPoint(const GameState& state) const;
-    virtual Action getLegalAction_SELECTGEMS(const GameState& state) const;
-    virtual Action getLegalAction_BUYCARD(const GameState& state) const;
-    virtual Action getLegalAction_RESERVECARD(const GameState& state) const;
+    int evaluatePlayerPoint(const GameState& state) const;
+    int getActRecursion(GameState state, int depth);
     MinimaxAgent(int index);
+    static constexpr int totalDepth = 4;
 private:
     int playerIndex;
 };
