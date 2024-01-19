@@ -10,6 +10,8 @@
 #include <assert.h>
 #include <format>
 #include <stdlib.h>
+#include <fstream>
+#include <sstream>
 
 class Options {
     private:
@@ -25,7 +27,7 @@ class Options {
             std::cout<<"Options:"<<std::endl;
             std::cout<<std::format("{:<20}{}","-h/-help","Display specific types of command line options.")<<std::endl;
             std::cout<<std::format("{:<20}{}","-p","Set the number of players. ([2(default)/3/4])")<<std::endl;
-            std::cout<<std::format("{:<20}{}","-m","Set the game mode. [SelfTrain/HumanVsComputer(default)]")<<std::endl;
+            std::cout<<std::format("{:<20}{}","-m","Set the game mode. [SelfTrain/HumanVsComputer(default)/ComputerBattle]")<<std::endl;
             std::cout<<std::format("{:<20}{}","-no-graphics","Close the GUI.")<<std::endl;
             std::cout<<std::format("{:<20}{}","-no-terminal-outputs  ","Reduce most of the terminal outputs.")<<std::endl;
             std::cout<<std::format("{:<20}{}","-a","Set the agent of conmputers. [Minimax/QLearning(default)/Greedy]")<<std::endl;

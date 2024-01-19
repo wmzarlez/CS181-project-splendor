@@ -123,26 +123,21 @@ float QLearningAgent::get_feature(const GameState& state, std::string featureNam
     else if(featureName=="my-points"){
         return state.playerBoards[playerIndex].score/2.0;
     }
-    else if(featureName=="points-opponents-get-after-3-turns"){
+    else if(featureName=="points-opponents-get-after-2-turns"){
         int maxPoint=0;
         for(int i=0;i<state.numPlayer;i++){
             if(i==playerIndex)continue;
 
             int opponentScoreNow=state.playerBoards[i].score;
-            #pragma omp parallel for
+            //#pragma omp parallel for
             for(auto a1:state.get_legal_action(i)){
                 GameState s1=state;
                 s1.apply_action(a1,i);
                 for(auto a2:s1.get_legal_action(i)){
                     GameState s2=s1;
                     s2.apply_action(a2,i);
-                    for(auto a3:s2.get_legal_action(i)){
-                        GameState s3=s2;
-                        s3.apply_action(a3,i);
-                        int opponentScoreAfter3Turns=s3.playerBoards[i].score;
-                        #pragma omp critical
-                        if(opponentScoreAfter3Turns-opponentScoreNow>maxPoint){maxPoint=opponentScoreAfter3Turns-opponentScoreNow;}
-                    }
+                    int opponentScoreAfter2Turns=s2.playerBoards[i].score;
+                    if(opponentScoreAfter2Turns-opponentScoreNow>maxPoint){maxPoint=opponentScoreAfter2Turns-opponentScoreNow;}
                 }
             }
         }
@@ -166,6 +161,48 @@ float QLearningAgent::get_feature(const GameState& state, std::string featureNam
         }
         std::sort(cardValueVector.begin(),cardValueVector.end(),std::greater<float>());
         for(int i=0;i<6;i++){
+            feature+=cardValueVector[i];
+        }
+        return feature/4.0;
+    }
+    else if(featureName=="4-max-card-values-to-me"){
+        float feature=0;
+        std::vector<float> cardValueVector;
+        for(int i=0;i<3;i++){
+            for(int j=0;j<4;j++){
+                Card card=state.market[i][j];
+                if(card.cardId==0)continue;
+                cardValueVector.push_back(market_card_value(state,card,playerIndex));
+            }
+        }
+        for(int i=0;i<3;i++){
+            Card card=state.playerBoards[playerIndex].reservedCards[i];
+            if(card.cardId==0)continue;
+            cardValueVector.push_back(0.8*market_card_value(state,card,playerIndex));
+        }
+        std::sort(cardValueVector.begin(),cardValueVector.end(),std::greater<float>());
+        for(int i=0;i<4;i++){
+            feature+=cardValueVector[i];
+        }
+        return feature/4.0;
+    }
+    else if(featureName=="2-max-card-values-to-me"){
+        float feature=0;
+        std::vector<float> cardValueVector;
+        for(int i=0;i<3;i++){
+            for(int j=0;j<4;j++){
+                Card card=state.market[i][j];
+                if(card.cardId==0)continue;
+                cardValueVector.push_back(market_card_value(state,card,playerIndex));
+            }
+        }
+        for(int i=0;i<3;i++){
+            Card card=state.playerBoards[playerIndex].reservedCards[i];
+            if(card.cardId==0)continue;
+            cardValueVector.push_back(0.8*market_card_value(state,card,playerIndex));
+        }
+        std::sort(cardValueVector.begin(),cardValueVector.end(),std::greater<float>());
+        for(int i=0;i<2;i++){
             feature+=cardValueVector[i];
         }
         return feature/4.0;
@@ -197,6 +234,15 @@ float QLearningAgent::get_feature(const GameState& state, std::string featureNam
     else if(featureName=="turns"){
         return state.numTurn/10.0;
     }
+    else if(featureName=="reserved-cards-point"){
+        float reservedPoint=0;
+        for(int i=0;i<3;i++){
+            if(state.playerBoards[playerIndex].reservedCards[i].cardId!=0){
+                reservedPoint+=state.playerBoards[playerIndex].reservedCards[i].point;
+            }
+        }
+        return reservedPoint/4;
+    }
     else{
         std::cout<<"No such feature."<<std::endl;
         return 0;
@@ -223,22 +269,32 @@ float QLearningAgent::get_reward(const GameState& state){
     
     reward+=(state.playerBoards[playerIndex].score-lastState.playerBoards[playerIndex].score);
 
-    int numCard=0;
-    for(int i=0;i<5;i++){
-        numCard+=state.playerBoards[playerIndex].bonuses[i];
-    }
+    // int numCard=0;
+    // for(int i=0;i<5;i++){
+    //     numCard+=state.playerBoards[playerIndex].bonuses[i];
+    // }
     for(int i=0;i<5;i++){
         if(state.playerBoards[playerIndex].bonuses[i]>lastState.playerBoards[playerIndex].bonuses[i]){
-            reward+=2.0/(1.0+numCard);
+            reward+=1.5;
+        }
+    }
+    for(int i=0;i<5;i++){
+        if(state.playerBoards[playerIndex].gemsOwnwd[i]>lastState.playerBoards[playerIndex].gemsOwnwd[i]){
+            reward+=0.2;
         }
     }
 
-    // for(int i=0;i<3;i++){
-    //     if(state.playerBoards[playerIndex].reservedCards[i].cardLevel==3 &&
-    //         lastState.playerBoards[playerIndex].reservedCards[i].cardLevel!=3){
-    //         reward+=1;
-    //     }
-    // }
+    for(int i=0;i<3;i++){
+        if(state.playerBoards[playerIndex].reservedCards[i].cardLevel==3 &&
+            lastState.playerBoards[playerIndex].reservedCards[i].cardLevel!=3){
+            reward+=0.5;
+        }
+    }
+
+    for(int i=0;i<state.numPlayer;i++){
+        if(i==playerIndex)continue;
+        reward-=(state.playerBoards[i].score-lastState.playerBoards[i].score)*0.2;
+    }
 
     return reward;
 }
@@ -252,10 +308,12 @@ QLearningAgent::QLearningAgent(int index, float alpha, float gamma):
 Action QLearningAgent::getAction(const GameState& state){
     //std::cout<<"QLearningAgent getAction()"<<std::endl;
     Action bestAction;
+    bestAction.type=SKIP;
     float maxQValue=-65535;
     auto actionVector=state.get_legal_action(playerIndex);
 
     for(auto iter=actionVector.begin();iter!=actionVector.end();iter++){
+        if(iter->type==SKIP)continue;
         float qValue=Q_Value(state,*iter);
         if(qValue>maxQValue){
             maxQValue=qValue;
@@ -265,7 +323,7 @@ Action QLearningAgent::getAction(const GameState& state){
 
     if(!noTraining){
         int prob=rand()%100;
-        epsilon=30;
+        epsilon=0;
         if(prob<epsilon){
             int numAction=actionVector.size();
             prob=rand()%(numAction);

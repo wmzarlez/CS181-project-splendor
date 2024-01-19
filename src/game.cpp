@@ -3,6 +3,7 @@
 #include "minimaxAgent.h"
 #include "qLearningAgent.h"
 #include "greedyAgent.h"
+#include "randomAgent.h"
 extern Options options;
 
 Game::Game(){
@@ -14,13 +15,15 @@ Game::Game(){
     else{
         if(options.get_option<std::string>("-m")==std::string("SelfTrain")){      
             int qAgentIndex=rand()%numPlayer;
-            //std::unique_ptr<Agent> q_ptr = std::make_unique<QLearningAgent>(qAgentIndex);
-            std::unique_ptr<Agent> q_ptr = std::make_unique<GreedyAgent>(qAgentIndex);
+            std::unique_ptr<Agent> q_ptr = std::make_unique<QLearningAgent>(qAgentIndex);
+            //std::unique_ptr<Agent> q_ptr = std::make_unique<GreedyAgent>(qAgentIndex);
             for(int i=0;i<numPlayer;i++){
                 if(i==qAgentIndex){
                     players.emplace_back(std::move(q_ptr));
+                    std::cout<<"Q-Learning Agent is player "<<qAgentIndex+1<<std::endl;
                 }
                 else{
+                    //std::unique_ptr<Agent> trainer_ptr = std::make_unique<RandomAgent>(i);
                     std::unique_ptr<Agent> trainer_ptr = std::make_unique<GreedyAgent>(i);
                     players.emplace_back(std::move(trainer_ptr));
                 }
@@ -74,6 +77,21 @@ Game::Game(){
                 //state=GameState();
            }
         }
+        else if(options.get_option<std::string>("-m")==std::string("ComputerBattle")){      
+            int qAgentIndex=rand()%numPlayer;
+            //std::unique_ptr<Agent> q_ptr = std::make_unique<QLearningAgent>(qAgentIndex);
+            std::unique_ptr<Agent> q_ptr = std::make_unique<GreedyAgent>(qAgentIndex);
+            for(int i=0;i<numPlayer;i++){
+                if(i==qAgentIndex){
+                    players.emplace_back(std::move(q_ptr));
+                    //std::cout<<"Q-Learning Agent is player "<<qAgentIndex+1<<std::endl;
+                }
+                else{
+                    std::unique_ptr<Agent> trainer_ptr = std::make_unique<GreedyAgent>(i);
+                    players.emplace_back(std::move(trainer_ptr));
+                }
+            }
+        }
         else{
             options.usage();      //model 不合法
             exit(1);
@@ -102,13 +120,13 @@ void Game::run(){
 void Game::train(){
      while(!state.is_win()){
         state.numTurn++;
-        std::cout<<std::endl<<"Turn "<<state.numTurn<<" Start"<<std::endl;
+        //std::cout<<std::endl<<"Turn "<<state.numTurn<<" Start"<<std::endl;
         for (int i=0;i<numPlayer;i++){
-            std::cout<<std::endl;
-            std::cout<<"Player "<<i+1<<"'s turn:"<<std::endl;
+            //std::cout<<std::endl;
+            //std::cout<<"Player "<<i+1<<"'s turn:"<<std::endl;
             Action turnAction = (*(players[i].get())).getAction(state);
             state.apply_action(turnAction,i);
-            state.print_table();
+            //state.print_table();
         }
     }
     std::cout<<"Game over"<<std::endl;

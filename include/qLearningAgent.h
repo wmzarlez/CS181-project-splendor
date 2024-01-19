@@ -3,7 +3,7 @@
 
 class QLearningAgent: public Agent{
 public:
-    QLearningAgent(int index, float alpha=0.01, float gamma=0.9);
+    QLearningAgent(int index, float alpha=0.005, float gamma=0.9);
     virtual Action getAction(const GameState& state);
 private:
     void load_weights();

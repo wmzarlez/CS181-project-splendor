@@ -95,13 +95,21 @@ Action HumanAgent::getAction(const GameState& state){
       }
     }
     else if(myActionType == ActionType::BUYCARD){
-      std::cout << "Enter coordinates(cardLevel and cardIndex):\n";
-      std::cin >> myAction.params[0] >> myAction.params[1];
+      std::cout << "Enter coordinates(cardLevel and cardColumn):\n";
+      int cardLevel;
+      int cardColumn;
+      std::cin >> cardLevel >> cardColumn;
+      myAction.params[0]=cardLevel-1;
+      myAction.params[1]=cardColumn-1;
     }
     else if(myActionType == ActionType::RESERVECARD){
       myAction.params[2] = Gem::BLANK_;
-      std::cout << "Enter coordinates(cardLevel and cardIndex), then enter 1 if want to choose a golden gem and 0 otherwise:\n";
-      std::cin >> myAction.params[0] >> myAction.params[1] >> myAction.params[2];
+      std::cout << "Enter coordinates(cardLevel and cardColumn), then enter 1 if want to choose a golden gem and 0 otherwise:\n";
+      int cardLevel;
+      int cardColumn;
+      std::cin >> cardLevel >> cardColumn >> myAction.params[2];
+      myAction.params[0]=cardLevel-1;
+      myAction.params[1]=cardColumn-1;
       if(myAction.params[2] == 1 && gemNum >= 10){
         std::cout << "Too much gems, throw one gem:\n\tWHITE     -> 0\n\tBLUE      -> 1\n\tGREEN     -> 2\n\tRED       -> 3\n\tBLACK     -> 4\nYELLOW    -> 5.\n";
         std::cin >> myAction.params[3];

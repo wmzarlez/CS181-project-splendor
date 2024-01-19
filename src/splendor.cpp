@@ -1415,10 +1415,12 @@ void GameState::print_action(Action action, int playerIndex) const{
         if(action.params[0]>=0 && action.params[0]<=2){
             std::cout<<"Player "<<playerIndex+1<<" buy the "<<action.params[1]+1<<"th card of level "<<action.params[0]+1<<std::endl;
             cout_card(market[action.params[0]][action.params[1]]);
+            std::cout<<std::endl;
         }
         else if(action.params[0]>=3){
             std::cout<<"Player "<<playerIndex+1<<" buy the "<<action.params[1]+1<<"th card from the reserved cards"<<std::endl;
             cout_card(playerBoards[playerIndex].reservedCards[action.params[1]]);
+            std::cout<<std::endl;
         }
         else{
             std::cout<<"Error action!"<<std::endl;;
