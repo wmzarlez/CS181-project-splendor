@@ -12,6 +12,7 @@ std::uint16_t HumanAgent::getGemAvailable(const GameState& state) const{
 
 bool HumanAgent::isLegalAction(const GameState& state, const Action myAction) const{
   if(myAction.type == ActionType::SELECTGEMS){
+    if(myAction.params[0]<6 && myAction.params[0]==myAction.params[1] && myAction.params[0]==myAction.params[2]){return false;}
     int getGemCount[5] = {0};
     int doubleGemCnt = 0;
     int gameStateGem[6]; memcpy(reinterpret_cast<void*>(gameStateGem), reinterpret_cast<const void*>(state.gemPile), 6*sizeof(int));
@@ -95,7 +96,7 @@ Action HumanAgent::getAction(const GameState& state){
       }
     }
     else if(myActionType == ActionType::BUYCARD){
-      std::cout << "Enter coordinates(cardLevel and cardColumn):\n";
+      std::cout << "Enter coordinates(cardLevel(if you want to bug a reserved card, enter 4) and cardColumn):\n";
       int cardLevel;
       int cardColumn;
       std::cin >> cardLevel >> cardColumn;
