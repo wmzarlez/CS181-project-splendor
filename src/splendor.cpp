@@ -917,6 +917,49 @@ bool GameState::is_win() {
     }
 }
 
+int GameState::who_wins(){
+    // check if someone wins
+    int playnum = options.get_option<int>("-p");
+    bool pan = false;
+
+    if (playnum >= 2 && playnum <= 4) {
+        int winnerIndex=-1;
+        int winnerPoint=15;
+        int winnerCard=100;
+        for (int i = 0; i < playnum; ++i) {
+            if (playerBoards[i].score > winnerPoint) {
+                pan = true;
+                winnerIndex=i;
+                winnerPoint=playerBoards[i].score;
+                winnerCard=0;
+                for(int j=0;j<5;j++){
+                    winnerCard+=playerBoards[i].bonuses[j];
+                }
+            }
+            else if (playerBoards[i].score == winnerPoint) {
+                pan = true;
+                int playerCard=0;
+                for(int j=0;j<5;j++){
+                    playerCard+=playerBoards[i].bonuses[j];
+                }
+                if(playerCard<=winnerCard){
+                    winnerIndex=i;
+                    winnerPoint=playerBoards[i].score;
+                    winnerCard=playerCard;
+                }
+            }
+        }
+        if(pan){
+            std::cout << "Player " << winnerIndex + 1 << " wins" << std::endl;
+            return winnerIndex + 1;
+        }
+        return 0;
+    } else {
+        std::cout << "Illegal number of players";
+        exit(1);
+    }
+}
+
 void GameState::check_noble(int playerIndex){
     for(int i=0;i<5;i++){
         if(noblePile[i].nobleId==0)continue;
@@ -1481,14 +1524,14 @@ void GameState::add_card_explicit(int cardLevel, int cardColumnIndex, int cardId
         exit(1);
     }
 
-    if(!options.get_option<bool>("-no-graphics")){
+    if(!options.get_option<bool>("-no-graphics") && options.get_option<std::string>("-m")==std::string("HumanVsComputer")){
         paintbrush->draw_card(cardLevel,cardColumnIndex,cardId);
     }
 }
 void GameState::remove_card(int cardLevel, int cardColumnIndex){
     market[cardLevel-1][cardColumnIndex]={};
     if(isCopy==true){return;}
-    if(!options.get_option<bool>("-no-graphics")){
+    if(!options.get_option<bool>("-no-graphics") && options.get_option<std::string>("-m")==std::string("HumanVsComputer")){
         paintbrush->erase_card(cardLevel,cardColumnIndex);
     }
 }
@@ -1496,7 +1539,7 @@ void GameState::add_gem(Gem gemType){
     if(gemType<6){
         gemPile[gemType]+=1;
         if(isCopy==true){return;}
-        if(!options.get_option<bool>("-no-graphics")){
+        if(!options.get_option<bool>("-no-graphics") && options.get_option<std::string>("-m")==std::string("HumanVsComputer")){
             paintbrush->draw_gem((int)gemType);
         }
     }
@@ -1505,7 +1548,7 @@ void GameState::remove_gem(Gem gemType){
     if(gemType<6){
         gemPile[gemType]-=1;
         if(isCopy==true){return;}
-        if(!options.get_option<bool>("-no-graphics")){
+        if(!options.get_option<bool>("-no-graphics") && options.get_option<std::string>("-m")==std::string("HumanVsComputer")){
             paintbrush->erase_gem((int)gemType);
         }
     }
@@ -1513,7 +1556,7 @@ void GameState::remove_gem(Gem gemType){
 void GameState::remove_noble(int nobleIndex){
     noblePile[nobleIndex]={};
     if(isCopy==true){return;}
-    if(!options.get_option<bool>("-no-graphics")){
+    if(!options.get_option<bool>("-no-graphics") && options.get_option<std::string>("-m")==std::string("HumanVsComputer")){
         paintbrush->erase_noble(nobleIndex);
     }
 }

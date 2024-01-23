@@ -1,10 +1,13 @@
+#include <chrono>
 #include "game.h"
 #include "humanAgent.h"
 #include "minimaxAgent.h"
 #include "qLearningAgent.h"
 #include "greedyAgent.h"
 #include "randomAgent.h"
+
 extern Options options;
+extern std::unordered_map<std::string,int> consumingTime;
 
 Game::Game(){
     
@@ -120,7 +123,7 @@ void Game::run(){
 void Game::train(){
      while(!state.is_win()){
         state.numTurn++;
-        //std::cout<<std::endl<<"Turn "<<state.numTurn<<" Start"<<std::endl;
+        std::cout<<std::endl<<"Turn "<<state.numTurn<<" Start"<<std::endl;
         for (int i=0;i<numPlayer;i++){
             //std::cout<<std::endl;
             //std::cout<<"Player "<<i+1<<"'s turn:"<<std::endl;
@@ -131,4 +134,22 @@ void Game::train(){
         }
     }
     std::cout<<"Game over"<<std::endl;
+}
+
+std::string Game::battle(){
+    int winnerId=0;
+     while(!winnerId){
+        state.numTurn++;
+        std::cout<<std::endl<<"Turn "<<state.numTurn<<" Start"<<std::endl;
+        for (int i=0;i<numPlayer;i++){
+            std::chrono::high_resolution_clock::time_point startTime = std::chrono::high_resolution_clock::now();
+            Action turnAction = (*(players[i].get())).getAction(state);
+            state.apply_action(turnAction,i);
+            consumingTime[players[i]->get_name()]+=std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - startTime).count();
+            //getchar();
+        }
+        winnerId=state.who_wins();
+    }
+    std::cout<<"Game over"<<std::endl;
+    return players[winnerId-1]->get_name();
 }

@@ -5,6 +5,7 @@
 class HumanAgent: public Agent{
 public:
     virtual Action getAction(const GameState& state);
+    virtual std::string get_name(){return "Human Player";}
     virtual std::uint16_t getGemAvailable(const GameState& state) const;
     virtual bool isLegalAction(const GameState& state, const Action myAction) const;
     HumanAgent(int index);

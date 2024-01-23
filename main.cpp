@@ -2,6 +2,7 @@
 #include "game.h"
 
 Options options = Options();
+std::unordered_map<std::string,int> consumingTime;
 
 void update_version(){
     std::ifstream version("../qTrainingLog/version.txt");
@@ -29,8 +30,7 @@ int main(int argc, const char* argv[]){
     srand((unsigned) time(NULL));
     options.set_args(argc, argv);
 
-    if(options.get_option<std::string>("-m")==std::string("HumanVsComputer") ||
-        options.get_option<std::string>("-m")==std::string("ComputerBattle")){
+    if(options.get_option<std::string>("-m")==std::string("HumanVsComputer")){
         Game game;
         game.run();
     }
@@ -41,6 +41,40 @@ int main(int argc, const char* argv[]){
             Game game;
             game.train();
             //update_version();
+        }
+    }
+    else if(options.get_option<std::string>("-m")==std::string("ComputerBattle")){
+        int numBattle=100;
+        std::unordered_map<std::string,int> scoreBoard;
+        for(int i=0;i<numBattle;i++){
+            Game game;
+            scoreBoard[game.battle()]+=1;
+            //update_version();
+        }
+        std::vector<std::string> agentVector;
+        for(auto i:scoreBoard){
+            agentVector.push_back(i.first);
+        }
+        for(int i=0;i<agentVector.size();i++){
+            if(i==0){
+                std::cout<<agentVector[i];
+            }
+            else{
+                std::cout<<":"<<agentVector[i];
+            }
+        }
+        std::cout<<"=";
+        for(int i=0;i<agentVector.size();i++){
+            if(i==0){
+                std::cout<<scoreBoard[agentVector[i]];
+            }
+            else{
+                std::cout<<":"<<scoreBoard[agentVector[i]];
+            }
+        }
+        std::cout<<std::endl;
+        for(auto i:consumingTime){
+            std::cout<<i.first<<" takes "<<i.second<<" millisecs."<<std::endl;
         }
     }
     else{

@@ -98,6 +98,7 @@ public:
     void apply_action(Action action,int playerindex);
     // return true if one player wins
     bool is_win();
+    int who_wins();
     // Check whether a player can get a noble.
     // If true, increase the player's point, and remove that noble
     void check_noble(int playerIndex);

@@ -306,7 +306,7 @@ QLearningAgent::QLearningAgent(int index, float alpha, float gamma):
 }
 
 Action QLearningAgent::getAction(const GameState& state){
-    std::cout<<"QLearningAgent getAction()"<<std::endl;
+    std::cout<<"Approximate Q-Learning agent choosing action..."<<std::endl;
     Action bestAction;
     bestAction.type=SKIP;
     float maxQValue=-65535;
@@ -338,7 +338,7 @@ Action QLearningAgent::getAction(const GameState& state){
     }
     else{
         update_weights(state,bestAction);
-        //if(!noTraining)store_weights();
+        if(!noTraining)store_weights();
         lastState=state;
         lastAction=bestAction;
     }

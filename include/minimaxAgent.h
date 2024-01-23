@@ -4,6 +4,7 @@
 class MinimaxAgent: public Agent{
 public:
     virtual Action getAction(const GameState& state);
+    virtual std::string get_name(){return "Adversarial Search Agent";}
     int evaluatePlayerPoint(const GameState& state) const;
     int getActRecursion(GameState state, int depth);
     MinimaxAgent(int index);

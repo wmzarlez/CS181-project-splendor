@@ -54,8 +54,8 @@ Action GreedyAgent::getAction(const GameState& state){
         #pragma omp critical
         if(optActPair.second < tmpPt){optActPair = std::make_pair(possibleActs[i], tmpPt);}
     }
-    std::cout << "Num of legal actions is "<<size<<std::endl;
-    std::cout << " It takes " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - startTime).count() << " millisecs.\n" << std::endl;
+    //std::cout << "Num of legal actions is "<<size<<std::endl;
+    std::cout << " It takes " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - startTime).count() << " millisecs." << std::endl;
     return optActPair.first;
 }
 
