@@ -113,7 +113,7 @@ void Game::run(){
             Action turnAction = (*(players[i].get())).getAction(state);
             state.apply_action(turnAction,i);
             state.print_table();
-            getchar();
+            //getchar();
         }
     }
     std::cout<<"Game over"<<std::endl;
