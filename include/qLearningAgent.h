@@ -5,6 +5,7 @@ class QLearningAgent: public Agent{
 public:
     QLearningAgent(int index, float alpha=0.00, float gamma=0.9);
     virtual Action getAction(const GameState& state);
+    virtual std::string get_name(){return "Approximate Q-Learning Agent";}
 private:
     void load_weights();
     void store_weights();

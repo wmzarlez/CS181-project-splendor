@@ -625,7 +625,7 @@ void GameState::get_legal_selectgems_action (int playerIndex,std::vector<Action>
         numGem+=playerBoards[playerIndex].gemsOwnwd[i];
     }
     for (int i=0;i<5;i++){        //同样颜色拿两颗
-        if(gemPile[i]>=4 && numGem<=8){
+        if(gemPile[i]>=4 && numGem<=9){
             Action getTwoSameGemsAction;
             getTwoSameGemsAction.type=SELECTGEMS;
             getTwoSameGemsAction.params[0]=i;
@@ -634,15 +634,26 @@ void GameState::get_legal_selectgems_action (int playerIndex,std::vector<Action>
             getTwoSameGemsAction.params[3]=6;
             getTwoSameGemsAction.params[4]=6;
             getTwoSameGemsAction.params[5]=6;
-            ActionVector.push_back(getTwoSameGemsAction);
+            if(numGem==9){
+                for(int j=0;j<6;j++){
+                    if(playerBoards[playerIndex].gemsOwnwd[j]>0){
+                        Action dropAction=getTwoSameGemsAction;
+                        dropAction.params[3]=j;
+                        ActionVector.push_back(dropAction);
+                    }
+                }
+            }
+            else{
+                ActionVector.push_back(getTwoSameGemsAction);
+            }
         }
     }
     for (int i=0;i<5;i++){        //三颗不同颜色
-        if(gemPile[i]>=1 && numGem<=9){
+        if(gemPile[i]>=1){
             for(int j=i+1;j<7;j++){
-                if((j<5 && gemPile[j]>=1 && numGem<=8) || (j==6 && numGem==9)){
+                if((j<5 && gemPile[j]>=1 && numGem<=9) || (j==6 && numGem==10)){
                     for(int z=j;z<7;z++){
-                        if((z<5 && gemPile[z]>=1 && z>j && numGem<=7) || (z==6 && numGem>=8)){
+                        if((z<5 && gemPile[z]>=1 && z>j && numGem<=8) || (z==6 && numGem>=9)){
                             Action getThreeGemsAction;
                             getThreeGemsAction.type=SELECTGEMS;
                             getThreeGemsAction.params[0]=i;
@@ -651,7 +662,19 @@ void GameState::get_legal_selectgems_action (int playerIndex,std::vector<Action>
                             getThreeGemsAction.params[3]=6;
                             getThreeGemsAction.params[4]=6;
                             getThreeGemsAction.params[5]=6;
-                            ActionVector.push_back(getThreeGemsAction);
+                            if((numGem==10 && i<5) || (numGem==9 && j<5) || (numGem==8 && z<5)){
+                                for(int k=0;k<6;k++){
+                                    if(playerBoards[playerIndex].gemsOwnwd[k]>0){
+                                        Action dropAction=getThreeGemsAction;
+                                        dropAction.params[3]=k;
+                                        ActionVector.push_back(dropAction);
+                                    }
+                                }
+                            }
+                            else{
+                                ActionVector.push_back(getThreeGemsAction);
+                            }
+                            //ActionVector.push_back(getThreeGemsAction);
                         }
                     }
                 }
@@ -701,13 +724,26 @@ void GameState::get_legal_reservecard_action (int playerIndex,std::vector<Action
                     reserveCard.type=RESERVECARD;
                     reserveCard.params[0]=i;
                     reserveCard.params[1]=j;
-                    if(gemPile[5]>0 && numGem<=9){
+                    if(gemPile[5]>0){
                         reserveCard.params[2]=1;
+                        if(numGem>=10){
+                            for(int k=0;k<5;k++){
+                                if(playerBoards[playerIndex].gemsOwnwd[k]>0){
+                                    Action dropAction=reserveCard;
+                                    dropAction.params[3]=k;
+                                    ActionVector.push_back(dropAction);
+                                }
+                            }
+                            
+                        }
+                        else{
+                            ActionVector.push_back(reserveCard);
+                        }
                     }
                     else{
                         reserveCard.params[2]=0;
+                        ActionVector.push_back(reserveCard);
                     }
-                    ActionVector.push_back(reserveCard);
                 }
             }
         }
@@ -733,6 +769,13 @@ void GameState::apply_action(Action action, int playerindex){
             playerBoards[playerindex].gemsOwnwd[action.params[i]]--;
         }
 
+        for(int i=0;i<6;i++){
+            if(gemPile[i]<0){
+                std::cout<<"Select gems illegally!"<<std::endl;
+                exit(1);
+            }
+        }
+
         print_action(action,playerindex);
         
     }
@@ -754,7 +797,7 @@ void GameState::apply_action(Action action, int playerindex){
             }
             for (int i=0;i<5;i++){                //先扣除玩家已有宝石，再把这些宝石放回宝石堆
                 playerBoards[playerindex].gemsOwnwd[i]-=helpgem[i];          //假设全部花费普通宝石，之后再去扣除特殊宝石
-            }
+            }      
             for (int i=0;i<5;i++){                
             if(playerBoards[playerindex].gemsOwnwd[i]<0){
                     playerBoards[playerindex].gemsOwnwd[5]+=playerBoards[playerindex].gemsOwnwd[i];    //不够就说明花万能宝石
@@ -879,6 +922,11 @@ bool GameState::is_win() {
     int playnum = options.get_option<int>("-p");
     bool pan = false;
 
+    if(numTurn>100){
+        std::cout<<"Tie! no one wins."<<std::endl;
+        return true;
+    }
+
     if (playnum >= 2 && playnum <= 4) {
         int winnerIndex=-1;
         int winnerPoint=15;
@@ -916,6 +964,63 @@ bool GameState::is_win() {
     }
 }
 
+int GameState::who_wins(){
+    // check if someone wins
+    int playnum = options.get_option<int>("-p");
+    bool pan = false;
+
+    if(numTurn>100){
+        std::cout<<"Tie! no one wins."<<std::endl;
+        int i=0;
+        int maxScore=0;
+        int winnerIndex=-1;
+        for(;i<playnum;i++){
+            if(playerBoards[i].score>=maxScore){
+                winnerIndex=i;
+                maxScore=playerBoards[i].score;
+            }
+        }
+        return winnerIndex + 1;
+    }
+
+    if (playnum >= 2 && playnum <= 4) {
+        int winnerIndex=-1;
+        int winnerPoint=15;
+        int winnerCard=100;
+        for (int i = 0; i < playnum; ++i) {
+            if (playerBoards[i].score > winnerPoint) {
+                pan = true;
+                winnerIndex=i;
+                winnerPoint=playerBoards[i].score;
+                winnerCard=0;
+                for(int j=0;j<5;j++){
+                    winnerCard+=playerBoards[i].bonuses[j];
+                }
+            }
+            else if (playerBoards[i].score == winnerPoint) {
+                pan = true;
+                int playerCard=0;
+                for(int j=0;j<5;j++){
+                    playerCard+=playerBoards[i].bonuses[j];
+                }
+                if(playerCard<=winnerCard){
+                    winnerIndex=i;
+                    winnerPoint=playerBoards[i].score;
+                    winnerCard=playerCard;
+                }
+            }
+        }
+        if(pan){
+            std::cout << "Player " << winnerIndex + 1 << " wins" << std::endl;
+            return winnerIndex + 1;
+        }
+        return 0;
+    } else {
+        std::cout << "Illegal number of players";
+        exit(1);
+    }
+}
+
 void GameState::check_noble(int playerIndex){
     for(int i=0;i<5;i++){
         if(noblePile[i].nobleId==0)continue;
@@ -929,7 +1034,7 @@ void GameState::check_noble(int playerIndex){
             }
         }
         if(satisfy==true){
-            playerBoards->score+=3;
+            playerBoards[playerIndex].score+=3;
             remove_noble(i);
         }
     }
@@ -1480,14 +1585,14 @@ void GameState::add_card_explicit(int cardLevel, int cardColumnIndex, int cardId
         exit(1);
     }
 
-    if(!options.get_option<bool>("-no-graphics")){
+    if(!options.get_option<bool>("-no-graphics") && options.get_option<std::string>("-m")==std::string("HumanVsComputer")){
         paintbrush->draw_card(cardLevel,cardColumnIndex,cardId);
     }
 }
 void GameState::remove_card(int cardLevel, int cardColumnIndex){
     market[cardLevel-1][cardColumnIndex]={};
     if(isCopy==true){return;}
-    if(!options.get_option<bool>("-no-graphics")){
+    if(!options.get_option<bool>("-no-graphics") && options.get_option<std::string>("-m")==std::string("HumanVsComputer")){
         paintbrush->erase_card(cardLevel,cardColumnIndex);
     }
 }
@@ -1495,7 +1600,7 @@ void GameState::add_gem(Gem gemType){
     if(gemType<6){
         gemPile[gemType]+=1;
         if(isCopy==true){return;}
-        if(!options.get_option<bool>("-no-graphics")){
+        if(!options.get_option<bool>("-no-graphics") && options.get_option<std::string>("-m")==std::string("HumanVsComputer")){
             paintbrush->draw_gem((int)gemType);
         }
     }
@@ -1504,7 +1609,7 @@ void GameState::remove_gem(Gem gemType){
     if(gemType<6){
         gemPile[gemType]-=1;
         if(isCopy==true){return;}
-        if(!options.get_option<bool>("-no-graphics")){
+        if(!options.get_option<bool>("-no-graphics") && options.get_option<std::string>("-m")==std::string("HumanVsComputer")){
             paintbrush->erase_gem((int)gemType);
         }
     }
@@ -1512,7 +1617,7 @@ void GameState::remove_gem(Gem gemType){
 void GameState::remove_noble(int nobleIndex){
     noblePile[nobleIndex]={};
     if(isCopy==true){return;}
-    if(!options.get_option<bool>("-no-graphics")){
+    if(!options.get_option<bool>("-no-graphics") && options.get_option<std::string>("-m")==std::string("HumanVsComputer")){
         paintbrush->erase_noble(nobleIndex);
     }
 }
