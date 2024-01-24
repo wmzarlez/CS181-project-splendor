@@ -493,7 +493,6 @@ std::string noble_to_string(const Noble &noble){
     nobleString+="}";
     return nobleString;
 }
-
 GameState::GameState(): cardPile(std::make_shared<CardPile>()), totalNobalPile(std::make_shared<NoblePile>()), isCopy(false){
     for(int i=0;i<3;i++){                                                   //初始化market    col1   col2   col3
         for(int j=0;j<4;j++){                                               ////// level1 r1  00     01      02

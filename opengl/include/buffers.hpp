@@ -1,116 +1,107 @@
 #pragma once
 
-#include "glad/glad.h"
+#include <glad/glad.h>
+#include "stb_image.h"
+#include "object_base.hpp"
+
 #include <vector>
-#include <span>
-#include <optional>
-#include <memory>
-#include <tuple>
-#include <algorithm>
 
 
 namespace OpenGL{
-    
 
-    class ObjectBase {
-        protected:
-            std::optional<unsigned int> _id;
-            ObjectBase() : _id{std::nullopt} {}
-            ObjectBase(const BaseObject&) = delete;
-            ObjectBase(ObjectBase&& other) { this->swap(other); }
-            const ObjectBase& operator=(const ObjectBase&) = delete;
-            const ObjectBase& operator=(ObjectBase&& other) { this->swap(other); return *this; }
-            ~ObjectBase() {_id = std::nullopt;}
-            inline void swap(ObjectBase& other) {
-                std::swap(_id, other._id);
-            } 
+    struct _VBO {
+        static constexpr GLenum target = GL_ARRAY_BUFFER;
+    };
+
+    struct _EBO {
+        static constexpr GLenum target = GL_ELEMENT_ARRAY_BUFFER;
     };
 
     template<typename T>
-    class BufferBase : public ObjectBase {
-        public:
-            enum struct DrawPolicy : unsigned int{
-                //The data is set only once and used many times.
-                STATIC  = GL_STATIC_DRAW, 
-                //The data is changed a lot and used many times.
-                DYNAMIC = GL_DYNAMIC_DRAW,
-                //The data is set only once and used by the GPU at most a few times.
-                STREAM  = GL_STREAM_DRAW
-            };
+    concept Buffers = requires(const T& x) {
+        T::target;
+        requires std::disjunction_v<std::is_same<T, _VBO>, std::is_same<T, _EBO>>;
+    };
 
+    enum struct Buffer_Usage : GLenum {
+        Stream_Draw = GL_STREAM_DRAW,
+        Static_Draw = GL_STATIC_DRAW, 
+        Dynamic_Draw = GL_DYNAMIC_DRAW, 
+    };
+
+    template<Buffers Which, typename T>
+    class Buffer : public ObjectBase {
         private:
-            std::vector<T>      _data;
-            DrawPolicy          _drawPolicy;
-
+            std::vector<T> _data;
+            Buffer_Usage _usage;
         public:
-            BufferBase() : ObjectBase(), _drawPolicy(DrawPolicy::STATIC) {}
-
-            BufferBase(std::span<const T> data, DrawPolicy drawPolicy = DrawPolicy::STATIC) : 
-                ObjectBase(),
-                _data{std::cbegin(data), std::cend(data)}, 
-                _drawPolicy{drawPolicy} {
-                unsigned int newId;
-                glGenBuffers(1, &newId);
-                _id = newId;
+            Buffer() : _usage{Buffer_Usage::Static_Draw} {
+                unsigned int id = 0;
+                glGenBuffers(1, &id);
+                _id = id;
             }
 
-            ~BufferBase() {
+            Buffer(std::vector<T> data, Buffer_Usage usage = Buffer_Usage::Static_Draw) : 
+                _data(std::move(data)), 
+                _usage(usage) {
+                unsigned int id = 0;
+                glGenBuffers(1, &id);
+                _id = id;
+            }
+
+            void bind() const {
+                glBindBuffer(Which::target, *_id);
+                glBufferData(Which::target, sizeof(T) * _data.size(), (void*)_data.data(), static_cast<GLenum>(_usage));
+            }
+
+            Buffer_Usage get_usage() const { return _usage; }
+
+            void set_usage(Buffer_Usage usage) { _usage = usage; }
+
+            const std::vector<T> get_data() const { return _data; }
+
+            void set_data(std::vector<T> data) { _data = std::move(data); }
+
+            ~Buffer() {
                 if(_id) {
-                    glDeleteBuffers(1, &(*_id));
+                    unsigned int id = *_id;
+                    glDeleteBuffers(1, &id);
+                    _id = std::nullopt;
                 }
             }
 
-            inline void swap(BufferBase& other) {
-                ObjectBase::swap(other);
-                std::swap(_data, other._data);
-                std::swap(_drawPolicy, other._drawPolicy);
-            }
-
-            const BufferBase& operator=(BufferBase&& other) {
-                this->swap(other);
-                return *this;
-            }
-
-            inline std::vector<T>& get_data() { return _data; }
-
-            inline void bind() const {
-                if constexpr (std::is_same_v<T, float>) {
-                    glBindBuffer(GL_ARRAY_BUFFER, *_id);
-                    glBufferData(GL_ARRAY_BUFFER, sizeof(T) * _data.size(), (const void*)_data.data(), static_cast<unsigned int>(_drawPolicy));
-                } else if constexpr (std::is_same_v<T, float>)
-            }
     };
 
-    using VBO = BufferBase<float>;
-    using EBO = BufferBase<unsigned int>;
+    template<typename T>
+    using VBO = Buffer<_VBO, T>;
 
+    template<typename T>
+    using EBO = Buffer<_EBO, T>;
 
     class VAO : public ObjectBase {
-        private:
-            std::vector<std::tuple<std::shared_ptr<VBO>, std::shared_ptr<EBO>>> _data;
         public:
-            template<typename... Args>
-            VAO(Args... args) : _data{args...} {
-                unsigned int newId;
-                glGenVertexArrays(1, &newId);
-                _id = newId;
-                std::for_each(std::cbegin)
+            VAO() {
+                unsigned int id;
+                glGenVertexArrays(1, &id);
+                _id = id;
+            }
+
+            void bind() const {
+                assert(_id);
+                glBindVertexArray(*_id);
+            }
+
+            void unbind() const {
+                assert(_id);
+                glBindVertexArray(0);
             }
 
             ~VAO() {
                 if(_id) {
-                    glDeleteVertexArrays(1, &(*_id));
+                    unsigned int id = *_id;
+                    glDeleteVertexArrays(1, &id);
+                    _id = std::nullopt;
                 }
-            }
-
-            inline void swap(VAO& other) {
-                ObjectBase::swap(other);
-                std::swap(_data, other._data);
-            }
-
-            const VAO& operator=(VAO&& other) {
-                this->swap(other);
-                return *this;
             }
     };
 }

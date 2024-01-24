@@ -4,12 +4,19 @@
 #include <format>
 #include <string>
 
-inline void runtime_error(const char* file, unsigned int line, const std::string& what) {
-    std::cerr << std::format("Runtime Error happened in {}:{}\n\t{}", file, line, what) << std::endl;
-    exit(-1);
+template<typename T, std::size_t N>
+constexpr std::array<T, N> operator-(std::array<T, N> data) {
+    for(auto i = 0ULL ; i < N ; ++i) {
+        data[i] = -data[i];
+    }
+    return data;
 }
 
-#define runtime_error(what) runtime_error(__FILE__, __LINE__, what)
+inline void runtime_error(const char* file, unsigned int line, const std::string& what) {
+    std::cerr << std::format("Runtime Error happened in {}:{}\n\t{}", file, line, what) << std::endl;
+}
+
+#define error(what) runtime_error(__FILE__, __LINE__, what)
 
 template<typename T, typename... Args, typename Func>
 inline void apply(Func&& func, T&& first, Args&&... others) {
