@@ -44,7 +44,7 @@ int main(int argc, const char* argv[]){
         }
     }
     else if(options.get_option<std::string>("-m")==std::string("ComputerBattle")){
-        int numBattle=1;
+        int numBattle=100;
         std::unordered_map<std::string,int> scoreBoard;
         for(int i=0;i<numBattle;i++){
             Game game;
