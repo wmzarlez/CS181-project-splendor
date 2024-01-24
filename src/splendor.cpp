@@ -1035,7 +1035,7 @@ void GameState::check_noble(int playerIndex){
             }
         }
         if(satisfy==true){
-            playerBoards->score+=3;
+            playerBoards[playerIndex].score+=3;
             remove_noble(i);
         }
     }
