@@ -2,7 +2,7 @@
 #include <memory>
 #include <vector>
 #include "util.hpp"
-#include "../opengl/include/visualization.hpp"
+#include "visualization.hpp"
 
 typedef enum{
     WHITE = 0,

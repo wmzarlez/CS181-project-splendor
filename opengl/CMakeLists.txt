@@ -15,12 +15,14 @@ target_link_libraries(opengl_lib
     PUBLIC 
         glad
         glfw3
+        glm
         stb_image
 )
 
 target_include_directories(opengl_lib 
     PUBLIC 
         ${CMAKE_CURRENT_SOURCE_DIR}/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/glfw/include
 )
 
 
