@@ -25,7 +25,7 @@ int GreedyAgent::evalPt(const GameState& state) const{
 }
 
 int GreedyAgent::getActRecursion(GameState state, int depth){
-    if(depth > recursionDepth) return evalPt(state);
+    if(depth == recursionDepth) return evalPt(state);
     std::vector<Action> possibleActs = state.get_legal_action(playerIndex);
     int bestPoint = std::numeric_limits<int>::min();
 
@@ -40,7 +40,7 @@ int GreedyAgent::getActRecursion(GameState state, int depth){
 
 // Initial depth 0, num(searchDepth) = num(actions taken). If searchDepth = 5, then take 5 sequential actions and return at depth 5. 
 Action GreedyAgent::getAction(const GameState& state){
-    std::cout << "Greedy agent choosing action..."<<std::endl;
+    std::cout << "Greedy agent choosing action... ";
     std::chrono::high_resolution_clock::time_point startTime = std::chrono::high_resolution_clock::now();
     std::pair<Action, int> optActPair = std::make_pair(Action(), std::numeric_limits<int>::min());
     
@@ -55,7 +55,7 @@ Action GreedyAgent::getAction(const GameState& state){
         if(optActPair.second < tmpPt){optActPair = std::make_pair(possibleActs[i], tmpPt);}
     }
     //std::cout << "Num of legal actions is "<<size<<std::endl;
-    std::cout << " It takes " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - startTime).count() << " millisecs." << std::endl;
+    std::cout << "It takes " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - startTime).count() << " millisecs." << std::endl;
     return optActPair.first;
 }
 

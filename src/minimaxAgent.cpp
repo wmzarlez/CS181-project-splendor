@@ -78,7 +78,7 @@ Action MinimaxAgent::getAction(const GameState& state){
          
     }
     
-    std::cout << " It takes " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - startTime).count() << " millisecs.\n" << std::endl;
+    std::cout << "It takes " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - startTime).count() << " millisecs.\n" << std::endl;
     if(optActPair.second == MY_INT_MIN) optActPair.first.type = SKIP_ACT;
     return optActPair.first;
 
