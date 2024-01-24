@@ -13,5 +13,5 @@ public:
     GreedyAgent(int index);
 private:
     int playerIndex;
-    static constexpr int recursionDepth = 5;
+    static constexpr int recursionDepth = 4;
 };

@@ -146,7 +146,7 @@ float QLearningAgent::get_feature(const GameState& state, std::string featureNam
             if(i==playerIndex)continue;
 
             int opponentScoreNow=state.playerBoards[i].score;
-            //#pragma omp parallel for
+            #pragma omp parallel for
             for(auto a1:state.get_legal_action(i)){
                 GameState s1=state;
                 s1.apply_action(a1,i);
@@ -154,7 +154,10 @@ float QLearningAgent::get_feature(const GameState& state, std::string featureNam
                     GameState s2=s1;
                     s2.apply_action(a2,i);
                     int opponentScoreAfter2Turns=s2.playerBoards[i].score;
-                    if(opponentScoreAfter2Turns-opponentScoreNow>maxPoint){maxPoint=opponentScoreAfter2Turns-opponentScoreNow;}
+                     #pragma omp critical
+                    {
+                        if(opponentScoreAfter2Turns-opponentScoreNow>maxPoint){maxPoint=opponentScoreAfter2Turns-opponentScoreNow;}
+                    }
                 }
             }
         }
