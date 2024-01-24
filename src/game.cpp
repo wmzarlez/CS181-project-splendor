@@ -41,7 +41,7 @@ Game::Game(){
            }
            else{
                 std::unique_ptr<Agent> player_ptr = std::make_unique<HumanAgent>(humanId-1);
-                if(options.get_option<std::string>("-a")==std::string("Minimax")){
+                if(options.get_option<std::string>("-a")==std::string("AdversarialSearch")){
                     for(int i=0;i<numPlayer;i++){
                         if(i==humanId-1){
                             players.emplace_back(std::move(player_ptr));

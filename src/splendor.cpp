@@ -101,7 +101,7 @@ CardPile::CardPile(){
     Card card21 = {.point = 0, .bonusGem=GREEN, .cardLevel=1, .cardId=21, .cost = {1,3,1,0,0}};
     level1Pile[20] = card21;
 
-    Card card22 = {.point = 0, .bonusGem=GREEN, .cardLevel=1, .cardId=22, .cost = {0,0,3,0,0}};
+    Card card22 = {.point = 0, .bonusGem=GREEN, .cardLevel=1, .cardId=22, .cost = {0,0,0,3,0}};
     level1Pile[21] = card22;
 
     Card card23 = {.point = 1, .bonusGem=WHITE, .cardLevel=1, .cardId=23, .cost = {0,0,4,0,0}};

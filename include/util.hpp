@@ -30,7 +30,7 @@ class Options {
             std::cout<<std::format("{:<20}{}","-m","Set the game mode. [SelfTrain/HumanVsComputer(default)/ComputerBattle]")<<std::endl;
             std::cout<<std::format("{:<20}{}","-no-graphics","Close the GUI.")<<std::endl;
             std::cout<<std::format("{:<20}{}","-no-terminal-outputs  ","Reduce most of the terminal outputs.")<<std::endl;
-            std::cout<<std::format("{:<20}{}","-a","Set the agent of conmputers. [Minimax/QLearning(default)/Greedy]")<<std::endl;
+            std::cout<<std::format("{:<20}{}","-a","Set the agent of conmputers. [AdversarialSearch/QLearning(default)/Greedy]")<<std::endl;
             std::cout<<std::format("{:<20}{}","-n","Set the number of trainings in SelfTrain mode.")<<std::endl;
             std::cout<<std::format("{:<20}{}","-i","Set your seat/the player id of human in HumanVsComputer mode. [1(default)/2/3/4](the number should be less than the number of players)")<<std::endl;
             std::cout<<std::format("{:<20}{}","-b","Set the address of the best params of approximate Q-Learning.")<<std::endl;
