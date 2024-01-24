@@ -26,6 +26,7 @@ aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/src src)
 
 find_package(OpenMP REQUIRED)
 
+
 add_executable(main main.cpp ${src})
 add_executable(test test.cpp ${src})
 add_executable(basic_lighting basic_lighting.cpp ${src})
@@ -34,16 +35,7 @@ target_link_directories(main PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/bin)
 target_link_directories(test PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/bin)
 target_link_directories(basic_lighting PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/bin)
 
-target_link_libraries(main PUBLIC opengl_lib)
+target_link_libraries(main PUBLIC opengl_lib OpenMP::OpenMP_CXX)
 target_link_libraries(test PUBLIC opengl_lib)
 target_link_libraries(basic_lighting PUBLIC opengl_lib)
-
-
-target_link_libraries(main PRIVATE OpenMP::OpenMP_CXX)
-
-# find_package(OpenMP REQUIRED)
-
-# add_executable(test test.cpp)
-
-# target_link_libraries(test PRIVATE OpenMP::OpenMP_CXX)
 
