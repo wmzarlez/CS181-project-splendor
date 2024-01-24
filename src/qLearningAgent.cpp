@@ -135,7 +135,7 @@ float QLearningAgent::get_feature(const GameState& state, std::string featureNam
         return feature/10.0;
     }
     else if(featureName=="gold-gem"){
-        return state.playerBoards[playerIndex].gemsOwnwd[(int)YELLOW]/5.0;
+        return state.playerBoards[playerIndex].gemsOwnwd[(int)YELLOW]/10.0;
     }
     else if(featureName=="my-points"){
         return state.playerBoards[playerIndex].score/2.0;
