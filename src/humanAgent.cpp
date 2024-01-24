@@ -39,6 +39,9 @@ bool HumanAgent::isLegalAction(const GameState& state, const Action myAction) co
 
   else if(myAction.type == ActionType::BUYCARD){
     int playerGem[6]; memcpy(reinterpret_cast<void*>(playerGem), reinterpret_cast<const void*>(state.playerBoards[playerIndex].gemsOwnwd), 6*sizeof(int));
+    for(int i=0;i<5;i++){
+      playerGem[i]+=state.playerBoards[playerIndex].bonuses[i];
+    }
     if(myAction.params[0] >= 0 && myAction.params[0] <= 2 && myAction.params[1] >=0 && myAction.params[1] <= 3){
       if(!state.market[myAction.params[0]][myAction.params[1]].cardId) return false;
       int cardCost[5]; memcpy(reinterpret_cast<void*>(cardCost), reinterpret_cast<const void*>(state.market[myAction.params[0]][myAction.params[1]].cost), 5*sizeof(int));
