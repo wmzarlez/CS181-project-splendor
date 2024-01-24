@@ -83,7 +83,7 @@ Game::Game(){
         }
         else if(options.get_option<std::string>("-m")==std::string("ComputerBattle")){      
             int qAgentIndex=rand()%numPlayer;
-            std::unique_ptr<Agent> q_ptr = std::make_unique<MinimaxAgent>(qAgentIndex);
+            std::unique_ptr<Agent> q_ptr = std::make_unique<QLearningAgent>(qAgentIndex);
             for(int i=0;i<numPlayer;i++){
                 if(i==qAgentIndex){
                     players.emplace_back(std::move(q_ptr));

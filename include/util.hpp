@@ -43,7 +43,7 @@ class Options {
             _options["-m"]="HumanVsComputer";
             _options["-no-graphics"]="1";
             _options["-no-terminal-outputs"]="0";
-            _options["-a"]="Minimax";
+            _options["-a"]="QLearning";
 
             // if SelfTrain
             _options["-n"]="10";
