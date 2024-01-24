@@ -9,10 +9,13 @@
 #include <stdexcept>
 #include <assert.h>
 #include <format>
+#include <stdlib.h>
+#include <fstream>
+#include <sstream>
 
 class Options {
     private:
-        std::unordered_map<std::string, std::optional<std::string>> _options;
+        std::unordered_map<std::string, std::string> _options;
 
         inline bool is_flag(const char* s) {
             return (strlen(s) > 0 && s[0] == '-');
@@ -24,7 +27,7 @@ class Options {
             std::cout<<"Options:"<<std::endl;
             std::cout<<std::format("{:<20}{}","-h/-help","Display specific types of command line options.")<<std::endl;
             std::cout<<std::format("{:<20}{}","-p","Set the number of players. ([2(default)/3/4])")<<std::endl;
-            std::cout<<std::format("{:<20}{}","-m","Set the game mode. [SelfTrain/HumanVsComputer(default)]")<<std::endl;
+            std::cout<<std::format("{:<20}{}","-m","Set the game mode. [SelfTrain/HumanVsComputer(default)/ComputerBattle]")<<std::endl;
             std::cout<<std::format("{:<20}{}","-no-graphics","Close the GUI.")<<std::endl;
             std::cout<<std::format("{:<20}{}","-no-terminal-outputs  ","Reduce most of the terminal outputs.")<<std::endl;
             std::cout<<std::format("{:<20}{}","-a","Set the agent of conmputers. [Minimax/QLearning(default)/Greedy]")<<std::endl;
@@ -38,7 +41,7 @@ class Options {
         Options(){
             _options["-p"]="2";
             _options["-m"]="HumanVsComputer";
-            _options["-no-graphyics"]="0";
+            _options["-no-graphics"]="1";
             _options["-no-terminal-outputs"]="0";
             _options["-a"]="QLearning";
 
@@ -46,7 +49,7 @@ class Options {
             _options["-n"]="10";
 
             // if HumanVSComputer
-            _options["-s"]="1";
+            _options["-i"]="1";
 
             // if Qlearning
             _options["-no-training"]="0";
@@ -62,7 +65,7 @@ class Options {
 
             int curr = 1;
             
-            if((argc>=2) && (strcmp(argv[1],"-h") || strcmp(argv[1],"-help"))){
+            if((argc>=2) && ((strcmp(argv[1],"-h")==0 || strcmp(argv[1],"-help")==0))){
                 usage();
                 exit(0);
             }
@@ -83,36 +86,43 @@ class Options {
         }
 
         template<typename T>
-        inline std::optional<T> get_option(const char* s) const {
+        inline T get_option(const char* s) const {
             static_assert(0, "Type is not supported!");
-            return std::nullopt;
+            return T();
         }
 };
 
 template<>
-inline std::optional<std::string> Options::get_option<std::string>(const char* s) const {
+inline std::string Options::get_option<std::string>(const char* s) const {
     auto iter = _options.find(s);
-    if(iter == _options.end() || !(iter->second))
-        return std::nullopt;
+    if(iter == _options.end()){
+        std::cout<<"No matched options."<<std::endl;
+        return std::string();
+    }
     return iter->second;
 }
 
 template<>
-inline std::optional<int> Options::get_option<int>(const char* s) const {
+inline int Options::get_option<int>(const char* s) const {
     auto iter = _options.find(s);
     int ret;
-    if(iter == _options.end() || !(iter->second) || sscanf(iter->second->c_str(), "%d", &ret) < 1)
-        return std::nullopt;
+    if(iter == _options.end()){
+        std::cout<<"No matched options."<<std::endl;
+        return -1;
+    }
+    sscanf(iter->second.c_str(), "%d", &ret);
     return ret;
 }
 
 template<>
-inline std::optional<bool> Options::get_option<bool>(const char* s) const {
+inline bool Options::get_option<bool>(const char* s) const {
     auto iter = _options.find(s);
     int value;
-    if(iter == _options.end())
-        return std::nullopt;
-    sscanf(iter->second->c_str(), "%d", &value);
+    if(iter == _options.end()){
+        std::cout<<"No matched options."<<std::endl;
+        return false;
+    }
+    sscanf(iter->second.c_str(), "%d", &value);
     if(value==0){
         return false;
     }

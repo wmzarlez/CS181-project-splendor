@@ -1,0 +1,13 @@
+bias	1.56102
+cards-to-closest-noble	-4.22793
+reserved-cards-point	0.12722
+2-max-card-values-to-me	0.695397
+cards-owned	5.99116
+4-max-card-values-to-opponents	-0.240487
+gem-owned	3.025472
+gold-gem	1.588584
+my-points	6.54455
+points-opponents-get-after-2-turns	-1.878302
+6-max-card-values-to-me	0.450985
+4-max-card-values-to-me	0.984092
+turns	-1.95876

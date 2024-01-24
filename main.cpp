@@ -1,53 +1,84 @@
-#include "glm/glm.hpp"
-#include "game_object.hpp"
-#include <functional>
-#include <cmath>
+#include "util.hpp"
+#include "game.h"
 
-using namespace OpenGL;
+Options options = Options();
+std::unordered_map<std::string,int> consumingTime;
 
-struct Movement {
-    /**
-     * @param t the current time
-     * @return whether this Movement is finished
-    */
-    virtual bool update(float t);
-};
+void update_version(){
+    std::ifstream version("../qTrainingLog/version.txt");
+    std::string line;
+    if(!version.is_open()){
+        return;
+    }
+    std::getline(version,line);
+    int bestModel=atoi(line.c_str());
+    std::getline(version,line);
+    int latestModel=atoi(line.c_str());
+    version.close();
 
-std::function<glm::mat3(float)> gen_y_negative(float degree) {
-    return [=](float t)->glm::mat3 {
-        const float theta = glm::radians(t * degree);
-        return glm::mat3{
-            std::cos(theta), 0, std::sin(theta), 
-            0, 1, 0, 
-            -std::sin(theta), 0, std::cos(theta)
-        };
-    };
+    std::ofstream out("../qTrainingLog/version.txt",std::ios::out);
+    if(!out.is_open()){
+        return;
+    }
+    out<<bestModel+1<<std::endl;
+    out<<latestModel+1<<std::endl;
+    return;
 }
-    
 
-struct Rotation : public Movement{
-        Rotation(std::shared_ptr<GameObject> object, float curr_t, float t_scale, std::function<glm::mat3(float)> update_f) : 
-            _object{object}, _last_t{curr_t}, _residue_t{1}, _t_scale{t_scale}, _update{update_f} {}
+int main(int argc, const char* argv[]){
 
-        bool update(float t) override {
-            const float delta_t = t - _last_t;
-            _last_t = t;
-            const float normalize_t = delta_t * _t_scale;
-            const float update_t = std::min(_residue_t, normalize_t);
-            _residue_t -= update_t;
-            _object->set_rot(_object->get_rot() * _update(update_t));
-            return _residue_t <= 0;
+    srand((unsigned) time(NULL));
+    options.set_args(argc, argv);
+
+    if(options.get_option<std::string>("-m")==std::string("HumanVsComputer")){
+        Game game;
+        game.run();
+    }
+    else if(options.get_option<std::string>("-m")==std::string("SelfTrain")){
+        int numTrain=options.get_option<int>("-n");
+        numTrain=1;
+        for(int i=0;i<numTrain;i++){
+            Game game;
+            game.train();
+            //update_version();
         }
-    private:
-        std::shared_ptr<GameObject> _object;
-        float _last_t;
-        float _residue_t;
-        float _t_scale;
-        std::function<glm::mat3(float)> _update;
-};
+    }
+    else if(options.get_option<std::string>("-m")==std::string("ComputerBattle")){
+        int numBattle=100;
+        std::unordered_map<std::string,int> scoreBoard;
+        for(int i=0;i<numBattle;i++){
+            Game game;
+            scoreBoard[game.battle()]+=1;
+            //update_version();
+        }
+        std::vector<std::string> agentVector;
+        for(auto i:scoreBoard){
+            agentVector.push_back(i.first);
+        }
+        for(int i=0;i<agentVector.size();i++){
+            if(i==0){
+                std::cout<<agentVector[i];
+            }
+            else{
+                std::cout<<":"<<agentVector[i];
+            }
+        }
+        std::cout<<"=";
+        for(int i=0;i<agentVector.size();i++){
+            if(i==0){
+                std::cout<<scoreBoard[agentVector[i]];
+            }
+            else{
+                std::cout<<":"<<scoreBoard[agentVector[i]];
+            }
+        }
+        std::cout<<std::endl;
+        for(auto i:consumingTime){
+            std::cout<<i.first<<" takes "<<i.second<<" millisecs."<<std::endl;
+        }
+    }
+    else{
+        std::cout<<"Game mode error!"<<std::endl;
+    }
 
-
-
-int main() {
-    return 0;
 }

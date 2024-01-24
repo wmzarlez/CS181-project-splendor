@@ -18,7 +18,8 @@ typedef enum{
     SELECTGEMS = 0,
     BUYCARD = 1,
     RESERVECARD = 2,
-    SKIP = 3
+    SKIP = 3,
+    ILLEGAL = 4
 } ActionType;
 
 struct Card{
@@ -29,8 +30,11 @@ struct Card{
     int cost[5] = {10,10,10,10,10};
 };
 
+//Card card = {.point = -2, .bonusGem, .cost = {10,10,10,10,10}}
+
 struct Noble{
-    int point = 3;
+    int nobleId=0;   //nobleId start from 1
+    int point = 0;
     int bonusRequired[5] = {10,10,10,10,10};
 };
 
@@ -42,28 +46,28 @@ struct Noble{
  * BUYCARD:
  * (params[0],params[1]) represents (cardLevel-1,cardIndex)
  * they can be just used as market[params[0]][params[1]]
+ * if params[0]==3, then player buys the reserved card with index params[1]
  * params remained are useless
  * RESERVECARD:
  * the first 2 params are similar with BUYCARD
  * the third param is an indicator of whether a gold/YELLOW gem can be got
  * 0 -- no YELLOW gem, 1 -- get a YELLOW gem
+ * the fourth param is the gem player may droped (usually BLANK(6))
  * params remained are useless
  * SKIP:
  * all params are useless
 */
+
 struct Action{
-    ActionType type = SKIP;
+    ActionType type = ILLEGAL;
     int params[6];
 };
 
-class PlayerBoard{
-public:
-    // PlayerBoard init
-    PlayerBoard();
-private:
-    int bonuses[5];
-    int gemsOwnwd[6];
-    Card reservedCards[3];
+struct PlayerBoard{
+    int bonuses[5]={};
+    int gemsOwnwd[6]={};
+    Card reservedCards[3]={};
+    int score=0;
 };
 
 struct CardPile{
@@ -73,42 +77,59 @@ struct CardPile{
     int level2CardRemained = 30;
     Card level3Pile[20];
     int level3CardRemained = 20;
+    CardPile();
+};
+
+struct NoblePile{           //存放所有贵族牌信息，初始化游戏时随机从中抽取需要个数的贵族
+    Noble allNoble[10];
+    NoblePile();
 };
 
 class GameState{
 public:
     // GameState init
     GameState();
+    GameState(const GameState &other);
+    GameState& operator=(const GameState &other);
     std::vector<Action> get_legal_action(int playerIndex) const;
-    void apply_action(Action action);
+    void get_legal_selectgems_action(int playerIndex,std::vector<Action> & ActionVector) const;
+    void get_legal_buycards_action(int playerIndex,std::vector<Action> & ActionVector) const;
+    void get_legal_reservecard_action(int playerIndex,std::vector<Action> & ActionVector) const;
+    void apply_action(Action action,int playerindex);
     // return true if one player wins
     bool is_win();
+    int who_wins();
     // Check whether a player can get a noble.
     // If true, increase the player's point, and remove that noble
     void check_noble(int playerIndex);
     void print_table() const;
+    void print_action(Action action, int playerIndex) const;
 
     //  when you need to add/remove tokens, use functions below
     void add_card_random(int cardLevel, int cardColumnIndex);
-    void add_card_explicit(int cardLevel, int cardColumnIndex, int cardId);
+    void add_card_explicit(int cardLevel, int cardColumnIndex, int cardId);   
     void remove_card(int cardLevel, int cardColumnIndex);
     void add_gem(Gem gemType);
     void remove_gem(Gem gemType);
-    void add_noble_random(int nobleIndex);
-    void add_noble_explicit(int nobleIndex, int nobleId);
     void remove_noble(int nobleIndex);
+    
+    bool ableToBuy(int playerIndex,Card theCard) const;
+    
+    int numTurn = 0;
 
-private:
     int gemPile[6] = {4,4,4,4,4,5};
-
     Card market[3][4];
     std::shared_ptr<CardPile> cardPile;
-
+    //储存了所有的贵族卡信息，唯一的作用就是初始化noblepile
+    std::shared_ptr<NoblePile> totalNobalPile;          
+    
     Noble noblePile[5];
     int numNoble = 3;
 
-    PlayerBoard playerBoards[4];
-    int numPlayer = 2;
+    PlayerBoard playerBoards[4]={};
+    int numPlayer;
 
     Visualization* paintbrush;
+
+    bool isCopy;
 };
