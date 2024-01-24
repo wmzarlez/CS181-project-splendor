@@ -174,7 +174,7 @@ float QLearningAgent::get_feature(const GameState& state, std::string featureNam
         for(int i=0;i<3;i++){
             Card card=state.playerBoards[playerIndex].reservedCards[i];
             if(card.cardId==0)continue;
-            cardValueVector.push_back(0.8*market_card_value(state,card,playerIndex));
+            cardValueVector.push_back(1.1*market_card_value(state,card,playerIndex));
         }
         std::sort(cardValueVector.begin(),cardValueVector.end(),std::greater<float>());
         for(int i=0;i<6;i++){
@@ -195,7 +195,7 @@ float QLearningAgent::get_feature(const GameState& state, std::string featureNam
         for(int i=0;i<3;i++){
             Card card=state.playerBoards[playerIndex].reservedCards[i];
             if(card.cardId==0)continue;
-            cardValueVector.push_back(0.8*market_card_value(state,card,playerIndex));
+            cardValueVector.push_back(1.1*market_card_value(state,card,playerIndex));
         }
         std::sort(cardValueVector.begin(),cardValueVector.end(),std::greater<float>());
         for(int i=0;i<4;i++){
@@ -216,7 +216,7 @@ float QLearningAgent::get_feature(const GameState& state, std::string featureNam
         for(int i=0;i<3;i++){
             Card card=state.playerBoards[playerIndex].reservedCards[i];
             if(card.cardId==0)continue;
-            cardValueVector.push_back(0.8*market_card_value(state,card,playerIndex));
+            cardValueVector.push_back(1.1*market_card_value(state,card,playerIndex));
         }
         std::sort(cardValueVector.begin(),cardValueVector.end(),std::greater<float>());
         for(int i=0;i<2;i++){
