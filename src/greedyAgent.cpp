@@ -40,14 +40,14 @@ int GreedyAgent::getActRecursion(GameState state, int depth){
 
 // Initial depth 0, num(searchDepth) = num(actions taken). If searchDepth = 5, then take 5 sequential actions and return at depth 5. 
 Action GreedyAgent::getAction(const GameState& state){
-    std::cout << "Greedy agent choosing action..."<<std::endl;;
+    std::cout << "Greedy agent choosing action..."<<std::endl;
     std::chrono::high_resolution_clock::time_point startTime = std::chrono::high_resolution_clock::now();
     std::pair<Action, int> optActPair = std::make_pair(Action(), std::numeric_limits<int>::min());
     
     std::vector<Action> possibleActs = state.get_legal_action(playerIndex);
     int size=possibleActs.size();
     #pragma omp parallel for
-    for(std::uint16_t i=0; i<size; ++i){
+    for(std::uint16_t i=0; i<size; ++i){ 
         GameState newStat = state;
         newStat.apply_action(possibleActs[i], playerIndex);
         int tmpPt = getActRecursion(newStat, 1);
