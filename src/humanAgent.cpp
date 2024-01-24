@@ -72,9 +72,9 @@ bool HumanAgent::isLegalAction(const GameState& state, const Action myAction) co
 }
 
 Action HumanAgent::getAction(const GameState& state){
-  Action myAction = Action();
-  int myActionType = -1;
   for(;;){
+    Action myAction = Action();
+    int myActionType = -1;
     do{
       std::cout << "Enter action type:\n\tSELECT GEMS  -> 0\n\tBUY CARD     -> 1\n\tRESERVE CARD -> 2\n\tSKIP         -> 3.\n";
       std::cin >> myActionType;
