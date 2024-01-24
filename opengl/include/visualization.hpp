@@ -28,6 +28,7 @@ class Visualization{
 namespace OpenGL {
     
     class GameManager : public Visualization{
+
         private:
             std::array<std::array<unsigned int, 4>, 3> card_location_to_id;
             std::array<unsigned int, 5> nobility_location_to_id;
@@ -41,6 +42,8 @@ namespace OpenGL {
             std::shared_ptr<Coin_Manager> coin_manager;
             std::shared_ptr<Movement_Manager> movement_manager;
             std::shared_ptr<Render_Manager> render_manager;
+
+            static constexpr std::array<int, 6> coin_map = {4, 3, 2, 1, 0, 5};
         public:
             GameManager();
 
@@ -65,6 +68,37 @@ namespace OpenGL {
                 render_manager->remove(card_location_to_id[card_level][card_index]);
                 card_location_to_id[card_level][card_index] = (unsigned int)(-1);
             }
+
+            void draw_gem(int gemType) override {
+                if(gemType >=6)
+                    return;
+                int id = coin_map[gemType];
+                auto coin = coin_manager->get_a_coin(coin_num[id], glm::vec3{0.05, 0.05, 0.05}, glm::mat{1}, table->get_coin_global_position(coin_num[id]) + glm::vec3{0,0,(coin_num[id] % 10) * 0.1});
+                render_manager->add_game_object(coin);
+                coin_num[id]++;
+            }
+
+            void erase_gem(int gemType) override {
+                if(gemType >= 6)
+                    return;
+                int id = coin_map[gemType];
+                unsigned int coin_id = --coin_num[id];
+                render_manager->remove(coin_id);
+            }
+
+            void draw_noble(int nobleIndex, int nobleId) override {
+                assert(nobleId > 0 );
+                --nobleId;
+                nobleId += 100;
+                nobility_location_to_id[nobleIndex] = nobleId;
+                auto nobility = nobility_manager->get_a_nobility(nobleId, glm::vec3{0.27,0.27,0.27}, glm::mat3{1}, table->get_nobility_global_position(nobleIndex));
+                render_manager->add_game_object(nobility);
+            }
+            
+            void erase_noble(int nobleIndex) override {
+                render_manager->remove(nobility_location_to_id[nobleIndex]);
+            }
+
 
             void operator()() {
                 while(!glfwWindowShouldClose(Window::window)) {
