@@ -26,7 +26,7 @@ bool HumanAgent::isLegalAction(const GameState& state, const Action myAction) co
         --gameStateGem[myAction.params[i]];
       }
     }
-    for(std::uint16_t i=0; i<5; +  +i) if(getGemCount[i] > 2) doubleGemCnt += 1;
+    for(std::uint16_t i=0; i<5; ++i) if(getGemCount[i] > 2) doubleGemCnt += 1;
     if(doubleGemCnt > 1) return false;
     for(std::uint16_t i=0; i<6; playerGem[i] += getGemCount[i], ++i);
     for(std::uint16_t i=0; i<6; ++i){
@@ -72,7 +72,7 @@ bool HumanAgent::isLegalAction(const GameState& state, const Action myAction) co
 }
 
 Action HumanAgent::getAction(const GameState& state){
-  Action myAction;
+  Action myAction; 
   for(;;){
     myAction = Action();
     int myActionType = -1;
