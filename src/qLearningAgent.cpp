@@ -11,7 +11,21 @@ void QLearningAgent::load_weights(){
     std::string line;
     if(!version.is_open()){
         std::cout<<"Error: Read version fail."<<std::endl;
-        exit(1);
+        std::cout<<"Using the default weight."<<std::endl;
+        weights["bias"]=1.56102;
+        weights["cards-to-closest-noble"]=-4.22793;
+        weights["reserved-cards-point"]=0.22722;
+        weights["2-max-card-values-to-me"]=0.695397;
+        weights["cards-owned"]=5.99116;
+        weights["4-max-card-values-to-opponents"]=-0.440487;
+        weights["gem-owned"]=3.525472;
+        weights["gold-gem"]=-0.588584;
+        weights["my-points"]=6.54455;
+        weights["points-opponents-get-after-2-turns"]=-0.678302;
+        weights["6-max-card-values-to-me"]=0.450985;
+        weights["4-max-card-values-to-me"]=0.984092;
+        weights["turns"]=-1.95876;
+        return;
     }
     std::getline(version,line);
     int bestModel=atoi(line.c_str());
@@ -33,6 +47,9 @@ void QLearningAgent::load_weights(){
 }
 
 void QLearningAgent::store_weights(){
+    std::ifstream version("../qTrainingLog/version.txt");
+    if(!version.is_open())return;
+
     std::ofstream weightData("../qTrainingLog/"+std::string(std::to_string(latestModel+1))+".txt");
     //latestModel++;
     for(auto iter=weights.begin();iter!=weights.end();iter++){
