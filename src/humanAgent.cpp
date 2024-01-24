@@ -23,10 +23,10 @@ bool HumanAgent::isLegalAction(const GameState& state, const Action myAction) co
       else if(!gameStateGem[myAction.params[i]]) return false;
       else{
         ++getGemCount[myAction.params[i]];
-        -- gameStateGem[myAction.params[i]];
+        --gameStateGem[myAction.params[i]];
       }
     }
-    for(std::uint16_t i=0; i<5; ++i) if(getGemCount[i] > 2) doubleGemCnt += 1;
+    for(std::uint16_t i=0; i<5; +  +i) if(getGemCount[i] > 2) doubleGemCnt += 1;
     if(doubleGemCnt > 1) return false;
     for(std::uint16_t i=0; i<6; playerGem[i] += getGemCount[i], ++i);
     for(std::uint16_t i=0; i<6; ++i){
@@ -72,7 +72,6 @@ bool HumanAgent::isLegalAction(const GameState& state, const Action myAction) co
 }
 
 Action HumanAgent::getAction(const GameState& state){
-  std::uint16_t gemNum = getGemAvailable(state);
   Action myAction = Action();
   int myActionType = -1;
   for(;;){
@@ -83,6 +82,7 @@ Action HumanAgent::getAction(const GameState& state){
 
     myAction.type = static_cast<ActionType>(myActionType);
     if(myActionType == ActionType::SELECTGEMS){
+      std::uint16_t gemNum = getGemAvailable(state);
       for(std::uint16_t i=0; i<6; myAction.params[i++] = Gem::BLANK_);
       std::cout << "Enter gem type:\n\tWHITE     -> 0\n\tBLUE      -> 1\n\tGREEN     -> 2\n\tRED       -> 3\n\tBLACK     -> 4\n\tNONE      -> 6.\n";
       for(std::uint16_t i=0; i<3; ++i){
@@ -104,6 +104,7 @@ Action HumanAgent::getAction(const GameState& state){
       myAction.params[1]=cardColumn-1;
     }
     else if(myActionType == ActionType::RESERVECARD){
+      std::uint16_t gemNum = getGemAvailable(state);
       myAction.params[2] = Gem::BLANK_;
       std::cout << "Enter coordinates(cardLevel and cardColumn), then enter 1 if want to choose a golden gem and 0 otherwise:\n";
       int cardLevel;
